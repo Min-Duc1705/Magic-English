@@ -26,7 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
-import vn.project.magic_english.utils.SecurityUtil;
+
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)

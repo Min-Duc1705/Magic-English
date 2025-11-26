@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import vn.project.magic_english.service.UserService;
 
 @Component("userDetailsService")
 public class UserDetailsCustom implements UserDetailsService {
@@ -33,7 +32,7 @@ public class UserDetailsCustom implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        vn.project.magic_english.model.User user = this.userService.handleGetUserByUsername(username);
+        vn.nhomx.magic_english.model.User user = this.userService.handleGetUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Username/password không hợp lệ");
         }
