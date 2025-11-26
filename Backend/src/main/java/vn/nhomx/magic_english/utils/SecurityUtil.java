@@ -25,7 +25,10 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
 
-import vn.project.magic_english.model.response.ResLoginDTO;
+import vn.nhomx.magic_english.model.response.ResLoginDTO;
+
+
+
 
 @Service
 // SecurityUtil: Tiện ích bảo mật cho JWT, xác thực, lấy thông tin user hiện tại

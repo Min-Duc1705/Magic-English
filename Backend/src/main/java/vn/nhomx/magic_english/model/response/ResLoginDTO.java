@@ -1,4 +1,4 @@
-package vn.project.magic_english.model.response;
+package vn.nhomx.magic_english.model.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

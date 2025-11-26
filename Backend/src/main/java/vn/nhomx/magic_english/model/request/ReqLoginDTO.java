@@ -1,4 +1,4 @@
-package vn.project.magic_english.model.request;
+package vn.nhomx.magic_english.model.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

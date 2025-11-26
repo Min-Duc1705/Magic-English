@@ -1,4 +1,4 @@
-package vn.project.magic_english.utils.error;
+package vn.nhomx.magic_english.utils.error;
 
 public class PermissionException extends Exception {
     // Constructor that accepts a message

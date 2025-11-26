@@ -1,4 +1,4 @@
-package vn.project.magic_english.utils.error;
+package vn.nhomx.magic_english.utils.error;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import vn.project.magic_english.model.response.RestResponse;
+import vn.nhomx.magic_english.model.response.RestResponse;
+
+
 
 @RestControllerAdvice
 public class GlobalException {
