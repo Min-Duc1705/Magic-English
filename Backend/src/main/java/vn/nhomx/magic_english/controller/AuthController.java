@@ -1,6 +1,5 @@
-package vn.project.magic_english.controller;
+package vn.nhomx.magic_english.controller;
 
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.nhomx.magic_english.model.User;
 import vn.nhomx.magic_english.model.request.ReqLoginDTO;
 import vn.nhomx.magic_english.model.response.ResLoginDTO;
+import vn.nhomx.magic_english.model.response.ResRegister;
+import vn.nhomx.magic_english.service.UserService;
+import vn.nhomx.magic_english.utils.SecurityUtil;
 import vn.nhomx.magic_english.utils.annotation.ApiMessage;
 import vn.nhomx.magic_english.utils.error.IdInvalidException;
 
