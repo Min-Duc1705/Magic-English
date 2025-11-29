@@ -25,6 +25,10 @@ repositories {
 }
 
 dependencies {
+	// Spring AI with OpenAI (compatible with Gemini)
+	implementation platform('org.springframework.ai:spring-ai-bom:1.0.0-M4')
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+	
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
