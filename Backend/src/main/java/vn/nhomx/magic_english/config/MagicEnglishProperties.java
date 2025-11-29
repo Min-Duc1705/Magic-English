@@ -1,4 +1,4 @@
-package vn.project.magic_english.config;
+package vn.nhomx.magic_english.config;
 
 import java.util.List;
 
