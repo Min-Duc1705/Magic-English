@@ -242,57 +242,57 @@ public class VocabularyService {
         }
     }
 
-    // public ResultPaginationDTO handleGetAllVocabulary(String search, Pageable pageable) {
-    //     // Build Specification for user and search filters
-    //     Specification<Vocabulary> spec = (root, query, criteriaBuilder) -> {
-    //         List<Predicate> predicates = new ArrayList<>();
+    public ResultPaginationDTO handleGetAllVocabulary(String search, Pageable pageable) {
+        // Build Specification for user and search filters
+        Specification<Vocabulary> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    //         // Filter by current user
-    //         String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //                 () -> new RuntimeException("User not authenticated"));
-    //         User user = userRepository.findByEmail(email);
-    //         if (user == null) {
-    //             throw new RuntimeException("User not found");
-    //         }
-    //         predicates.add(criteriaBuilder.equal(root.get("user").get("id"), user.getId()));
+            // Filter by current user
+            String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                    () -> new RuntimeException("User not authenticated"));
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), user.getId()));
 
-    //         // Add search filter if provided
-    //         if (search != null && !search.trim().isEmpty()) {
-    //             String likePattern = "%" + search.toLowerCase() + "%";
-    //             Predicate wordPredicate = criteriaBuilder.like(
-    //                     criteriaBuilder.lower(root.get("word")), likePattern);
-    //             Predicate meaningPredicate = criteriaBuilder.like(
-    //                     criteriaBuilder.lower(root.get("meaning")), likePattern);
-    //             Predicate cefrPredicate = criteriaBuilder.like(
-    //                     criteriaBuilder.lower(root.get("cefrLevel")), likePattern);
-    //             Predicate wordTypePredicate = criteriaBuilder.like(
-    //                     criteriaBuilder.lower(root.get("wordType")), likePattern);
+            // Add search filter if provided
+            if (search != null && !search.trim().isEmpty()) {
+                String likePattern = "%" + search.toLowerCase() + "%";
+                Predicate wordPredicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("word")), likePattern);
+                Predicate meaningPredicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("meaning")), likePattern);
+                Predicate cefrPredicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("cefrLevel")), likePattern);
+                Predicate wordTypePredicate = criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("wordType")), likePattern);
 
-    //             predicates.add(criteriaBuilder.or(wordPredicate, meaningPredicate, cefrPredicate, wordTypePredicate));
-    //         }
+                predicates.add(criteriaBuilder.or(wordPredicate, meaningPredicate, cefrPredicate, wordTypePredicate));
+            }
 
-    //         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    //     };
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
 
-    //     // Execute query with spec
-    //     Page<Vocabulary> pageVocabulary = this.vocabularyRepository.findAll(spec, pageable);
+        // Execute query with spec
+        Page<Vocabulary> pageVocabulary = this.vocabularyRepository.findAll(spec, pageable);
 
-    //     // Build response
-    //     ResultPaginationDTO rs = new ResultPaginationDTO();
-    //     ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+        // Build response
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
-    //     mt.setPage(pageable.getPageNumber() + 1);
-    //     mt.setPageSize(pageable.getPageSize());
-    //     mt.setPages(pageVocabulary.getTotalPages());
-    //     mt.setTotal(pageVocabulary.getTotalElements());
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(pageVocabulary.getTotalPages());
+        mt.setTotal(pageVocabulary.getTotalElements());
 
-    //     rs.setMeta(mt);
-    //     rs.setResult(pageVocabulary.getContent().stream()
-    //             .map(VocabularyDetailResponse::fromEntity)
-    //             .toList());
+        rs.setMeta(mt);
+        rs.setResult(pageVocabulary.getContent().stream()
+                .map(VocabularyDetailResponse::fromEntity)
+                .toList());
 
-    //     return rs;
-    // }
+        return rs;
+    }
 
     /**
      * Preview vocabulary data without saving to database

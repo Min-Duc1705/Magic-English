@@ -38,14 +38,14 @@ public class VocabularyController {
      * Get all vocabulary with optional search and pagination
      * GET /api/v1/vocabulary?search=keyword&page=0&size=10
      */
-    // @GetMapping("/vocabulary")
-    // public ResponseEntity<ResultPaginationDTO> getAllVocabulary(
-    //         @RequestParam(value = "search", required = false) String search,
-    //         Pageable pageable) {
+    @GetMapping("/vocabulary")
+    public ResponseEntity<ResultPaginationDTO> getAllVocabulary(
+            @RequestParam(value = "search", required = false) String search,
+            Pageable pageable) {
 
-    //     return ResponseEntity.ok(
-    //             vocabularyService.handleGetAllVocabulary(search, pageable));
-    // }
+        return ResponseEntity.ok(
+                vocabularyService.handleGetAllVocabulary(search, pageable));
+    }
 
     // /**
     //  * Preview vocabulary data without saving to database
