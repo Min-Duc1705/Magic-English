@@ -47,16 +47,16 @@ public class VocabularyController {
                 vocabularyService.handleGetAllVocabulary(search, pageable));
     }
 
-    // /**
-    //  * Preview vocabulary data without saving to database
-    //  * POST /api/v1/vocabulary/preview
-    //  */
-    // @PostMapping("/vocabulary/preview")
-    // public ResponseEntity<VocabularyDetailResponse> previewVocabulary(
-    //         @Valid @RequestBody AddVocabularyRequest request) {
-    //     VocabularyDetailResponse response = vocabularyService.previewVocabulary(request);
-    //     return ResponseEntity.ok(response);
-    // }
+    /**
+     * Preview vocabulary data without saving to database
+     * POST /api/v1/vocabulary/preview
+     */
+    @PostMapping("/vocabulary/preview")
+    public ResponseEntity<VocabularyDetailResponse> previewVocabulary(
+            @Valid @RequestBody AddVocabularyRequest request) {
+        VocabularyDetailResponse response = vocabularyService.previewVocabulary(request);
+        return ResponseEntity.ok(response);
+    }
 
     /**
      * Get vocabulary breakdown by word type (verb, noun, adjective, adverb)
