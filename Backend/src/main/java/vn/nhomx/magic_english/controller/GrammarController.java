@@ -53,10 +53,10 @@ public class GrammarController {
     //  * Delete grammar check
     //  * DELETE /api/v1/grammar/{id}
     //  */
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<Void> deleteGrammarCheck(@PathVariable Long id) {
-    //     grammarService.deleteGrammarCheck(id);
-    //     return ResponseEntity.noContent().build();
-    // }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteGrammarCheck(@PathVariable Long id) {
+        grammarService.deleteGrammarCheck(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
