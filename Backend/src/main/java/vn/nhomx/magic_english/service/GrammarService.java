@@ -87,7 +87,7 @@ public class GrammarService {
                 .schedule(() -> responseCache.remove(cacheKey), 5, java.util.concurrent.TimeUnit.MINUTES);
 
         // Save to database ASYNCHRONOUSLY (don't block response)
-        saveGrammarAsync(grammar, user);
+        // saveGrammarAsync(grammar, user);
 
         log.info("Returning response (DB save happening in background)");
         return response;
