@@ -41,8 +41,8 @@ public class Grammar {
     @Column(columnDefinition = "TEXT")
     private String correctedText; // câu đã được sửa hết lỗi (full corrected version)
 
-    // @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<GrammarError> errors = new ArrayList<>(); // danh sách các lỗi chi tiết
+    @OneToMany(mappedBy = "grammar", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GrammarError> errors = new ArrayList<>(); // danh sách các lỗi chi tiết
 
     private Instant createdAt;
     private Instant updatedAt;
