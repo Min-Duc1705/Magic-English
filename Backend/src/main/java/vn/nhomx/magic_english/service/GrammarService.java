@@ -258,24 +258,24 @@ public class GrammarService {
     /**
      * Get grammar check by ID
      */
-    // public GrammarCheckResponse getGrammarCheckById(Long id) {
-    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //             () -> new RuntimeException("User not authenticated"));
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    public GrammarCheckResponse getGrammarCheckById(Long id) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     Grammar grammar = grammarRepository.findById(id)
-    //             .orElseThrow(() -> new RuntimeException("Grammar check not found"));
+        Grammar grammar = grammarRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grammar check not found"));
 
-    //     // Check if belongs to current user
-    //     if (grammar.getUser().getId() != user.getId()) {
-    //         throw new RuntimeException("Access denied");
-    //     }
+        // Check if belongs to current user
+        if (grammar.getUser().getId() != user.getId()) {
+            throw new RuntimeException("Access denied");
+        }
 
-    //     return GrammarCheckResponse.fromEntity(grammar);
-    // }
+        return GrammarCheckResponse.fromEntity(grammar);
+    }
 
     /**
      * Delete grammar check
