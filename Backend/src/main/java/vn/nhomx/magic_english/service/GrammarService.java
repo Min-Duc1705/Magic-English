@@ -277,28 +277,28 @@ public class GrammarService {
         return GrammarCheckResponse.fromEntity(grammar);
     }
 
-    /**
-     * Delete grammar check
-     */
-    // @Transactional
-    // public void deleteGrammarCheck(Long id) {
-    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //             () -> new RuntimeException("User not authenticated"));
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    // /**
+    //  * Delete grammar check
+    //  */
+    @Transactional
+    public void deleteGrammarCheck(Long id) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     Grammar grammar = grammarRepository.findById(id)
-    //             .orElseThrow(() -> new RuntimeException("Grammar check not found"));
+        Grammar grammar = grammarRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Grammar check not found"));
 
-    //     // Check if belongs to current user
-    //     if (grammar.getUser().getId() != user.getId()) {
-    //         throw new RuntimeException("Access denied");
-    //     }
+        // Check if belongs to current user
+        if (grammar.getUser().getId() != user.getId()) {
+            throw new RuntimeException("Access denied");
+        }
 
-    //     grammarRepository.delete(grammar);
-    //     log.info("Grammar check deleted with ID: {}", id);
-    // }
+        grammarRepository.delete(grammar);
+        log.info("Grammar check deleted with ID: {}", id);
+    }
 
 }
