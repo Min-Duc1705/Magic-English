@@ -122,7 +122,7 @@ public class GrammarService {
                 Provide a detailed JSON response with the following structure:
 
                 {
-                    "score": 95,
+                    "score": 85,
                     "correctedText": "The fully corrected version of the text",
                     "errors": [
                         {
