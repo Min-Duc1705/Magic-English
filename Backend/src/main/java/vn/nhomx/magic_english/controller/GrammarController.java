@@ -39,15 +39,15 @@ public class GrammarController {
         return ResponseEntity.ok(grammarService.handleGetAllGrammarChecks(pageable));
     }
 
-    // /**
-    //  * Get grammar check by ID
-    //  * GET /api/v1/grammar/{id}
-    //  */
-    // @GetMapping("/{id}")
-    // public ResponseEntity<GrammarCheckResponse> getGrammarCheckById(@PathVariable Long id) {
-    //     GrammarCheckResponse response = grammarService.getGrammarCheckById(id);
-    //     return ResponseEntity.ok(response);
-    // }
+    /**
+     * Get grammar check by ID
+     * GET /api/v1/grammar/{id}
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<GrammarCheckResponse> getGrammarCheckById(@PathVariable Long id) {
+        GrammarCheckResponse response = grammarService.getGrammarCheckById(id);
+        return ResponseEntity.ok(response);
+    }
 
     // /**
     //  * Delete grammar check
