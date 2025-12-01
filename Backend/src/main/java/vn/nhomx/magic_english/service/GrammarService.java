@@ -218,87 +218,87 @@ public class GrammarService {
     /**
      * Get all grammar checks for current user with pagination
      */
-    public ResultPaginationDTO handleGetAllGrammarChecks(Pageable pageable) {
-        // Build Specification for user filter
-        Specification<Grammar> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+    // public ResultPaginationDTO handleGetAllGrammarChecks(Pageable pageable) {
+    //     // Build Specification for user filter
+    //     Specification<Grammar> spec = (root, query, criteriaBuilder) -> {
+    //         List<Predicate> predicates = new ArrayList<>();
 
-            // Filter by current user
-            String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-                    () -> new RuntimeException("User not authenticated"));
-            User user = userRepository.findByEmail(email);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            }
-            predicates.add(criteriaBuilder.equal(root.get("user").get("id"), user.getId()));
+    //         // Filter by current user
+    //         String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+    //                 () -> new RuntimeException("User not authenticated"));
+    //         User user = userRepository.findByEmail(email);
+    //         if (user == null) {
+    //             throw new RuntimeException("User not found");
+    //         }
+    //         predicates.add(criteriaBuilder.equal(root.get("user").get("id"), user.getId()));
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+    //         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    //     };
 
-        // Execute query with spec
-        Page<Grammar> pageGrammar = this.grammarRepository.findAll(spec, pageable);
+    //     // Execute query with spec
+    //     Page<Grammar> pageGrammar = this.grammarRepository.findAll(spec, pageable);
 
-        // Build response
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+    //     // Build response
+    //     ResultPaginationDTO rs = new ResultPaginationDTO();
+    //     ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
-        mt.setPage(pageable.getPageNumber() + 1);
-        mt.setPageSize(pageable.getPageSize());
-        mt.setPages(pageGrammar.getTotalPages());
-        mt.setTotal(pageGrammar.getTotalElements());
+    //     mt.setPage(pageable.getPageNumber() + 1);
+    //     mt.setPageSize(pageable.getPageSize());
+    //     mt.setPages(pageGrammar.getTotalPages());
+    //     mt.setTotal(pageGrammar.getTotalElements());
 
-        rs.setMeta(mt);
-        rs.setResult(pageGrammar.getContent().stream()
-                .map(GrammarCheckResponse::fromEntity)
-                .toList());
+    //     rs.setMeta(mt);
+    //     rs.setResult(pageGrammar.getContent().stream()
+    //             .map(GrammarCheckResponse::fromEntity)
+    //             .toList());
 
-        return rs;
-    }
+    //     return rs;
+    // }
 
     /**
      * Get grammar check by ID
      */
-    public GrammarCheckResponse getGrammarCheckById(Long id) {
-        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-                () -> new RuntimeException("User not authenticated"));
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    // public GrammarCheckResponse getGrammarCheckById(Long id) {
+    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+    //             () -> new RuntimeException("User not authenticated"));
+    //     User user = userRepository.findByEmail(email);
+    //     if (user == null) {
+    //         throw new RuntimeException("User not found");
+    //     }
 
-        Grammar grammar = grammarRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Grammar check not found"));
+    //     Grammar grammar = grammarRepository.findById(id)
+    //             .orElseThrow(() -> new RuntimeException("Grammar check not found"));
 
-        // Check if belongs to current user
-        if (grammar.getUser().getId() != user.getId()) {
-            throw new RuntimeException("Access denied");
-        }
+    //     // Check if belongs to current user
+    //     if (grammar.getUser().getId() != user.getId()) {
+    //         throw new RuntimeException("Access denied");
+    //     }
 
-        return GrammarCheckResponse.fromEntity(grammar);
-    }
+    //     return GrammarCheckResponse.fromEntity(grammar);
+    // }
 
     /**
      * Delete grammar check
      */
-    @Transactional
-    public void deleteGrammarCheck(Long id) {
-        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-                () -> new RuntimeException("User not authenticated"));
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new RuntimeException("User not found");
-        }
+    // @Transactional
+    // public void deleteGrammarCheck(Long id) {
+    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+    //             () -> new RuntimeException("User not authenticated"));
+    //     User user = userRepository.findByEmail(email);
+    //     if (user == null) {
+    //         throw new RuntimeException("User not found");
+    //     }
 
-        Grammar grammar = grammarRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Grammar check not found"));
+    //     Grammar grammar = grammarRepository.findById(id)
+    //             .orElseThrow(() -> new RuntimeException("Grammar check not found"));
 
-        // Check if belongs to current user
-        if (grammar.getUser().getId() != user.getId()) {
-            throw new RuntimeException("Access denied");
-        }
+    //     // Check if belongs to current user
+    //     if (grammar.getUser().getId() != user.getId()) {
+    //         throw new RuntimeException("Access denied");
+    //     }
 
-        grammarRepository.delete(grammar);
-        log.info("Grammar check deleted with ID: {}", id);
-    }
+    //     grammarRepository.delete(grammar);
+    //     log.info("Grammar check deleted with ID: {}", id);
+    // }
 
 }

@@ -34,10 +34,10 @@ public class GrammarController {
     //  * Get all grammar checks with pagination
     //  * GET /api/v1/grammar?page=0&size=20
     //  */
-    // @GetMapping
-    // public ResponseEntity<ResultPaginationDTO> getAllGrammarChecks(Pageable pageable) {
-    //     return ResponseEntity.ok(grammarService.handleGetAllGrammarChecks(pageable));
-    // }
+    @GetMapping
+    public ResponseEntity<ResultPaginationDTO> getAllGrammarChecks(Pageable pageable) {
+        return ResponseEntity.ok(grammarService.handleGetAllGrammarChecks(pageable));
+    }
 
     // /**
     //  * Get grammar check by ID
