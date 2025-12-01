@@ -21,7 +21,7 @@ public class GrammarCheckResponse {
     private String inputText;
     private String correctedText;
     private int score;
-    // private List<GrammarErrorResponse> errors = new ArrayList<>();
+    private List<GrammarErrorResponse> errors = new ArrayList<>();
     private Instant createdAt;
 
     public static GrammarCheckResponse fromEntity(Grammar grammar) {
@@ -43,16 +43,16 @@ public class GrammarCheckResponse {
         return response;
     }
 
-    // private static GrammarErrorResponse mapError(GrammarError error) {
-    //     return new GrammarErrorResponse(
-    //             error.getId(),
-    //             error.getErrorType(),
-    //             error.getBeforeText(),
-    //             error.getErrorText(),
-    //             error.getCorrectedText(),
-    //             error.getAfterText(),
-    //             error.getExplanation(),
-    //             error.getStartPosition(),
-    //             error.getEndPosition());
-    // }
+    private static GrammarErrorResponse mapError(GrammarError error) {
+        return new GrammarErrorResponse(
+                error.getId(),
+                error.getErrorType(),
+                error.getBeforeText(),
+                error.getErrorText(),
+                error.getCorrectedText(),
+                error.getAfterText(),
+                error.getExplanation(),
+                error.getStartPosition(),
+                error.getEndPosition());
+    }
 }
