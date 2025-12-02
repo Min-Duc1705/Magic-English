@@ -72,41 +72,41 @@ public class UserAchievementController {
      * Get validated user achievements
      * Returns list directly (no wrapper)
      */
-    // @GetMapping
-    // public ResponseEntity<List<UserAchievement>> getUserAchievements(Authentication authentication) {
-    //     String email = authentication.getName();
-    //     User user = userRepository.findByEmail(email);
+    @GetMapping
+    public ResponseEntity<List<UserAchievement>> getUserAchievements(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
 
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     List<UserAchievement> userAchievements = userAchievementService.getUserAchievements(user.getId());
-    //     return ResponseEntity.ok(userAchievements);
-    // }
+        List<UserAchievement> userAchievements = userAchievementService.getUserAchievements(user.getId());
+        return ResponseEntity.ok(userAchievements);
+    }
 
     // /**
     //  * Reset all achievements for current user (for testing purposes)
     //  */
-    // @DeleteMapping("/reset")
-    // public ResponseEntity<String> resetAchievements(Authentication authentication) {
-    //     String email = authentication.getName();
-    //     User user = userRepository.findByEmail(email);
+    @DeleteMapping("/reset")
+    public ResponseEntity<String> resetAchievements(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email);
 
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     userAchievementService.resetUserAchievements(user.getId());
-    //     return ResponseEntity.ok("Achievements reset successfully for user: " + user.getName());
-    // }
+        userAchievementService.resetUserAchievements(user.getId());
+        return ResponseEntity.ok("Achievements reset successfully for user: " + user.getName());
+    }
 
     // /**
     //  * Get all achievements in the system (for showing locked/unlocked status)
     //  */
-    // @GetMapping("/all")
-    // public ResponseEntity<List<Achievement>> getAllAchievements() {
-    //     List<Achievement> achievements = userAchievementService.getAllAchievements();
-    //     return ResponseEntity.ok(achievements);
-    // }
+    @GetMapping("/all")
+    public ResponseEntity<List<Achievement>> getAllAchievements() {
+        List<Achievement> achievements = userAchievementService.getAllAchievements();
+        return ResponseEntity.ok(achievements);
+    }
 }
