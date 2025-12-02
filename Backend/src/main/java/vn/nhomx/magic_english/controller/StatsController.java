@@ -1,10 +1,12 @@
 package vn.nhomx.magic_english.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -66,6 +68,62 @@ public class StatsController {
         // Get all home stats (vocabulary + grammar)
         Map<String, Object> stats = statsService.getHomeStatsByEmail(email);
 
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Get daily vocabulary stats for last N days
+     * GET /api/v1/stats/daily-vocabulary?days=7
+     * Response: [{"date": "2024-12-23", "count": 3}, ...]
+     */
+    @GetMapping("/stats/daily-vocabulary")
+    public ResponseEntity<List<Map<String, Object>>> getDailyVocabularyStats(
+            @RequestParam(value = "days", defaultValue = "7") int days) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        List<Map<String, Object>> stats = statsService.getDailyVocabularyStats(email, days);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Get daily grammar check stats for last N days
+     * GET /api/v1/stats/daily-grammar-checks?days=7
+     * Response: [{"date": "2024-12-23", "count": 2}, ...]
+     */
+    @GetMapping("/stats/daily-grammar-checks")
+    public ResponseEntity<List<Map<String, Object>>> getDailyGrammarCheckStats(
+            @RequestParam(value = "days", defaultValue = "7") int days) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        List<Map<String, Object>> stats = statsService.getDailyGrammarCheckStats(email, days);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Get daily grammar score stats for last N days
+     * GET /api/v1/stats/daily-grammar-scores?days=7
+     * Response: [{"date": "2024-12-23", "avgScore": 85}, ...]
+     */
+    @GetMapping("/stats/daily-grammar-scores")
+    public ResponseEntity<List<Map<String, Object>>> getDailyGrammarScoreStats(
+            @RequestParam(value = "days", defaultValue = "7") int days) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        List<Map<String, Object>> stats = statsService.getDailyGrammarScoreStats(email, days);
+        return ResponseEntity.ok(stats);
+    }
+
+    /**
+     * Get daily activity stats for last N days (for streak chart)
+     * GET /api/v1/stats/daily-activity?days=7
+     * Response: [{"date": "2024-12-23", "hasActivity": true}, ...]
+     */
+    @GetMapping("/stats/daily-activity")
+    public ResponseEntity<List<Map<String, Object>>> getDailyActivityStats(
+            @RequestParam(value = "days", defaultValue = "7") int days) {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        List<Map<String, Object>> stats = statsService.getDailyActivityStats(email, days);
         return ResponseEntity.ok(stats);
     }
 }
