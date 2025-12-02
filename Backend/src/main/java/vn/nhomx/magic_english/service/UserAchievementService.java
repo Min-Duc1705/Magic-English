@@ -69,26 +69,26 @@ public class UserAchievementService {
         return newAchievements;
     }
 
-    // /**
-    //  * Lấy danh sách achievement của user
-    //  */
-    // public List<UserAchievement> getUserAchievements(Long userId) {
-    //     return userAchievementRepository.findByUserId(userId);
-    // }
+    /**
+     * Lấy danh sách achievement của user
+     */
+    public List<UserAchievement> getUserAchievements(Long userId) {
+        return userAchievementRepository.findByUserId(userId);
+    }
 
-    // /**
-    //  * Lấy tất cả achievement trong hệ thống
-    //  */
-    // public List<Achievement> getAllAchievements() {
-    //     return achievementRepository.findAll();
-    // }
+    /**
+     * Lấy tất cả achievement trong hệ thống
+     */
+    public List<Achievement> getAllAchievements() {
+        return achievementRepository.findAll();
+    }
 
-    // /**
-    //  * Reset tất cả achievements của user (dùng cho testing)
-    //  */
-    // @org.springframework.transaction.annotation.Transactional
-    // public void resetUserAchievements(Long userId) {
-    //     userAchievementRepository.deleteByUserId(userId);
-    //     System.out.println("🔄 Reset achievements for user ID: " + userId);
-    // }
+    /**
+     * Reset tất cả achievements của user (dùng cho testing)
+     */
+    @org.springframework.transaction.annotation.Transactional
+    public void resetUserAchievements(Long userId) {
+        userAchievementRepository.deleteByUserId(userId);
+        System.out.println("🔄 Reset achievements for user ID: " + userId);
+    }
 }
