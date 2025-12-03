@@ -23,6 +23,6 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long>, J
     @Query("SELECT COUNT(v) FROM Vocabulary v WHERE v.user.id = :userId")
     Long countByUserId(@Param("userId") Long userId);
 
-    // @Query("SELECT COUNT(v) FROM Vocabulary v WHERE v.user.id = :userId AND DATE(v.createdAt) = CURRENT_DATE")
-    // Long countTodayVocabularyByUserId(@Param("userId") Long userId);
+    @Query("SELECT COUNT(v) FROM Vocabulary v WHERE v.user.id = :userId AND DATE(v.createdAt) = CURRENT_DATE")
+    Long countTodayVocabularyByUserId(@Param("userId") Long userId);
 }
