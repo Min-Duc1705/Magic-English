@@ -16,6 +16,7 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long>, J
     @Query("SELECT v.wordType, COUNT(v) FROM Vocabulary v WHERE v.user.id = :userId GROUP BY v.wordType")
     List<Object[]> countByWordTypeForUser(@Param("userId") Long userId);
 
+    //
     @Query("SELECT v.cefrLevel, COUNT(v) FROM Vocabulary v WHERE v.user.id = :userId GROUP BY v.cefrLevel")
     List<Object[]> countByCefrLevelForUser(@Param("userId") Long userId);
 
