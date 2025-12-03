@@ -101,13 +101,13 @@ public class StatsService {
     // /**
     //  * Get total vocabulary count for user
     //  */
-    // public Long getTotalVocabularyCountByEmail(String email) {
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
-    //     return vocabularyRepository.countByUserId(user.getId());
-    // }
+    public Long getTotalVocabularyCountByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return vocabularyRepository.countByUserId(user.getId());
+    }
 
     // /**
     //  * Get home statistics for current user
