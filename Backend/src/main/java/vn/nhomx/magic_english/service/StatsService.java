@@ -31,39 +31,39 @@ public class StatsService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // /**
-    //  * Get vocabulary breakdown by word type (verb, noun, adjective, adverb)
-    //  */
-    // public Map<String, Long> getVocabularyBreakdownByEmail(String email) {
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    /**
+     * Get vocabulary breakdown by word type (verb, noun, adjective, adverb)
+     */
+    public Map<String, Long> getVocabularyBreakdownByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     List<Object[]> results = vocabularyRepository.countByWordTypeForUser(user.getId());
-    //     Map<String, Long> breakdown = new HashMap<>();
+        List<Object[]> results = vocabularyRepository.countByWordTypeForUser(user.getId());
+        Map<String, Long> breakdown = new HashMap<>();
 
-    //     // Initialize all types with 0
-    //     breakdown.put("verb", 0L);
-    //     breakdown.put("noun", 0L);
-    //     breakdown.put("adjective", 0L);
-    //     breakdown.put("adverb", 0L);
-    //     breakdown.put("other", 0L);
+        // Initialize all types with 0
+        breakdown.put("verb", 0L);
+        breakdown.put("noun", 0L);
+        breakdown.put("adjective", 0L);
+        breakdown.put("adverb", 0L);
+        breakdown.put("other", 0L);
 
-    //     // Fill with actual data
-    //     for (Object[] result : results) {
-    //         String type = ((String) result[0]).toLowerCase();
-    //         Long count = (Long) result[1];
+        // Fill with actual data
+        for (Object[] result : results) {
+            String type = ((String) result[0]).toLowerCase();
+            Long count = (Long) result[1];
 
-    //         if (breakdown.containsKey(type)) {
-    //             breakdown.put(type, count);
-    //         } else {
-    //             breakdown.put("other", breakdown.get("other") + count);
-    //         }
-    //     }
+            if (breakdown.containsKey(type)) {
+                breakdown.put(type, count);
+            } else {
+                breakdown.put("other", breakdown.get("other") + count);
+            }
+        }
 
-    //     return breakdown;
-    // }
+        return breakdown;
+    }
 
     /**
      * Get CEFR level distribution (A1-C2)
