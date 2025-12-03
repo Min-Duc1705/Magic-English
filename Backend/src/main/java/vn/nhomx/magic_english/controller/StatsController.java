@@ -44,13 +44,13 @@ public class StatsController {
      * GET /api/v1/vocabulary/count
      * Response: 1204
      */
-    // @GetMapping("/vocabulary/count")
-    // public ResponseEntity<Long> getTotalVocabularyCount() {
-    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //             () -> new RuntimeException("User not authenticated"));
-    //     Long count = statsService.getTotalVocabularyCountByEmail(email);
-    //     return ResponseEntity.ok(count);
-    // }
+    @GetMapping("/vocabulary/count")
+    public ResponseEntity<Long> getTotalVocabularyCount() {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        Long count = statsService.getTotalVocabularyCountByEmail(email);
+        return ResponseEntity.ok(count);
+    }
 
     /**
      * Get home statistics for dashboard
