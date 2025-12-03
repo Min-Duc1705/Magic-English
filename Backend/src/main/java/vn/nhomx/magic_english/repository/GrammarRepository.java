@@ -19,4 +19,7 @@ public interface GrammarRepository extends JpaRepository<Grammar, Long>, JpaSpec
     // Count grammar checks by user
     long countByUserId(Long userId);
 
+    // Count grammar checks created today
+    @Query("SELECT COUNT(g) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) = CURRENT_DATE")
+    Long countTodayGrammarChecksByUserId(@Param("userId") Long userId);
 }
