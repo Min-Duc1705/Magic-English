@@ -113,150 +113,150 @@ public class StatsService {
     //  * Get home statistics for current user
     //  * Returns: streakDays, wordsToday, totalWords, grammarChecks, avgGrammarScore
     //  */
-    // public Map<String, Object> getHomeStatsByEmail(String email) {
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    public Map<String, Object> getHomeStatsByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     Map<String, Object> stats = new HashMap<>();
+        Map<String, Object> stats = new HashMap<>();
 
-    //     // Get today's vocabulary count
-    //     Long wordsToday = vocabularyRepository.countTodayVocabularyByUserId(user.getId());
-    //     stats.put("wordsToday", wordsToday);
+        // Get today's vocabulary count
+        Long wordsToday = vocabularyRepository.countTodayVocabularyByUserId(user.getId());
+        stats.put("wordsToday", wordsToday);
 
-    //     // Get total vocabulary count
-    //     Long totalWords = vocabularyRepository.countByUserId(user.getId());
-    //     stats.put("totalWords", totalWords);
+        // Get total vocabulary count
+        Long totalWords = vocabularyRepository.countByUserId(user.getId());
+        stats.put("totalWords", totalWords);
 
-    //     // Get current learning streak
-    //     int currentStreak = calculateCurrentStreak(user.getId());
-    //     stats.put("streakDays", currentStreak);
+        // Get current learning streak
+        int currentStreak = calculateCurrentStreak(user.getId());
+        stats.put("streakDays", currentStreak);
 
-    //     // Kiểm tra và cấp achievement cho learning streak
-    //     if (currentStreak > 0) {
-    //         userAchievementService.checkAndGrantAchievements(user, "learning_streak", (long) currentStreak);
-    //     }
+        // Kiểm tra và cấp achievement cho learning streak
+        if (currentStreak > 0) {
+            userAchievementService.checkAndGrantAchievements(user, "learning_streak", (long) currentStreak);
+        }
 
-    //     // Get today's grammar checks count
-    //     Long grammarChecks = grammarRepository.countTodayGrammarChecksByUserId(user.getId());
-    //     stats.put("grammarChecks", grammarChecks != null ? grammarChecks : 0L);
+        // Get today's grammar checks count
+        Long grammarChecks = grammarRepository.countTodayGrammarChecksByUserId(user.getId());
+        stats.put("grammarChecks", grammarChecks != null ? grammarChecks : 0L);
 
-    //     // Get total grammar check count
-    //     long totalChecks = grammarRepository.countByUserId(user.getId());
-    //     stats.put("totalChecks", totalChecks);
+        // Get total grammar check count
+        long totalChecks = grammarRepository.countByUserId(user.getId());
+        stats.put("totalChecks", totalChecks);
 
-    //     // Get today's average grammar score
-    //     Double avgScoreToday = grammarRepository.getTodayAverageScoreByUserId(user.getId());
-    //     stats.put("avgGrammarScore", avgScoreToday != null ? avgScoreToday.intValue() : 0);
+        // Get today's average grammar score
+        Double avgScoreToday = grammarRepository.getTodayAverageScoreByUserId(user.getId());
+        stats.put("avgGrammarScore", avgScoreToday != null ? avgScoreToday.intValue() : 0);
 
-    //     // Get average score (all time)
-    //     Double avgScoreTotal = grammarRepository.getAverageScoreByUserId(user.getId());
-    //     stats.put("avgGrammarScoreTotal", avgScoreTotal != null ? avgScoreTotal.intValue() : 0);
+        // Get average score (all time)
+        Double avgScoreTotal = grammarRepository.getAverageScoreByUserId(user.getId());
+        stats.put("avgGrammarScoreTotal", avgScoreTotal != null ? avgScoreTotal.intValue() : 0);
 
-    //     // Get longest streak ever
-    //     int longestStreak = calculateLongestStreak(user.getId());
-    //     stats.put("longestStreak", longestStreak);
+        // Get longest streak ever
+        int longestStreak = calculateLongestStreak(user.getId());
+        stats.put("longestStreak", longestStreak);
 
-    //     return stats;
-    // }
+        return stats;
+    }
 
-    // /**
-    //  * Calculate current learning streak based on vocabulary and grammar activity
-    //  * Streak = consecutive days with any activity (vocabulary or grammar)
-    //  */
-    // private int calculateCurrentStreak(Long userId) {
-    //     // Get all unique activity dates (vocabulary + grammar)
-    //     List<java.sql.Date> vocabDates = userRepository.findAllVocabularyDatesByUserId(userId);
-    //     List<java.sql.Date> grammarDates = userRepository.findAllGrammarDatesByUserId(userId);
+    /**
+     * Calculate current learning streak based on vocabulary and grammar activity
+     * Streak = consecutive days with any activity (vocabulary or grammar)
+     */
+    private int calculateCurrentStreak(Long userId) {
+        // Get all unique activity dates (vocabulary + grammar)
+        List<java.sql.Date> vocabDates = userRepository.findAllVocabularyDatesByUserId(userId);
+        List<java.sql.Date> grammarDates = userRepository.findAllGrammarDatesByUserId(userId);
 
-    //     // Merge and sort all dates
-    //     Set<LocalDate> allActivityDates = new HashSet<>();
-    //     vocabDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
-    //     grammarDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
+        // Merge and sort all dates
+        Set<LocalDate> allActivityDates = new HashSet<>();
+        vocabDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
+        grammarDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
 
-    //     if (allActivityDates.isEmpty()) {
-    //         return 0;
-    //     }
+        if (allActivityDates.isEmpty()) {
+            return 0;
+        }
 
-    //     // Sort dates in descending order
-    //     List<LocalDate> sortedDates = allActivityDates.stream()
-    //             .sorted(Comparator.reverseOrder())
-    //             .collect(Collectors.toList());
+        // Sort dates in descending order
+        List<LocalDate> sortedDates = allActivityDates.stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
 
-    //     LocalDate today = LocalDate.now();
-    //     LocalDate yesterday = today.minusDays(1);
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
 
-    //     // Check if streak is active (activity today or yesterday)
-    //     LocalDate mostRecentDate = sortedDates.get(0);
-    //     if (!mostRecentDate.equals(today) && !mostRecentDate.equals(yesterday)) {
-    //         return 0; // Streak broken
-    //     }
+        // Check if streak is active (activity today or yesterday)
+        LocalDate mostRecentDate = sortedDates.get(0);
+        if (!mostRecentDate.equals(today) && !mostRecentDate.equals(yesterday)) {
+            return 0; // Streak broken
+        }
 
-    //     // Count consecutive days
-    //     int streak = 1;
-    //     LocalDate currentDate = mostRecentDate;
+        // Count consecutive days
+        int streak = 1;
+        LocalDate currentDate = mostRecentDate;
 
-    //     for (int i = 1; i < sortedDates.size(); i++) {
-    //         LocalDate previousDate = sortedDates.get(i);
-    //         long daysBetween = ChronoUnit.DAYS.between(previousDate, currentDate);
+        for (int i = 1; i < sortedDates.size(); i++) {
+            LocalDate previousDate = sortedDates.get(i);
+            long daysBetween = ChronoUnit.DAYS.between(previousDate, currentDate);
 
-    //         if (daysBetween == 1) {
-    //             // Consecutive day found
-    //             streak++;
-    //             currentDate = previousDate;
-    //         } else {
-    //             // Gap found, streak ends
-    //             break;
-    //         }
-    //     }
+            if (daysBetween == 1) {
+                // Consecutive day found
+                streak++;
+                currentDate = previousDate;
+            } else {
+                // Gap found, streak ends
+                break;
+            }
+        }
 
-    //     return streak;
-    // }
+        return streak;
+    }
 
-    // /**
-    //  * Calculate longest streak ever achieved by user
-    //  * Finds the maximum consecutive days with activity (vocabulary or grammar)
-    //  */
-    // private int calculateLongestStreak(Long userId) {
-    //     // Get all unique activity dates (vocabulary + grammar)
-    //     List<java.sql.Date> vocabDates = userRepository.findAllVocabularyDatesByUserId(userId);
-    //     List<java.sql.Date> grammarDates = userRepository.findAllGrammarDatesByUserId(userId);
+    /**
+     * Calculate longest streak ever achieved by user
+     * Finds the maximum consecutive days with activity (vocabulary or grammar)
+     */
+    private int calculateLongestStreak(Long userId) {
+        // Get all unique activity dates (vocabulary + grammar)
+        List<java.sql.Date> vocabDates = userRepository.findAllVocabularyDatesByUserId(userId);
+        List<java.sql.Date> grammarDates = userRepository.findAllGrammarDatesByUserId(userId);
 
-    //     // Merge and sort all dates
-    //     Set<LocalDate> allActivityDates = new HashSet<>();
-    //     vocabDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
-    //     grammarDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
+        // Merge and sort all dates
+        Set<LocalDate> allActivityDates = new HashSet<>();
+        vocabDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
+        grammarDates.forEach(date -> allActivityDates.add(date.toLocalDate()));
 
-    //     if (allActivityDates.isEmpty()) {
-    //         return 0;
-    //     }
+        if (allActivityDates.isEmpty()) {
+            return 0;
+        }
 
-    //     // Sort dates in ascending order (oldest first)
-    //     List<LocalDate> sortedDates = allActivityDates.stream()
-    //             .sorted()
-    //             .collect(Collectors.toList());
+        // Sort dates in ascending order (oldest first)
+        List<LocalDate> sortedDates = allActivityDates.stream()
+                .sorted()
+                .collect(Collectors.toList());
 
-    //     // Find longest consecutive streak
-    //     int longestStreak = 1;
-    //     int currentStreak = 1;
-    //     LocalDate previousDate = sortedDates.get(0);
+        // Find longest consecutive streak
+        int longestStreak = 1;
+        int currentStreak = 1;
+        LocalDate previousDate = sortedDates.get(0);
 
-    //     for (int i = 1; i < sortedDates.size(); i++) {
-    //         LocalDate currentDate = sortedDates.get(i);
-    //         long daysBetween = ChronoUnit.DAYS.between(previousDate, currentDate);
+        for (int i = 1; i < sortedDates.size(); i++) {
+            LocalDate currentDate = sortedDates.get(i);
+            long daysBetween = ChronoUnit.DAYS.between(previousDate, currentDate);
 
-    //         if (daysBetween == 1) {
-    //             // Consecutive day found
-    //             currentStreak++;
-    //             longestStreak = Math.max(longestStreak, currentStreak);
-    //         } else {
-    //             // Gap found, reset current streak
-    //             currentStreak = 1;
-    //         }
-    //         previousDate = currentDate;
-    //     }
+            if (daysBetween == 1) {
+                // Consecutive day found
+                currentStreak++;
+                longestStreak = Math.max(longestStreak, currentStreak);
+            } else {
+                // Gap found, reset current streak
+                currentStreak = 1;
+            }
+            previousDate = currentDate;
+        }
 
-    //     return longestStreak;
-    // }
+        return longestStreak;
+    }
 }
