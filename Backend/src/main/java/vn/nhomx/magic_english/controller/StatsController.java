@@ -31,13 +31,13 @@ public class StatsController {
      * GET /api/v1/vocabulary/cefr-distribution
      * Response: {"A1": 30, "A2": 50, "B1": 90, "B2": 70, "C1": 20, "C2": 10}
      */
-    // @GetMapping("/vocabulary/cefr-distribution")
-    // public ResponseEntity<Map<String, Long>> getCefrDistribution() {
-    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //             () -> new RuntimeException("User not authenticated"));
-    //     Map<String, Long> distribution = statsService.getCefrLevelDistributionByEmail(email);
-    //     return ResponseEntity.ok(distribution);
-    // }
+    @GetMapping("/vocabulary/cefr-distribution")
+    public ResponseEntity<Map<String, Long>> getCefrDistribution() {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
+        Map<String, Long> distribution = statsService.getCefrLevelDistributionByEmail(email);
+        return ResponseEntity.ok(distribution);
+    }
 
     /**
      * Get total vocabulary count for current user
