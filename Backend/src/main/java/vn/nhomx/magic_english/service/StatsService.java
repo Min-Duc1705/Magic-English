@@ -68,35 +68,35 @@ public class StatsService {
     /**
      * Get CEFR level distribution (A1-C2)
      */
-    // public Map<String, Long> getCefrLevelDistributionByEmail(String email) {
-    //     User user = userRepository.findByEmail(email);
-    //     if (user == null) {
-    //         throw new RuntimeException("User not found");
-    //     }
+    public Map<String, Long> getCefrLevelDistributionByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
-    //     List<Object[]> results = vocabularyRepository.countByCefrLevelForUser(user.getId());
-    //     Map<String, Long> distribution = new HashMap<>();
+        List<Object[]> results = vocabularyRepository.countByCefrLevelForUser(user.getId());
+        Map<String, Long> distribution = new HashMap<>();
 
-    //     // Initialize all levels with 0
-    //     distribution.put("A1", 0L);
-    //     distribution.put("A2", 0L);
-    //     distribution.put("B1", 0L);
-    //     distribution.put("B2", 0L);
-    //     distribution.put("C1", 0L);
-    //     distribution.put("C2", 0L);
+        // Initialize all levels with 0
+        distribution.put("A1", 0L);
+        distribution.put("A2", 0L);
+        distribution.put("B1", 0L);
+        distribution.put("B2", 0L);
+        distribution.put("C1", 0L);
+        distribution.put("C2", 0L);
 
-    //     // Fill with actual data
-    //     for (Object[] result : results) {
-    //         String level = ((String) result[0]).toUpperCase();
-    //         Long count = (Long) result[1];
+        // Fill with actual data
+        for (Object[] result : results) {
+            String level = ((String) result[0]).toUpperCase();
+            Long count = (Long) result[1];
 
-    //         if (distribution.containsKey(level)) {
-    //             distribution.put(level, count);
-    //         }
-    //     }
+            if (distribution.containsKey(level)) {
+                distribution.put(level, count);
+            }
+        }
 
-    //     return distribution;
-    // }
+        return distribution;
+    }
 
     // /**
     //  * Get total vocabulary count for user
