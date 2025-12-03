@@ -58,14 +58,14 @@ public class StatsController {
      * Response: {"wordsToday": 5, "totalWords": 120, "streakDays": 0,
      * "grammarChecks": 0, "avgGrammarScore": 85}
      */
-    // @GetMapping("/vocabulary/home-stats")
-    // public ResponseEntity<Map<String, Object>> getHomeStats() {
-    //     String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
-    //             () -> new RuntimeException("User not authenticated"));
+    @GetMapping("/vocabulary/home-stats")
+    public ResponseEntity<Map<String, Object>> getHomeStats() {
+        String email = SecurityUtil.getCurrentUserLogin().orElseThrow(
+                () -> new RuntimeException("User not authenticated"));
 
-    //     // Get all home stats (vocabulary + grammar)
-    //     Map<String, Object> stats = statsService.getHomeStatsByEmail(email);
+        // Get all home stats (vocabulary + grammar)
+        Map<String, Object> stats = statsService.getHomeStatsByEmail(email);
 
-    //     return ResponseEntity.ok(stats);
-    // }
+        return ResponseEntity.ok(stats);
+    }
 }
