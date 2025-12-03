@@ -26,4 +26,8 @@ public interface GrammarRepository extends JpaRepository<Grammar, Long>, JpaSpec
     // Calculate average score for user (today only)
     @Query("SELECT AVG(g.score) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) = CURRENT_DATE")
     Double getTodayAverageScoreByUserId(@Param("userId") Long userId);
+
+    // Calculate average score for user (all time)
+    @Query("SELECT AVG(g.score) FROM Grammar g WHERE g.user.id = :userId")
+    Double getAverageScoreByUserId(@Param("userId") Long userId);
 }
