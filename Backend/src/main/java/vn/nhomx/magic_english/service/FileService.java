@@ -97,17 +97,17 @@ public class FileService {
         return tmpDir.length();
     }
 
-    // public InputStreamResource getResource(String fileName, String folder)
-    //         throws URISyntaxException, FileNotFoundException {
-    //     // Cloudinary URLs should be accessed directly, not through this method
-    //     if (isCloudinaryUrl(fileName)) {
-    //         throw new UnsupportedOperationException("Use the Cloudinary URL directly for remote files");
-    //     }
+    public InputStreamResource getResource(String fileName, String folder)
+            throws URISyntaxException, FileNotFoundException {
+        // // Cloudinary URLs should be accessed directly, not through this method
+        // if (isCloudinaryUrl(fileName)) {
+        //     throw new UnsupportedOperationException("Use the Cloudinary URL directly for remote files");
+        // }
 
-    //     URI uri = new URI(baseURI + folder + "/" + fileName);
-    //     Path path = Paths.get(uri);
+        URI uri = new URI(baseURI + folder + "/" + fileName);
+        Path path = Paths.get(uri);
 
-    //     File file = new File(path.toString());
-    //     return new InputStreamResource(new FileInputStream(file));
-    // }
+        File file = new File(path.toString());
+        return new InputStreamResource(new FileInputStream(file));
+    }
 }
