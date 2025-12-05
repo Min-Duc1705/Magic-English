@@ -1,4 +1,4 @@
-package vn.project.magic_english.controller;
+package vn.nhomx.magic_english.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,52 +20,52 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import vn.project.magic_english.model.response.ResUploadFileDTO;
-import vn.project.magic_english.service.FileService;
-import vn.project.magic_english.utils.annotation.ApiMessage;
-import vn.project.magic_english.utils.error.StorageException;
+import vn.nhomx.magic_english.model.response.ResUploadFileDTO;
+import vn.nhomx.magic_english.service.FileService;
+import vn.nhomx.magic_english.utils.annotation.ApiMessage;
+import vn.nhomx.magic_english.utils.error.StorageException;
 
 @RestController
 @RequestMapping("/api/v1")
 public class FileController {
 
-    // @Value("${magic_english.upload}")
-    // private String baseURI;
+    @Value("${magic_english.upload}")
+    private String baseURI;
 
-    // private final FileService fileService;
+    private final FileService fileService;
 
-    // public FileController(FileService fileService) {
-    //     this.fileService = fileService;
-    // }
+    public FileController(FileService fileService) {
+        this.fileService = fileService;
+    }
 
-    // @PostMapping("/files")
-    // @ApiMessage("Upload single file")
-    // public ResponseEntity<ResUploadFileDTO> upload(
-    //         @RequestParam(name = "file", required = false) MultipartFile file,
-    //         @RequestParam("folder") String folder
+    @PostMapping("/files")
+    @ApiMessage("Upload single file")
+    public ResponseEntity<ResUploadFileDTO> upload(
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam("folder") String folder
 
-    // ) throws URISyntaxException, IOException, StorageException {
-    //     // skip validate
-    //     if (file == null || file.isEmpty()) {
-    //         throw new StorageException("File is empty. Please upload a file.");
-    //     }
-    //     String fileName = file.getOriginalFilename();
-    //     List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx");
-    //     boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
+    ) throws URISyntaxException, IOException, StorageException {
+        // skip validate
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("File is empty. Please upload a file.");
+        }
+        String fileName = file.getOriginalFilename();
+        List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx");
+        boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
 
-    //     if (!isValid) {
-    //         throw new StorageException("Invalid file extension. only allows " + allowedExtensions.toString());
-    //     }
-    //     // create a directory if not exist
-    //     this.fileService.createDirectory(baseURI + folder);
+        if (!isValid) {
+            throw new StorageException("Invalid file extension. only allows " + allowedExtensions.toString());
+        }
+        // create a directory if not exist
+        this.fileService.createDirectory(baseURI + folder);
 
-    //     // store file
-    //     String uploadFile = this.fileService.store(file, folder);
+        // store file
+        String uploadFile = this.fileService.store(file, folder);
 
-    //     ResUploadFileDTO res = new ResUploadFileDTO(uploadFile, Instant.now());
+        ResUploadFileDTO res = new ResUploadFileDTO(uploadFile, Instant.now());
 
-    //     return ResponseEntity.ok().body(res);
-    // }
+        return ResponseEntity.ok().body(res);
+    }
 
     // @GetMapping("/files")
     // @ApiMessage("Download a file")
