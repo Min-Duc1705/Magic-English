@@ -62,7 +62,7 @@ magic_english:
     base64-secret: TRrx3ZoD9xgevlM73MU8/ay9VO+8RJ7NjvFh5Ab0xoTsKzuPYwCOKDZugGYsVxroYRfP94DH6jBxBhFyBPaQQQ==
     access-token-validity-in-seconds: 36000 # 1 hour
     refresh-token-validity-in-seconds: 2592000 # 30 days
-  upload: 
+  upload: file:///T:/TryHard_IT_Project/Moblie/BTL/Backend/magic-english/public/
   ai:
     api-keys:
       - AIzaSyAFZh2mYw_7sHZpnTcZj2UY5lxh1gI-nIk # Key 1
