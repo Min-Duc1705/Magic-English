@@ -1,517 +1,433 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:magic_enlish/core/widgets/common/app_bottom_nav.dart';
 
-class ProgressPage extends StatelessWidget {
-  const ProgressPage({super.key});
+class ProgressScreen extends StatelessWidget {
+  const ProgressScreen({super.key});
+
+  // ===== COLORS =====
+  static const primary = Color(0xFF6B4EFF);
+  static const bgLight = Color(0xFFF3F4F6);
+  static const cardLight = Colors.white;
+  static const textMain = Color(0xFF1F2937);
+  static const textSub = Color(0xFF6B7280);
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF4A90E2);
-    const background = Color(0xFFF9F9F9);
-    const textColor = Color(0xFF100d1b);
-
-    // Static progress data
-    final Map<String, dynamic> progressData = {
-      'streakDays': 7,
-      'wordsToday': 12,
-      'totalWords': 156,
-      'accuracy': 85,
-      'testScores': [
-        {'date': 'Jan 15', 'score': 65},
-        {'date': 'Jan 22', 'score': 72},
-        {'date': 'Jan 29', 'score': 78},
-        {'date': 'Feb 05', 'score': 82},
-        {'date': 'Feb 12', 'score': 85},
-      ],
-      'skillProgress': [
-        {'skill': 'Reading', 'progress': 0.85, 'level': 'Advanced'},
-        {'skill': 'Writing', 'progress': 0.72, 'level': 'Intermediate'},
-        {'skill': 'Listening', 'progress': 0.68, 'level': 'Intermediate'},
-        {'skill': 'Speaking', 'progress': 0.60, 'level': 'Beginner'},
-      ],
-      'recentActivities': [
-        {
-          'type': 'vocabulary',
-          'title': 'Added 5 new words',
-          'date': '2 hours ago',
-          'icon': Icons.book,
-          'color': Colors.blue,
-        },
-        {
-          'type': 'test',
-          'title': 'Completed TOEIC Practice',
-          'date': '1 day ago',
-          'icon': Icons.assignment,
-          'color': Colors.green,
-        },
-        {
-          'type': 'grammar',
-          'title': 'Grammar check completed',
-          'date': '2 days ago',
-          'icon': Icons.spellcheck,
-          'color': Colors.orange,
-        },
-      ],
-    };
-
     return Scaffold(
-      backgroundColor: background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Row(
+      backgroundColor: bgLight,
+      body: Column(
+        children: [
+          _statusBar(),
+          _header(context),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey.shade200,
-                      ),
-                      child: const Icon(Icons.arrow_back, size: 24),
-                    ),
+                  _originalText(),
+                  const SizedBox(height: 12),
+                  _scoreCard(),
+                  const SizedBox(height: 12),
+                  _summary(),
+                  const SizedBox(height: 12),
+                  _corrected(),
+                  const SizedBox(height: 12),
+                  _grammarCard(
+                    wrong: "go",
+                    correct: "went",
+                    explanation:
+                        "Động từ 'go' cần được chia ở thì quá khứ đơn vì có trạng từ chỉ thời gian 'yesterday'. Dạng quá khứ đơn của 'go' là 'went'.",
+                    sentence:
+                        "He go to the school yesterday but don't bringed his book",
                   ),
-                  Expanded(
-                    child: Text(
-                      'My Progress',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.lexend(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
+                  const SizedBox(height: 12),
+                  _grammarCard(
+                    wrong: "don't",
+                    correct: "did not",
+                    explanation:
+                        "Khi phủ định động từ ở thì quá khứ đơn, ta dùng 'did not' + động từ nguyên mẫu.",
+                    sentence:
+                        "yesterday but don't bringed his book",
                   ),
-                  SizedBox(
-                    width: 48,
-                    child: IconButton(
-                      icon: const Icon(Icons.notifications_outlined),
-                      color: textColor,
-                      onPressed: () {},
-                    ),
+                  const SizedBox(height: 12),
+                  _grammarCard(
+                    wrong: "bringed",
+                    correct: "bring",
+                    explanation:
+                        "Sau 'did not', động từ chính phải ở dạng nguyên mẫu.",
+                    sentence:
+                        "but don't bringed his book",
                   ),
+                  const SizedBox(height: 12),
+                  _punctuationCard(),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
-
-            // Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Stats Grid
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.5,
-                      children: [
-                        _buildStatCard(
-                          icon: Icons.local_fire_department,
-                          title: 'Streak',
-                          value: '${progressData['streakDays']} days',
-                          color: Colors.orange,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.book,
-                          title: 'Words Today',
-                          value: '${progressData['wordsToday']}',
-                          color: Colors.blue,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.library_books,
-                          title: 'Total Words',
-                          value: '${progressData['totalWords']}',
-                          color: Colors.green,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.trending_up,
-                          title: 'Accuracy',
-                          value: '${progressData['accuracy']}%',
-                          color: Colors.purple,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Test Scores Chart
-                    Text(
-                      'Test Score Progress',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 200,
-                            child: CustomPaint(
-                              size: const Size(double.infinity, 200),
-                              painter: LineChartPainter(
-                                scores: (progressData['testScores'] as List)
-                                    .map((e) => (e['score'] as int).toDouble())
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: (progressData['testScores'] as List)
-                                .map((e) => Text(
-                                      e['date'],
-                                      style: GoogleFonts.lexend(
-                                        fontSize: 10,
-                                        color: Colors.grey,
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Skill Progress
-                    Text(
-                      'Skill Progress',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    ...(progressData['skillProgress'] as List).map((skill) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildSkillCard(
-                          skill: skill['skill'],
-                          progress: skill['progress'],
-                          level: skill['level'],
-                        ),
-                      );
-                    }),
-
-                    const SizedBox(height: 24),
-
-                    // Recent Activities
-                    Text(
-                      'Recent Activities',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    ...(progressData['recentActivities'] as List).map((activity) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _buildActivityCard(
-                          icon: activity['icon'],
-                          title: activity['title'],
-                          date: activity['date'],
-                          color: activity['color'],
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 3),
+      bottomNavigationBar: _bottomNav(),
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
+  // ================= STATUS BAR =================
+  Widget _statusBar() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.lexend(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            title,
-            style: GoogleFonts.lexend(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSkillCard({
-    required String skill,
-    required double progress,
-    required String level,
-  }) {
-    Color progressColor;
-    if (progress >= 0.75) {
-      progressColor = Colors.green;
-    } else if (progress >= 0.5) {
-      progressColor = Colors.orange;
-    } else {
-      progressColor = Colors.red;
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                skill,
-                style: GoogleFonts.lexend(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: progressColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  level,
-                  style: GoogleFonts.lexend(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: progressColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text("10:47",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
           Row(
             children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-                    minHeight: 8,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '${(progress * 100).toInt()}%',
-                style: GoogleFonts.lexend(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: progressColor,
-                ),
-              ),
+              Icon(Icons.signal_cellular_4_bar, size: 16),
+              SizedBox(width: 4),
+              Icon(Icons.wifi, size: 16),
+              SizedBox(width: 4),
+              Icon(Icons.battery_full, size: 16),
             ],
-          ),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildActivityCard({
-    required IconData icon,
-    required String title,
-    required String date,
-    required Color color,
-  }) {
+  // ================= HEADER =================
+  Widget _header(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4),
         ],
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          ),
+          const Text(
+            "Grammar Checker",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.image_search, color: Colors.blue),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= ORIGINAL TEXT =================
+  Widget _originalText() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            "ORIGINAL TEXT",
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: textSub,
+              letterSpacing: 1,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "He go to the school yesterday but don't bringed his book",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= SCORE =================
+  Widget _scoreCard() {
+    return _card(
+      child: Column(
+        children: [
+          SizedBox(
+            width: 140,
+            height: 140,
+            child: CustomPaint(
+              painter: _CircleScorePainter(score: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text("40",
+                      style:
+                          TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+                  Text("/ 100",
+                      style: TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            "Your Score",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            "Significant improvements needed.",
+            style: TextStyle(color: textSub),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= SUMMARY =================
+  Widget _summary() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Summary of Suggestions",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          _summaryRow(Icons.spellcheck, Colors.red, "0 Spelling Errors"),
+          _summaryRow(Icons.text_fields, Colors.purple, "3 Grammar Errors"),
+          _summaryRow(Icons.edit, Colors.blue, "1 Punctuation Mistake"),
+          _summaryRow(Icons.lightbulb, Colors.orange, "0 Clarity Improvements"),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryRow(IconData icon, Color color, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: color.withOpacity(.15),
+            child: Icon(icon, color: color),
+          ),
+          const SizedBox(width: 12),
+          Text(text,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+
+  // ================= CORRECTED =================
+  Widget _corrected() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F6EB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundColor: Colors.green,
+                    child:
+                        Icon(Icons.check, color: Colors.white, size: 16),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Corrected Version",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
+                  ),
+                ],
+              ),
+              Icon(Icons.copy, color: Colors.green),
+            ],
+          ),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: const Text(
+              "He went to the school yesterday but did not bring his book.",
+              style: TextStyle(fontSize: 16, height: 1.5),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  // ================= GRAMMAR CARD =================
+  Widget _grammarCard({
+    required String wrong,
+    required String correct,
+    required String explanation,
+    required String sentence,
+  }) {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Tt Grammar",
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purple)),
+          const SizedBox(height: 8),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(fontSize: 18, color: textMain),
               children: [
-                Text(
-                  title,
-                  style: GoogleFonts.lexend(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                TextSpan(
+                    text: sentence.replaceAll(wrong, ""),
+                    style: const TextStyle()),
+                TextSpan(
+                  text: wrong,
+                  style: const TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    color: Colors.purple,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  date,
-                  style: GoogleFonts.lexend(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                TextSpan(
+                  text: " $correct",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: Colors.grey),
+          const SizedBox(height: 8),
+          Text(explanation,
+              style: const TextStyle(color: textSub, height: 1.5)),
         ],
       ),
     );
   }
+
+  // ================= PUNCTUATION =================
+  Widget _punctuationCard() {
+    return _card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text("Punctuation",
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue)),
+          SizedBox(height: 8),
+          Text(
+            "his book.",
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.green),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "Câu trần thuật cần kết thúc bằng dấu chấm (.).",
+            style: TextStyle(color: textSub),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================= CARD =================
+  Widget _card({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: child,
+    );
+  }
+
+  // ================= BOTTOM NAV =================
+  Widget _bottomNav() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: 4,
+      selectedItemColor: primary,
+      unselectedItemColor: Colors.grey,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.school), label: "Vocab"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.check_circle), label: "Grammar"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center), label: "Practice"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart), label: "Progress"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle), label: "Profile"),
+      ],
+    );
+  }
 }
 
-// Custom painter for line chart
-class LineChartPainter extends CustomPainter {
-  final List<double> scores;
-
-  LineChartPainter({required this.scores});
+// ================= CIRCLE SCORE =================
+class _CircleScorePainter extends CustomPainter {
+  final int score;
+  _CircleScorePainter({required this.score});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4A90E2)
-      ..strokeWidth = 3
+    const stroke = 10.0;
+    final center = size.center(Offset.zero);
+    final radius = (size.width / 2) - stroke;
+
+    final bgPaint = Paint()
+      ..color = Colors.grey.shade200
+      ..strokeWidth = stroke
+      ..style = PaintingStyle.stroke;
+
+    final fgPaint = Paint()
+      ..color = Colors.orange
+      ..strokeWidth = stroke
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    final fillPaint = Paint()
-      ..color = const Color(0xFF4A90E2).withOpacity(0.1)
-      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, radius, bgPaint);
 
-    final path = Path();
-    final fillPath = Path();
-
-    if (scores.isEmpty) return;
-
-    final maxScore = 100.0;
-    final stepX = size.width / (scores.length - 1);
-
-    // Start path
-    path.moveTo(0, size.height - (scores[0] / maxScore * size.height));
-    fillPath.moveTo(0, size.height);
-    fillPath.lineTo(0, size.height - (scores[0] / maxScore * size.height));
-
-    for (int i = 1; i < scores.length; i++) {
-      final x = stepX * i;
-      final y = size.height - (scores[i] / maxScore * size.height);
-      path.lineTo(x, y);
-      fillPath.lineTo(x, y);
-    }
-
-    // Complete fill path
-    fillPath.lineTo(size.width, size.height);
-    fillPath.close();
-
-    // Draw fill and line
-    canvas.drawPath(fillPath, fillPaint);
-    canvas.drawPath(path, paint);
-
-    // Draw points
-    final pointPaint = Paint()
-      ..color = const Color(0xFF4A90E2)
-      ..style = PaintingStyle.fill;
-
-    for (int i = 0; i < scores.length; i++) {
-      final x = stepX * i;
-      final y = size.height - (scores[i] / maxScore * size.height);
-      canvas.drawCircle(Offset(x, y), 4, pointPaint);
-      canvas.drawCircle(Offset(x, y), 6, Paint()
-        ..color = Colors.white
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2);
-    }
+    final sweep = 2 * pi * (score / 100);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -pi / 2,
+      sweep,
+      false,
+      fgPaint,
+    );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
