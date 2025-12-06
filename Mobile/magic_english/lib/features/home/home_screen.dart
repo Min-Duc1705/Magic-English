@@ -1,327 +1,385 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:magic_enlish/core/widgets/common/app_bottom_nav.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+
+  static const primary = Color(0xFF4F46E5);
+  static const bgLight = Color(0xFFF3F4F6);
+  static const cardLight = Colors.white;
+  static const textMain = Color(0xFF111827);
+  static const textSub = Color(0xFF6B7280);
 
   @override
   Widget build(BuildContext context) {
-    const Color primary = Color(0xff3713ec);
-
     return Scaffold(
-      backgroundColor: const Color(0xfff6f6f8),
+      backgroundColor: bgLight,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            // ---------------- TOP BAR ----------------
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  const Icon(Icons.auto_stories, color: primary, size: 32),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      "Hello, John Doe!",
-                      style: GoogleFonts.lexend(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.calendar_month, color: Colors.black),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ),
-
-            // -------- MAIN CONTENT --------
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // -------- 4 STAT CARDS --------
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.5,
+            Column(
+              children: [
+                _statusBar(),
+                _header(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                    child: Column(
                       children: [
-                        _buildStatCard(
-                          icon: Icons.local_fire_department,
-                          title: 'Streak',
-                          value: '7 days',
-                          color: Colors.orange,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.book,
-                          title: 'Words Today',
-                          value: '12',
-                          color: Colors.blue,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.star,
-                          title: 'Grammar Checks',
-                          value: '45',
-                          color: Colors.green,
-                        ),
-                        _buildStatCard(
-                          icon: Icons.trending_up,
-                          title: 'Accuracy',
-                          value: '85%',
-                          color: Colors.purple,
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // -------- QUICK ACTIONS --------
-                    Text(
-                      'Quick Actions',
-                      style: GoogleFonts.lexend(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    _buildActionCard(
-                      icon: Icons.add_circle_outline,
-                      title: 'Add New Word',
-                      subtitle: 'Expand your vocabulary',
-                      color: Colors.blue,
-                      onTap: () {},
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _buildActionCard(
-                      icon: Icons.spellcheck,
-                      title: 'Grammar Check',
-                      subtitle: 'Check your writing',
-                      color: Colors.green,
-                      onTap: () {},
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // -------- RECENT WORDS --------
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Recent Words',
-                          style: GoogleFonts.lexend(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        _statGrid(),
+                        const SizedBox(height: 20),
+                        _featureCard(
+                          icon: Icons.translate,
+                          title: "Magic Vocab",
+                          desc: "Build and review your personal dictionary.",
+                          buttons: Row(
+                            children: [
+                              _primaryBtn("Add New Word"),
+                              const SizedBox(width: 12),
+                              _outlineBtn("Review Words"),
+                            ],
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('See all'),
+                        const SizedBox(height: 16),
+                        _featureCard(
+                          icon: Icons.spellcheck,
+                          title: "Grammar & Style",
+                          desc: "Refine your writing with AI.",
+                          buttons: _primaryBtn("Check Text"),
                         ),
+                        const SizedBox(height: 16),
+                        _featureCard(
+                          icon: Icons.monitoring,
+                          title: "Progress Dashboard",
+                          desc: "Track your learning journey.",
+                          buttons: _primaryBtn("View Progress"),
+                        ),
+                        const SizedBox(height: 20),
+                        _recentWords(),
                       ],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    // Recent Words List
-                    _buildWordCard(
-                      word: 'Ephemeral',
-                      meaning: 'Lasting for a very short time',
-                      example: 'The beauty of the sunset was ephemeral.',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildWordCard(
-                      word: 'Serendipity',
-                      meaning: 'The occurrence of events by chance',
-                      example: 'Finding that book was pure serendipity.',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildWordCard(
-                      word: 'Ubiquitous',
-                      meaning: 'Present everywhere',
-                      example: 'Smartphones are ubiquitous in modern life.',
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
+            _bottomNav(),
           ],
         ),
       ),
-      bottomNavigationBar: const AppBottomNav(currentIndex: 0),
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+  // ================= STATUS BAR =================
+  Widget _statusBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: const [
+          Text("11:31",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Row(
+            children: [
+              Icon(Icons.signal_cellular_alt, size: 14),
+              SizedBox(width: 4),
+              Icon(Icons.wifi, size: 14),
+              SizedBox(width: 4),
+              Icon(Icons.battery_full, size: 14),
+            ],
+          )
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  // ================= HEADER =================
+  Widget _header() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Row(
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.lexend(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Transform.rotate(
+            angle: -0.2,
+            child: const Icon(Icons.menu_book,
+                size: 40, color: primary),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Text(
+              "Hello, Minh Đức!",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          Text(
-            title,
-            style: GoogleFonts.lexend(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
+          IconButton(
+            icon: const Icon(Icons.calendar_month),
+            onPressed: () {},
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+  // ================= GRID =================
+  Widget _statGrid() {
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      children: [
+        _statCard(
+          icon: Icons.local_fire_department,
+          color: Colors.orange,
+          title: "Learning",
+          sub: "Streak",
+          value: "0 Days",
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.lexend(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.lexend(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-          ],
+        _statCard(
+          icon: Icons.import_contacts,
+          color: Colors.blue,
+          title: "Vocabulary",
+          sub: "Today",
+          value: "0 Words",
         ),
-      ),
+        _statCard(
+          icon: Icons.psychology,
+          color: Colors.green,
+          title: "Grammar Check",
+          sub: "Today",
+          value: "0 times",
+        ),
+        _statCard(
+          icon: Icons.star,
+          color: Colors.red,
+          title: "Grammar Score",
+          sub: "Avg Today",
+          value: "0 / 100",
+        ),
+      ],
     );
   }
 
-  Widget _buildWordCard({
-    required String word,
-    required String meaning,
-    required String example,
+  Widget _statCard({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String sub,
+    required String value,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: _card(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                word,
-                style: GoogleFonts.lexend(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xff3713ec),
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(icon, color: color),
               ),
-              IconButton(
-                icon: const Icon(Icons.volume_up, color: Colors.grey),
-                onPressed: () {},
-              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(sub,
+                      style: const TextStyle(
+                          fontSize: 10, color: textSub)),
+                ],
+              )
             ],
           ),
-          Text(
-            meaning,
-            style: GoogleFonts.lexend(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
+          const Spacer(),
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  // ================= FEATURE CARD =================
+  Widget _featureCard({
+    required IconData icon,
+    required String title,
+    required String desc,
+    required Widget buttons,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: _card(radius: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: primary, size: 26),
+              const SizedBox(width: 8),
+              Text(title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
+          Text(desc, style: const TextStyle(color: textSub)),
+          const SizedBox(height: 16),
+          buttons,
+        ],
+      ),
+    );
+  }
+
+  // ================= RECENT =================
+  Widget _recentWords() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text("Recently Add Words",
+              style:
+                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          SizedBox(height: 4),
           Text(
-            '"$example"',
-            style: GoogleFonts.lexend(
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
-              color: Colors.grey,
-            ),
+            "No words added yet",
+            style: TextStyle(
+                fontStyle: FontStyle.italic, color: Colors.grey),
           ),
         ],
       ),
+    );
+  }
+
+  // ================= BUTTONS =================
+  Widget _primaryBtn(String text) {
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primary,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          elevation: 6,
+        ),
+        child: Text(text,
+            style: const TextStyle(fontWeight: FontWeight.w600)),
+      ),
+    );
+  }
+
+  Widget _outlineBtn(String text) {
+    return Expanded(
+      child: OutlinedButton(
+        onPressed: () {},
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFFC7D2FE), width: 2),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+        child: Text(text,
+            style: const TextStyle(
+                fontWeight: FontWeight.w600, color: primary)),
+      ),
+    );
+  }
+
+  // ================= BOTTOM NAV =================
+  Widget _bottomNav() {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: const [
+            BoxShadow(color: Colors.black12, blurRadius: 16),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            _NavItem(Icons.home, "Home", active: true),
+            _NavItem(Icons.school, "Vocab"),
+            _NavItem(Icons.spellcheck, "Grammar"),
+            _NavItem(Icons.fitness_center, "Practice"),
+            _NavItem(Icons.bar_chart, "Progress"),
+            _NavItem(Icons.person, "Profile"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ================= CARD =================
+  BoxDecoration _card({double radius = 20}) {
+    return BoxDecoration(
+      color: cardLight,
+      borderRadius: BorderRadius.circular(radius),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 20,
+          offset: Offset(0, 8),
+        )
+      ],
+    );
+  }
+}
+
+// ================= NAV ITEM =================
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool active;
+
+  const _NavItem(this.icon, this.label, {this.active = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (active)
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF2FF),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(icon, color: DashboardScreen.primary),
+          )
+        else
+          Icon(icon, color: Colors.grey),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: active ? FontWeight.bold : FontWeight.normal,
+            color:
+                active ? DashboardScreen.primary : Colors.grey,
+          ),
+        )
+      ],
     );
   }
 }
