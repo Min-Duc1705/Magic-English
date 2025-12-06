@@ -1,1386 +1,679 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class VocabularyPage extends StatelessWidget {
+class VocabularyScreen extends StatefulWidget {
+  const VocabularyScreen({super.key});
+
+  @override
+  State<VocabularyScreen> createState() => _VocabularyScreenState();
+}
+
+class _VocabularyScreenState extends State<VocabularyScreen> {
+  int _selectedTabIndex = 0; // 0 = My Vocabulary, 1 = News
+  int _selectedFilterIndex = 0; // All, A1-A2, B1-B2, C1-C2, Favorites
+  final TextEditingController _searchController = TextEditingController();
+
+  // Sample vocabulary data
+  final List<VocabularyItem> _vocabularyItems = [
+    VocabularyItem(
+      word: 'weather',
+      partOfSpeech: '(noun/verb)',
+      meaning: 'Thời tiết; Vượt qua khó khăn',
+      level: 'A1',
+      phonetic: '/ˈwɛðər/',
+      isFavorite: false,
+    ),
+    VocabularyItem(
+      word: 'storm',
+      partOfSpeech: '(noun, verb)',
+      meaning: 'Bão tố; Giông bão; Tấn công dữ dội',
+      level: 'A2',
+      phonetic: '/stɔːm/',
+      isFavorite: false,
+    ),
+    VocabularyItem(
+      word: 'six',
+      partOfSpeech: '(adjective)',
+      meaning: 'Số sáu; Sáu (số lượng)',
+      level: 'A1',
+      phonetic: '/sɪks/',
+      isFavorite: false,
+    ),
+    VocabularyItem(
+      word: 'tropical',
+      partOfSpeech: '(adjective)',
+      meaning: 'Nhiệt đới; Thuộc vùng nhiệt đới',
+      level: 'B1',
+      phonetic: '/ˈtrɒpɪkəl/',
+      isFavorite: false,
+    ),
+  ];
+
+  final List<String> _filterOptions = [
+    'All',
+    'A1-A2',
+    'B1-B2',
+    'C1-C2',
+    'Favorites',
+  ];
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 412,
-          height: 917,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(color: const Color(0xF7F7F7F9)),
-          child: Stack(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: isDark
+          ? const Color(0xFF111827)
+          : const Color(0xFFF2F4F7),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Status bar simulation (optional - usually handled by system)
+            _buildStatusBar(isDark),
+
+            // Header
+            _buildHeader(isDark),
+
+            // Tab Switcher (My Vocabulary / News)
+            _buildTabSwitcher(isDark),
+
+            // Search Bar
+            _buildSearchBar(isDark),
+
+            // Filter Chips
+            _buildFilterChips(isDark),
+
+            // Vocabulary List
+            Expanded(child: _buildVocabularyList(isDark)),
+          ],
+        ),
+      ),
+      bottomNavigationBar: _buildBottomNavBar(isDark),
+    );
+  }
+
+  Widget _buildStatusBar(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '8:02',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          Row(
             children: [
-              Positioned(
-                left: 24,
-                top: 12,
-                child: SizedBox(
-                  width: 25.14,
-                  height: 16,
-                  child: Text(
-                    '1:09',
-                    style: TextStyle(
-                      color: const Color(0xFF111827),
-                      fontSize: 12,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      height: 1.33,
-                    ),
-                  ),
+              Icon(
+                Icons.wifi,
+                size: 16,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.signal_cellular_alt,
+                size: 16,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.battery_full,
+                size: 16,
+                color: isDark ? Colors.white : Colors.black,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () => Navigator.of(context).pop(),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Icons.arrow_back,
+                  size: 24,
+                  color: isDark ? Colors.white : const Color(0xFF1F2937),
                 ),
               ),
-              Positioned(
-                left: 332,
-                top: 8,
-                child: SizedBox(
-                  width: 16.39,
-                  height: 24,
-                  child: Text(
-                    'signal_cellular_alt',
-                    style: TextStyle(
-                      color: const Color(0xFF111827),
-                      fontSize: 16,
-                      fontFamily: 'Material Icons',
-                      fontWeight: FontWeight.w400,
-                      height: 1.50,
-                    ),
-                  ),
+            ),
+          ),
+          Text(
+            'My Vocabulary',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : const Color(0xFF1F2937),
+            ),
+          ),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () {
+                // TODO: Add new word
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Icon(
+                  Icons.add,
+                  size: 24,
+                  color: isDark ? Colors.white : const Color(0xFF1F2937),
                 ),
               ),
-              Positioned(
-                left: 352,
-                top: 8,
-                child: SizedBox(
-                  width: 16.39,
-                  height: 24,
-                  child: Text(
-                    'wifi',
-                    style: TextStyle(
-                      color: const Color(0xFF111827),
-                      fontSize: 16,
-                      fontFamily: 'Material Icons',
-                      fontWeight: FontWeight.w400,
-                      height: 1.50,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 372,
-                top: 8,
-                child: SizedBox(
-                  width: 16.39,
-                  height: 24,
-                  child: Text(
-                    'battery_full',
-                    style: TextStyle(
-                      color: const Color(0xFF111827),
-                      fontSize: 16,
-                      fontFamily: 'Material Icons',
-                      fontWeight: FontWeight.w400,
-                      height: 1.50,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                top: 47,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabSwitcher(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1F2937) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark ? const Color(0xFF374151) : const Color(0xFFF3F4F6),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedTabIndex = 0),
                 child: Container(
-                  width: 412,
-                  height: 64,
-                  decoration: BoxDecoration(color: const Color(0xF2F3F4F6)),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 8,
-                        top: 12,
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9999),
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: _selectedTabIndex == 0
+                        ? (isDark ? const Color(0xFF4B5563) : Colors.white)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: _selectedTabIndex == 0
+                        ? [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
                             ),
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 8,
-                                top: 8,
-                                child: SizedBox(
-                                  width: 24.34,
-                                  height: 24,
-                                  child: Text(
-                                    'arrow_back',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: const Color(0xFF111827),
-                                      fontSize: 24,
-                                      fontFamily: 'Material Icons',
-                                      fontWeight: FontWeight.w400,
-                                      height: 1,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 132.11,
-                        top: 18,
-                        child: SizedBox(
-                          width: 148.08,
-                          height: 28,
-                          child: Text(
-                            'My Vocabulary',
-                            style: TextStyle(
-                              color: const Color(0xFF111827),
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w700,
-                              height: 1.40,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 363.98,
-                        top: 12,
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: ShapeDecoration(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(9999),
-                            ),
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 8,
-                                top: 8,
-                                child: SizedBox(
-                                  width: 24.34,
-                                  height: 24,
-                                  child: Text(
-                                    'add',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: const Color(0xFF111827),
-                                      fontSize: 24,
-                                      fontFamily: 'Material Icons',
-                                      fontWeight: FontWeight.w400,
-                                      height: 1,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                          ]
+                        : null,
                   ),
-                ),
-              ),
-              Positioned(
-                left: 13,
-                top: 170,
-                child: Container(
-                  width: 387,
-                  height: 52,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                    shadows: [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 17,
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(),
-                        child: Stack(),
-                      ),
-                      Text(
-                        'Search my words... ',
-                        style: TextStyle(
-                          color: const Color(0xFF9E9E9E),
-                          fontSize: 17,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 13,
-                top: 287,
-                child: Container(
-                  width: 387,
-                  height: 151,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 29,
-                top: 307,
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'hello ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '(interjection)',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 36,
-                top: 335,
-                child: SizedBox(
-                  width: 312,
-                  height: 52,
                   child: Text(
-                    'Xin chào (lời chào khi gặp ai đó); Lời chào hỏi qua điện thoại; Sự chú ý (thường dùng để thu hút sự chú ý)',
+                    'My Vocabulary',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 31,
-                top: 393,
-                child: Container(
-                  width: 45,
-                  height: 37.11,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFF67B65B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 45,
-                top: 403,
-                child: Text(
-                  'A1',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 350.23,
-                top: 309.48,
-                child: Container(
-                  width: 30.54,
-                  height: 30.54,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 352.43,
-                top: 346.37,
-                child: Container(
-                  width: 27.15,
-                  height: 27.15,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 17,
-                top: 585,
-                child: Container(
-                  width: 387,
-                  height: 186,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 33,
-                top: 599,
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'friend ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '(noun)',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 40,
-                top: 627,
-                child: SizedBox(
-                  width: 310,
-                  height: 88,
-                  child: Text(
-                    'Bạn bè: Người mà bạn có mối quan hệ gắn bó, dựa trên sự yêu mến, tin tưởng và tôn trọng lẫn nhau; Người quen: Người mà bạn biết và có mối quan hệ xã giao, nhưng không thân thiết như bạn bè.',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 360.44,
-                top: 621.31,
-                child: Container(
-                  width: 25.11,
-                  height: 25.11,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 357.93,
-                top: 662.93,
-                child: Container(
-                  width: 30.13,
-                  height: 30.13,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 35,
-                top: 718.01,
-                child: Container(
-                  width: 45,
-                  height: 42.51,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFF67B65B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 49,
-                top: 729.47,
-                child: SizedBox(
-                  width: 17,
-                  height: 19.48,
-                  child: Text(
-                    'A1',
-                    style: TextStyle(
-                      color: Colors.white,
                       fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
+                      fontWeight: _selectedTabIndex == 0
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: _selectedTabIndex == 0
+                          ? (isDark ? Colors.white : const Color(0xFF3B82F6))
+                          : (isDark
+                                ? const Color(0xFF9CA3AF)
+                                : const Color(0xFF6B7280)),
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                left: 16,
-                top: 458,
+            ),
+            Expanded(
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedTabIndex = 1),
                 child: Container(
-                  width: 387,
-                  height: 107,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    shadows: [
-                      BoxShadow(
-                        color: Color(0x26000000),
-                        blurRadius: 16,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: _selectedTabIndex == 1
+                        ? (isDark ? const Color(0xFF4B5563) : Colors.white)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: _selectedTabIndex == 1
+                        ? [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
+                            ),
+                          ]
+                        : null,
                   ),
-                ),
-              ),
-              Positioned(
-                left: 32,
-                top: 472,
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'hello ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '(interjection)',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 39,
-                top: 500,
-                child: SizedBox(
-                  width: 284,
-                  height: 15.42,
                   child: Text(
-                    'lời chào; tiếng chào; sự chào hỏi',
+                    'News',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 355.64,
-                top: 471.89,
-                child: Container(
-                  width: 25.71,
-                  height: 25.71,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 357.57,
-                top: 498.26,
-                child: Container(
-                  width: 22.85,
-                  height: 22.85,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(),
-                  child: Stack(),
-                ),
-              ),
-              Positioned(
-                left: 34,
-                top: 521.56,
-                child: Container(
-                  width: 45,
-                  height: 39.31,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFF67B65B),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 48,
-                top: 532.16,
-                child: SizedBox(
-                  width: 17,
-                  height: 18.01,
-                  child: Text(
-                    'A1',
-                    style: TextStyle(
-                      color: Colors.white,
                       fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
+                      fontWeight: _selectedTabIndex == 1
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: _selectedTabIndex == 1
+                          ? (isDark ? Colors.white : const Color(0xFF3B82F6))
+                          : (isDark
+                                ? const Color(0xFF9CA3AF)
+                                : const Color(0xFF6B7280)),
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                left: 16,
-                top: 237,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1F2937) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search my words...',
+            hintStyle: TextStyle(
+              fontSize: 14,
+              color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+            ),
+            prefixIcon: Icon(
+              Icons.search,
+              color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+            ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+          ),
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? Colors.white : const Color(0xFF1F2937),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChips(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+      child: SizedBox(
+        height: 40,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: _filterOptions.length,
+          separatorBuilder: (context, index) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final isSelected = _selectedFilterIndex == index;
+            final isFavorites = index == 4;
+
+            return GestureDetector(
+              onTap: () => setState(() => _selectedFilterIndex = index),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFF3B82F6)
+                      : (isDark ? const Color(0xFF1F2937) : Colors.white),
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected
+                      ? null
+                      : Border.all(
+                          color: isDark
+                              ? const Color(0xFF374151)
+                              : const Color(0xFFF3F4F6),
+                        ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 5,
                   children: [
-                    Container(
-                      width: 47,
-                      height: 35,
-                      decoration: ShapeDecoration(
-                        color: const Color(0xFF3B82F6),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x26000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 4),
-                            spreadRadius: 0,
-                          ),
-                        ],
+                    if (isFavorites) ...[
+                      Icon(
+                        Icons.star,
+                        size: 16,
+                        color: isSelected
+                            ? Colors.white
+                            : const Color(0xFFFACC15),
                       ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 15,
-                            top: 9,
-                            child: Text(
-                              'All',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 73,
-                      height: 35,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x26000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 4),
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 16,
-                            top: 9,
-                            child: Text(
-                              'A1-A2',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 73,
-                      height: 35,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x26000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 4),
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 16,
-                            top: 9,
-                            child: Text(
-                              'B1-B2',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 73,
-                      height: 35,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x26000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 4),
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 15,
-                            top: 9,
-                            child: Text(
-                              'C1-C2',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 95,
-                      height: 35,
-                      decoration: ShapeDecoration(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadows: [
-                          BoxShadow(
-                            color: Color(0x26000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 4),
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            top: 7.50,
-                            child: Container(
-                              width: 20,
-                              height: 20,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(),
-                              child: Stack(),
-                            ),
-                          ),
-                          Positioned(
-                            left: 20,
-                            top: 9,
-                            child: Text(
-                              'Favourites',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 4),
+                    ],
+                    Text(
+                      _filterOptions[index],
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : (isDark ? Colors.white : const Color(0xFF1F2937)),
                       ),
                     ),
                   ],
                 ),
               ),
-              Positioned(
-                left: 0,
-                top: 837,
-                child: Container(
-                  width: 412,
-                  height: 80,
-                  decoration: ShapeDecoration(
-                    color: Colors.white /* color-white-solid */,
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        width: 1,
-                        color: const Color(0xFFF3F4F6) /* color-grey-96 */,
-                      ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVocabularyList(bool isDark) {
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: _vocabularyItems.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        return _buildVocabularyCard(_vocabularyItems[index], isDark);
+      },
+    );
+  }
+
+  Widget _buildVocabularyCard(VocabularyItem item, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1F2937) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Word Title Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    item.word,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : const Color(0xFF1F2937),
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(
-                            right: 0.03,
-                            bottom: 8,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 4,
-                                                  ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: Stack(),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Home',
-                                            style: TextStyle(
-                                              color: const Color(
-                                                0xFF9CA3AF,
-                                              ) /* color-azure-65 */,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.33,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 20,
-                                                    vertical: 4,
-                                                  ),
-                                              decoration: ShapeDecoration(
-                                                color: const Color(
-                                                  0xFFE0E7FF,
-                                                ) /* color-grey-94 */,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        9999,
-                                                      ),
-                                                ),
-                                              ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          vertical: 4,
-                                                        ),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Container(
-                                                          width: 24,
-                                                          height: 24,
-                                                          child: Stack(),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Vocab',
-                                            style: TextStyle(
-                                              color: const Color(
-                                                0xFF3B07E8,
-                                              ) /* color-blue-47 */,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w700,
-                                              height: 1.33,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Container(
-                                    height: 56,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      spacing: 4,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 4,
-                                          ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 4,
-                                                    ),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      width: 24,
-                                                      height: 24,
-                                                      child: Stack(),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: 16,
-                                          padding: const EdgeInsets.only(
-                                            bottom: 1,
-                                          ),
-                                          decoration: ShapeDecoration(
-                                            shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                width: 2,
-                                                color: Colors.black.withValues(
-                                                  alpha: 0,
-                                                ) /* color-black--0% */,
-                                              ),
-                                            ),
-                                          ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Grammar',
-                                                style: TextStyle(
-                                                  color: const Color(
-                                                    0xFF9CA3AF,
-                                                  ) /* color-azure-65 */,
-                                                  fontSize: 12,
-                                                  fontFamily: 'Inter',
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 1.33,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 4,
-                                                  ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: Stack(),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Practice',
-                                            style: TextStyle(
-                                              color: const Color(
-                                                0xFF9CA3AF,
-                                              ) /* color-azure-65 */,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.33,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 4,
-                                                  ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: Stack(),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Progress',
-                                            style: TextStyle(
-                                              color: const Color(
-                                                0xFF9CA3AF,
-                                              ) /* color-azure-65 */,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.33,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(minWidth: 60),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    spacing: 4,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 4,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    vertical: 4,
-                                                  ),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 24,
-                                                    height: 24,
-                                                    child: Stack(),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Profile',
-                                            style: TextStyle(
-                                              color: const Color(
-                                                0xFF9CA3AF,
-                                              ) /* color-azure-65 */,
-                                              fontSize: 12,
-                                              fontFamily: 'Inter',
-                                              fontWeight: FontWeight.w500,
-                                              height: 1.33,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  Text(
+                    item.partOfSpeech,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF6B7280),
+                    ),
                   ),
-                ),
+                ],
               ),
-              Positioned(
-                left: 16,
-                top: 111,
-                child: Container(
-                  width: 380,
-                  height: 44,
-                  decoration: ShapeDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 4,
-                        top: 3,
-                        child: Container(
-                          width: 186,
-                          height: 36,
-                          decoration: ShapeDecoration(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            shadows: [
-                              BoxShadow(
-                                color: Color(0x0C000000),
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 44.13,
-                                top: 7,
-                                child: Text(
-                                  'My vocabulary',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: const Color(0xFF111827),
-                                    fontSize: 14,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.43,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 237,
-                        top: 12,
-                        child: SizedBox(
-                          width: 101.05,
-                          height: 17,
-                          child: Text(
-                            'News',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: const Color(0xFF6B7280),
-                              fontSize: 14,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w500,
-                              height: 1.43,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    item.isFavorite = !item.isFavorite;
+                  });
+                },
+                child: Icon(
+                  item.isFavorite ? Icons.star : Icons.star_border,
+                  color: item.isFavorite
+                      ? const Color(0xFFFACC15)
+                      : (isDark
+                            ? const Color(0xFF4B5563)
+                            : const Color(0xFFD1D5DB)),
+                  size: 24,
                 ),
               ),
             ],
           ),
-        ),
-      ],
+
+          const SizedBox(height: 4),
+
+          // Meaning
+          Text(
+            item.meaning,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? const Color(0xFFD1D5DB) : const Color(0xFF6B7280),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Bottom Row: Level badge, Phonetic, More button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  // Level Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getLevelColor(item.level, isDark),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      item.level,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: _getLevelTextColor(item.level, isDark),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Phonetic
+                  Text(
+                    item.phonetic,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'monospace',
+                      color: isDark
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF6B7280),
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  // TODO: Show more options
+                },
+                child: Icon(
+                  Icons.more_vert,
+                  size: 20,
+                  color: isDark
+                      ? const Color(0xFF6B7280)
+                      : const Color(0xFF9CA3AF),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
+
+  Color _getLevelColor(String level, bool isDark) {
+    switch (level) {
+      case 'A1':
+      case 'A2':
+        return isDark ? const Color(0xFF166534) : const Color(0xFFDCFCE7);
+      case 'B1':
+      case 'B2':
+        return isDark ? const Color(0xFF1E40AF) : const Color(0xFFDBEAFE);
+      case 'C1':
+      case 'C2':
+        return isDark ? const Color(0xFF7C2D12) : const Color(0xFFFED7AA);
+      default:
+        return isDark ? const Color(0xFF166534) : const Color(0xFFDCFCE7);
+    }
+  }
+
+  Color _getLevelTextColor(String level, bool isDark) {
+    switch (level) {
+      case 'A1':
+      case 'A2':
+        return isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A);
+      case 'B1':
+      case 'B2':
+        return isDark ? const Color(0xFF93C5FD) : const Color(0xFF2563EB);
+      case 'C1':
+      case 'C2':
+        return isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C);
+      default:
+        return isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A);
+    }
+  }
+
+  Widget _buildBottomNavBar(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.only(top: 8, bottom: 20, left: 8, right: 8),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1F2937) : Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: isDark ? const Color(0xFF374151) : const Color(0xFFF3F4F6),
+          ),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.home, 'Home', 0, isDark),
+          _buildNavItem(Icons.school, 'Vocab', 1, isDark, isSelected: true),
+          _buildNavItem(Icons.text_fields, 'Grammar', 2, isDark),
+          _buildNavItem(Icons.fitness_center, 'Practice', 3, isDark),
+          _buildNavItem(Icons.bar_chart, 'Progress', 4, isDark),
+          _buildNavItem(Icons.person, 'Profile', 5, isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    IconData icon,
+    String label,
+    int index,
+    bool isDark, {
+    bool isSelected = false,
+  }) {
+    const selectedColor = Color(0xFF3B82F6);
+    final unselectedColor = isDark
+        ? const Color(0xFF6B7280)
+        : const Color(0xFF9CA3AF);
+
+    return GestureDetector(
+      onTap: () {
+        // TODO: Navigate to corresponding screen
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isSelected)
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF1E3A8A).withOpacity(0.3)
+                    : const Color(0xFFDBEAFE),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 24, color: selectedColor),
+            )
+          else
+            Icon(icon, size: 24, color: unselectedColor),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected ? selectedColor : unselectedColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class VocabularyItem {
+  final String word;
+  final String partOfSpeech;
+  final String meaning;
+  final String level;
+  final String phonetic;
+  bool isFavorite;
+
+  VocabularyItem({
+    required this.word,
+    required this.partOfSpeech,
+    required this.meaning,
+    required this.level,
+    required this.phonetic,
+    this.isFavorite = false,
+  });
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:magic_enlish/features/auth/login_screen.dart';
 import 'package:magic_enlish/features/vocabulary/vocabulary_screen.dart';
 
 void main() {
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const ,
+      home: const VocabularyScreen(),
     );
   }
 }
