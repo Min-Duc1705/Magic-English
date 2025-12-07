@@ -1,372 +1,325 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:magic_enlish/core/widgets/common/app_bottom_nav.dart';
+import 'package:magic_enlish/core/widgets/common/app_top_bar.dart';
+import 'package:magic_enlish/core/widgets/form/word_input_field.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_preview_card.dart';
+import 'package:magic_enlish/core/widgets/common/success_dialog.dart';
+import 'package:magic_enlish/data/models/vocabulary/Vocabulary.dart';
+import 'package:magic_enlish/data/repositories/vocabulary/vocabulary_repository.dart';
+import 'package:magic_enlish/features/vocabulary/review_word_screen.dart';
+import 'package:magic_enlish/providers/vocabulary/vocabulary_provider.dart';
 
-class AddWordScreen extends StatelessWidget {
-  const AddWordScreen({super.key});
+class AddWordPage extends StatefulWidget {
+  const AddWordPage({super.key});
 
-  // ===== COLORS =====
-  static const primary = Color(0xFF3B82F6);
-  static const primaryDark = Color(0xFF2563EB);
-  static const bgLight = Color(0xFFF8F9FB);
-  static const surface = Colors.white;
-  static const textMain = Color(0xFF111827);
-  static const textSub = Color(0xFF6B7280);
+  @override
+  State<AddWordPage> createState() => _AddWordPageState();
+}
+
+class _AddWordPageState extends State<AddWordPage> {
+  final TextEditingController _wordController = TextEditingController();
+  final VocabularyRepository _vocabularyRepository = VocabularyRepository();
+  bool _isLoading = false;
+  bool _isPreviewLoading = false;
+  Vocabulary? _previewVocabulary;
+  Timer? _debounceTimer;
+  String _lastFetchedWord = '';
+  String? _wordError;
+
+  @override
+  void dispose() {
+    _wordController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onWordChanged(String word) {
+    _debounceTimer?.cancel();
+
+    if (word.trim().isEmpty) {
+      setState(() {
+        _previewVocabulary = null;
+        _isPreviewLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isPreviewLoading = true;
+    });
+
+    _debounceTimer = Timer(const Duration(milliseconds: 2000), () {
+      final trimmedWord = word.trim().toLowerCase();
+      // Skip if already fetched this word
+      if (trimmedWord == _lastFetchedWord) {
+        setState(() {
+          _isPreviewLoading = false;
+        });
+        return;
+      }
+      _fetchPreview(trimmedWord);
+    });
+  }
+
+  Future<void> _fetchPreview(String word) async {
+    try {
+      final vocabulary = Vocabulary(
+        word: word,
+        ipa: '',
+        audioUrl: '',
+        meaning: '',
+        wordType: '',
+        example: '',
+        cefrLevel: '',
+        createdAt: DateTime.now(),
+      );
+
+      // Use preview API (doesn't save to DB) with 10 second timeout
+      final previewVocab = await _vocabularyRepository
+          .previewVocabulary(vocabulary)
+          .timeout(const Duration(seconds: 10));
+
+      if (mounted) {
+        setState(() {
+          _previewVocabulary = previewVocab;
+          _lastFetchedWord = word.toLowerCase();
+          _isPreviewLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _previewVocabulary = null;
+          _isPreviewLoading = false;
+        });
+
+        // Show timeout/error message
+        if (e.toString().contains('TimeoutException')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Server response too slow. Please try again.',
+                style: GoogleFonts.lexend(),
+              ),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  // Colors
+  Color get primary => const Color(0xFF3A57E8);
+  Color get secondary => const Color(0xFF00C49A);
+  Color get backgroundLight => const Color(0xFFF8F9FA);
+  Color get textLight => const Color(0xFF333333);
+  Color get placeholder => const Color(0xFFADB5BD);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgLight,
-      body: Column(
-        children: [
-          _statusBar(),
-          _header(context),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _wordInput(),
-                  const SizedBox(height: 24),
-                  _wordDetailCard(),
-                  const SizedBox(height: 32),
-                  _addButton(),
-                  const SizedBox(height: 120),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: _bottomNav(),
-    );
-  }
+      backgroundColor: backgroundLight,
 
-  // ================= STATUS BAR =================
-  Widget _statusBar() {
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      color: bgLight,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          Text(
-            "9:03",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-          Row(
-            children: [
-              Icon(Icons.wifi, size: 18),
-              SizedBox(width: 6),
-              Icon(Icons.battery_full, size: 18),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+      // Bottom Navigation
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
 
-  // ================= HEADER =================
-  Widget _header(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back),
-          ),
-          const Text(
-            "Add new word",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(width: 40),
-        ],
-      ),
-    );
-  }
-
-  // ================= INPUT =================
-  Widget _wordInput() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Enter an English word",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: textMain,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Stack(
+      body: SafeArea(
+        child: Column(
           children: [
-            TextField(
-              controller: TextEditingController(text: "software"),
-              decoration: InputDecoration(
-                hintText: "Type a word...",
-                filled: true,
-                fillColor: surface,
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20, vertical: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
+            // Top Bar
+            const AppTopBar(title: 'Add New Word'),
+
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 12),
+
+                    // Input Field
+                    WordInputField(
+                      controller: _wordController,
+                      enabled: !_isLoading,
+                      labelText: 'Enter an English word',
+                      hintText: 'e.g., serendipity',
+                      helperText:
+                          'Our AI will automatically find the meaning, pronunciation, and examples for you.',
+                      errorText: _wordError,
+                      onChanged: (value) {
+                        // Clear error when user starts typing
+                        if (_wordError != null) {
+                          setState(() => _wordError = null);
+                        }
+                        _onWordChanged(value);
+                      },
+                      onMicTap: () {
+                        // TODO: Implement voice input
+                      },
+                      primaryColor: primary,
+                      secondaryColor: secondary,
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Preview Card
+                    VocabularyPreviewCard(
+                      vocabulary: _previewVocabulary,
+                      isLoading: _isPreviewLoading,
+                      primaryColor: primary,
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
             ),
-            Positioned(
-              right: 12,
-              top: 0,
-              bottom: 0,
-              child: IconButton(
-                icon: const Icon(Icons.mic, color: Colors.green),
-                onPressed: () {},
+
+            // ---------------- ADD BUTTON ----------------
+            Container(
+              padding: const EdgeInsets.all(16),
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  minimumSize: const Size(double.infinity, 54),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: _isLoading ? null : _handleAddWord,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        "Add Word",
+                        style: GoogleFonts.lexend(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
-            )
+            ),
           ],
         ),
-        const SizedBox(height: 12),
-        const Text(
-          "Our AI will automatically find the meaning, pronunciation, and examples for you.",
-          style: TextStyle(fontSize: 12, color: textSub, height: 1.5),
-        ),
-      ],
+      ),
     );
   }
 
-  // ================= WORD DETAIL =================
-  Widget _wordDetailCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    "software",
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "/ˈsɒf.twɛər/",
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'monospace',
-                        color: textSub),
-                  ),
-                ],
+  Future<void> _handleAddWord() async {
+    final word = _wordController.text.trim();
+
+    // Validate input
+    if (word.isEmpty) {
+      setState(() => _wordError = 'Please enter a word');
+      return;
+    }
+
+    // Check if word contains only letters and spaces
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(word)) {
+      setState(() => _wordError = 'Word should contain only letters');
+      return;
+    }
+
+    // Check minimum length
+    if (word.length < 2) {
+      setState(() => _wordError = 'Word must be at least 2 characters');
+      return;
+    }
+
+    // Clear any previous error
+    setState(() => _wordError = null);
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Create vocabulary object with only the word (AI will enrich it)
+      final vocabulary = Vocabulary(
+        word: word,
+        ipa: '',
+        audioUrl: '',
+        meaning: '',
+        wordType: '',
+        example: '',
+        cefrLevel: '',
+        createdAt: DateTime.now(),
+      );
+
+      // Add vocabulary through provider
+      final provider = Provider.of<VocabularyProvider>(context, listen: false);
+      await provider.addVocabulary(vocabulary, context);
+
+      if (provider.error != null) {
+        throw Exception(provider.error);
+      }
+
+      // Get the newly added vocabulary
+      final addedVocab = provider.vocabularies.firstWhere(
+        (v) => v.word.toLowerCase() == word.toLowerCase(),
+        orElse: () => vocabulary,
+      );
+
+      // Show success dialog
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        await SuccessDialog.show(
+          context: context,
+          title: 'Word Added!',
+          message: '"${addedVocab.word}" is now in your vocabulary list.',
+          onViewWord: () {
+            Navigator.pop(context); // Close dialog
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => VocabularyDetailScreen(vocabulary: addedVocab),
               ),
-              IconButton(
-                icon: const Icon(Icons.volume_up, color: primary),
-                onPressed: () {},
-              ),
-            ],
+            ).then((_) {
+              if (mounted) {
+                Navigator.pop(context, true); // Close add word screen
+              }
+            });
+          },
+          onContinue: () {
+            Navigator.pop(context); // Close dialog
+            // Clear input and preview for next word
+            _wordController.clear();
+            setState(() {
+              _previewVocabulary = null;
+              _lastFetchedWord = '';
+            });
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e', style: GoogleFonts.lexend()),
+            backgroundColor: Colors.red,
           ),
-          const Divider(height: 32),
-          const Text(
-            "MEANING",
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: textSub,
-                letterSpacing: 1),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "Phần mềm máy tính; Thành phần phi vật lý",
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              _infoBlock("Type", "noun"),
-              const SizedBox(width: 40),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Level",
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: textSub),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    width: 32,
-                    height: 32,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: primary,
-                    ),
-                    child: const Text(
-                      "B1",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            "EXAMPLE",
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: textSub,
-                letterSpacing: 1),
-          ),
-          const SizedBox(height: 10),
-          _example("This new computer comes with the latest software."),
-          _example("You need to update your software for better security."),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoBlock(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: textSub),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ],
-    );
-  }
-
-  Widget _example(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("”",
-              style: TextStyle(fontSize: 22, color: primary)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14, height: 1.4),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= ADD BUTTON =================
-  Widget _addButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: primary,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        ),
-        onPressed: () {},
-        child: const Text(
-          "Add Word",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-
-  // ================= BOTTOM NAV =================
-  Widget _bottomNav() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey.shade200)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
-          _NavItem(Icons.home, "Home"),
-          _NavItem(Icons.school, "Vocab", active: true),
-          _NavItem(Icons.spellcheck, "Grammar"),
-          _NavItem(Icons.fitness_center, "Practice"),
-          _NavItem(Icons.bar_chart, "Progress"),
-          _NavItem(Icons.account_circle, "Profile"),
-        ],
-      ),
-    );
-  }
-}
-
-// ================= NAV ITEM =================
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool active;
-
-  const _NavItem(this.icon, this.label, {this.active = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        active
-            ? Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AddWordScreen.primary.withOpacity(.15),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(icon, color: AddWordScreen.primary),
-              )
-            : Icon(icon, color: Colors.grey),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-              fontSize: 10,
-              color: active ? AddWordScreen.primary : Colors.grey,
-              fontWeight:
-                  active ? FontWeight.bold : FontWeight.w500),
-        ),
-      ],
-    );
+        );
+      }
+    }
   }
 }
