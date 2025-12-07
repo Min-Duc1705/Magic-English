@@ -1,679 +1,463 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:magic_enlish/providers/vocabulary/vocabulary_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:magic_enlish/core/widgets/common/app_bottom_nav.dart';
+import 'package:magic_enlish/core/widgets/common/search_bar_widget.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/filter_chip_widget.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_card_widget.dart';
+import 'package:magic_enlish/features/vocabulary/add_word_screen.dart';
+import 'package:magic_enlish/features/vocabulary/review_word_screen.dart';
+import 'package:magic_enlish/features/news/news_screen.dart';
 
-class VocabularyScreen extends StatefulWidget {
-  const VocabularyScreen({super.key});
+class VocabularyPage extends StatefulWidget {
+  const VocabularyPage({super.key});
 
   @override
-  State<VocabularyScreen> createState() => _VocabularyScreenState();
+  State<VocabularyPage> createState() => _VocabularyPageState();
 }
 
-class _VocabularyScreenState extends State<VocabularyScreen> {
-  int _selectedTabIndex = 0; // 0 = My Vocabulary, 1 = News
-  int _selectedFilterIndex = 0; // All, A1-A2, B1-B2, C1-C2, Favorites
+class _VocabularyPageState extends State<VocabularyPage> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  String _selectedTab = "My Vocabulary";
 
-  // Sample vocabulary data
-  final List<VocabularyItem> _vocabularyItems = [
-    VocabularyItem(
-      word: 'weather',
-      partOfSpeech: '(noun/verb)',
-      meaning: 'Thời tiết; Vượt qua khó khăn',
-      level: 'A1',
-      phonetic: '/ˈwɛðər/',
-      isFavorite: false,
-    ),
-    VocabularyItem(
-      word: 'storm',
-      partOfSpeech: '(noun, verb)',
-      meaning: 'Bão tố; Giông bão; Tấn công dữ dội',
-      level: 'A2',
-      phonetic: '/stɔːm/',
-      isFavorite: false,
-    ),
-    VocabularyItem(
-      word: 'six',
-      partOfSpeech: '(adjective)',
-      meaning: 'Số sáu; Sáu (số lượng)',
-      level: 'A1',
-      phonetic: '/sɪks/',
-      isFavorite: false,
-    ),
-    VocabularyItem(
-      word: 'tropical',
-      partOfSpeech: '(adjective)',
-      meaning: 'Nhiệt đới; Thuộc vùng nhiệt đới',
-      level: 'B1',
-      phonetic: '/ˈtrɒpɪkəl/',
-      isFavorite: false,
-    ),
-  ];
+  Color get primary => const Color(0xFF4A90E2);
+  Color get background => const Color(0xfff6f6f8);
 
-  final List<String> _filterOptions = [
-    'All',
-    'A1-A2',
-    'B1-B2',
-    'C1-C2',
-    'Favorites',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Clear search khi vào trang
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _searchController.clear();
+        context.read<VocabularyProvider>().searchVocabularies('');
+      }
+    });
+
+    // Listen to scroll để load more
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      // Khi còn 200px nữa là đến cuối, load more
+      context.read<VocabularyProvider>().loadMoreVocabularies();
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDark
-          ? const Color(0xFF111827)
-          : const Color(0xFFF2F4F7),
+      backgroundColor: background,
+      bottomNavigationBar: const AppBottomNav(currentIndex: 1),
       body: SafeArea(
         child: Column(
           children: [
-            // Status bar simulation (optional - usually handled by system)
-            _buildStatusBar(isDark),
-
-            // Header
-            _buildHeader(isDark),
-
-            // Tab Switcher (My Vocabulary / News)
-            _buildTabSwitcher(isDark),
-
-            // Search Bar
-            _buildSearchBar(isDark),
-
-            // Filter Chips
-            _buildFilterChips(isDark),
-
-            // Vocabulary List
-            Expanded(child: _buildVocabularyList(isDark)),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavBar(isDark),
-    );
-  }
-
-  Widget _buildStatusBar(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '8:02',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.wifi,
-                size: 16,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.signal_cellular_alt,
-                size: 16,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                Icons.battery_full,
-                size: 16,
-                color: isDark ? Colors.white : Colors.black,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: () => Navigator.of(context).pop(),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Icon(
-                  Icons.arrow_back,
-                  size: 24,
-                  color: isDark ? Colors.white : const Color(0xFF1F2937),
-                ),
-              ),
-            ),
-          ),
-          Text(
-            'My Vocabulary',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : const Color(0xFF1F2937),
-            ),
-          ),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: () {
-                // TODO: Add new word
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Icon(
-                  Icons.add,
-                  size: 24,
-                  color: isDark ? Colors.white : const Color(0xFF1F2937),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabSwitcher(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1F2937) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? const Color(0xFF374151) : const Color(0xFFF3F4F6),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedTabIndex = 0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _selectedTabIndex == 0
-                        ? (isDark ? const Color(0xFF4B5563) : Colors.white)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: _selectedTabIndex == 0
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    'My Vocabulary',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: _selectedTabIndex == 0
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                      color: _selectedTabIndex == 0
-                          ? (isDark ? Colors.white : const Color(0xFF3B82F6))
-                          : (isDark
-                                ? const Color(0xFF9CA3AF)
-                                : const Color(0xFF6B7280)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedTabIndex = 1),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _selectedTabIndex == 1
-                        ? (isDark ? const Color(0xFF4B5563) : Colors.white)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: _selectedTabIndex == 1
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 2,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    'News',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: _selectedTabIndex == 1
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                      color: _selectedTabIndex == 1
-                          ? (isDark ? Colors.white : const Color(0xFF3B82F6))
-                          : (isDark
-                                ? const Color(0xFF9CA3AF)
-                                : const Color(0xFF6B7280)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchBar(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1F2937) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: _searchController,
-          decoration: InputDecoration(
-            hintText: 'Search my words...',
-            hintStyle: TextStyle(
-              fontSize: 14,
-              color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
-            ),
-            prefixIcon: Icon(
-              Icons.search,
-              color: isDark ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
-            ),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
-          ),
-          style: TextStyle(
-            fontSize: 14,
-            color: isDark ? Colors.white : const Color(0xFF1F2937),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChips(bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
-      child: SizedBox(
-        height: 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: _filterOptions.length,
-          separatorBuilder: (context, index) => const SizedBox(width: 8),
-          itemBuilder: (context, index) {
-            final isSelected = _selectedFilterIndex == index;
-            final isFavorites = index == 4;
-
-            return GestureDetector(
-              onTap: () => setState(() => _selectedFilterIndex = index),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? const Color(0xFF3B82F6)
-                      : (isDark ? const Color(0xFF1F2937) : Colors.white),
-                  borderRadius: BorderRadius.circular(12),
-                  border: isSelected
-                      ? null
-                      : Border.all(
-                          color: isDark
-                              ? const Color(0xFF374151)
-                              : const Color(0xFFF3F4F6),
-                        ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    if (isFavorites) ...[
-                      Icon(
-                        Icons.star,
-                        size: 16,
-                        color: isSelected
-                            ? Colors.white
-                            : const Color(0xFFFACC15),
-                      ),
-                      const SizedBox(width: 4),
-                    ],
-                    Text(
-                      _filterOptions[index],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: isSelected
-                            ? Colors.white
-                            : (isDark ? Colors.white : const Color(0xFF1F2937)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVocabularyList(bool isDark) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _vocabularyItems.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        return _buildVocabularyCard(_vocabularyItems[index], isDark);
-      },
-    );
-  }
-
-  Widget _buildVocabularyCard(VocabularyItem item, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1F2937) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Word Title Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
+            // -------------------- TOP BAR --------------------
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
                 children: [
+                  GestureDetector(
+                    onTap: () =>
+                        Navigator.pushReplacementNamed(context, '/home'),
+                    child: const Icon(Icons.arrow_back, size: 28),
+                  ),
+                  const Spacer(),
                   Text(
-                    item.word,
-                    style: TextStyle(
+                    "My Vocabulary",
+                    style: GoogleFonts.lexend(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF1F2937),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    item.partOfSpeech,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark
-                          ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF6B7280),
-                    ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AddWordPage()),
+                      );
+                      if (result == true && mounted) {
+                        context.read<VocabularyProvider>().loadVocabularies();
+                      }
+                    },
+                    child: const Icon(Icons.add, size: 28),
                   ),
                 ],
               ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    item.isFavorite = !item.isFavorite;
-                  });
-                },
-                child: Icon(
-                  item.isFavorite ? Icons.star : Icons.star_border,
-                  color: item.isFavorite
-                      ? const Color(0xFFFACC15)
-                      : (isDark
-                            ? const Color(0xFF4B5563)
-                            : const Color(0xFFD1D5DB)),
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 4),
-
-          // Meaning
-          Text(
-            item.meaning,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? const Color(0xFFD1D5DB) : const Color(0xFF6B7280),
             ),
-          ),
 
-          const SizedBox(height: 12),
-
-          // Bottom Row: Level badge, Phonetic, More button
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  // Level Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getLevelColor(item.level, isDark),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      item.level,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: _getLevelTextColor(item.level, isDark),
+            // -------------------- SEGMENTED BUTTONS --------------------
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E5E5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedTab = "My Vocabulary";
+                          });
+                        },
+                        child: Container(
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: _selectedTab == "My Vocabulary"
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: _selectedTab == "My Vocabulary"
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "My Vocabulary",
+                              style: GoogleFonts.lexend(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _selectedTab == "My Vocabulary"
+                                    ? const Color(0xFF333333)
+                                    : const Color(0xFF999999),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Phonetic
-                  Text(
-                    item.phonetic,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'monospace',
-                      color: isDark
-                          ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF6B7280),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedTab = "News";
+                          });
+                        },
+                        child: Container(
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: _selectedTab == "News"
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: _selectedTab == "News"
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "News",
+                              style: GoogleFonts.lexend(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _selectedTab == "News"
+                                    ? const Color(0xFF333333)
+                                    : const Color(0xFF999999),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              GestureDetector(
-                onTap: () {
-                  // TODO: Show more options
-                },
-                child: Icon(
-                  Icons.more_vert,
-                  size: 20,
-                  color: isDark
-                      ? const Color(0xFF6B7280)
-                      : const Color(0xFF9CA3AF),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            ),
 
-  Color _getLevelColor(String level, bool isDark) {
-    switch (level) {
-      case 'A1':
-      case 'A2':
-        return isDark ? const Color(0xFF166534) : const Color(0xFFDCFCE7);
-      case 'B1':
-      case 'B2':
-        return isDark ? const Color(0xFF1E40AF) : const Color(0xFFDBEAFE);
-      case 'C1':
-      case 'C2':
-        return isDark ? const Color(0xFF7C2D12) : const Color(0xFFFED7AA);
-      default:
-        return isDark ? const Color(0xFF166534) : const Color(0xFFDCFCE7);
-    }
-  }
+            // -------------------- SEARCH BAR --------------------
+            if (_selectedTab == "My Vocabulary")
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SearchBarWidget(
+                  hintText: "Search my words...",
+                  controller: _searchController,
+                  onChanged: (query) {
+                    context.read<VocabularyProvider>().searchVocabularies(
+                      query,
+                    );
+                  },
+                ),
+              ),
 
-  Color _getLevelTextColor(String level, bool isDark) {
-    switch (level) {
-      case 'A1':
-      case 'A2':
-        return isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A);
-      case 'B1':
-      case 'B2':
-        return isDark ? const Color(0xFF93C5FD) : const Color(0xFF2563EB);
-      case 'C1':
-      case 'C2':
-        return isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C);
-      default:
-        return isDark ? const Color(0xFF86EFAC) : const Color(0xFF16A34A);
-    }
-  }
+            const SizedBox(height: 12),
+            // -------------------- FILTER TABS --------------------
+            if (_selectedTab == "My Vocabulary")
+              Consumer<VocabularyProvider>(
+                builder: (context, provider, _) {
+                  return SizedBox(
+                    height: 44,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      children: [
+                        FilterChipWidget(
+                          label: "All",
+                          isActive: provider.selectedFilter == "All",
+                          onTap: () => provider.setFilter("All"),
+                          primaryColor: primary,
+                        ),
+                        FilterChipWidget(
+                          label: "A1-A2",
+                          isActive: provider.selectedFilter == "A1-A2",
+                          onTap: () => provider.setFilter("A1-A2"),
+                          primaryColor: primary,
+                        ),
+                        FilterChipWidget(
+                          label: "B1-B2",
+                          isActive: provider.selectedFilter == "B1-B2",
+                          onTap: () => provider.setFilter("B1-B2"),
+                          primaryColor: primary,
+                        ),
+                        FilterChipWidget(
+                          label: "C1-C2",
+                          isActive: provider.selectedFilter == "C1-C2",
+                          onTap: () => provider.setFilter("C1-C2"),
+                          primaryColor: primary,
+                        ),
+                        FilterChipWidget(
+                          label: "Favorites",
+                          isActive: provider.selectedFilter == "Favorites",
+                          onTap: () => provider.setFilter("Favorites"),
+                          icon: Icons.star,
+                          primaryColor: primary,
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
 
-  Widget _buildBottomNavBar(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.only(top: 8, bottom: 20, left: 8, right: 8),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1F2937) : Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: isDark ? const Color(0xFF374151) : const Color(0xFFF3F4F6),
-          ),
+            // -------------------- VOCAB LIST / EXPLORE --------------------
+            Expanded(
+              child: _selectedTab == "My Vocabulary"
+                  ? Consumer<VocabularyProvider>(
+                      builder: (context, provider, _) {
+                        return _buildVocabularyList(provider);
+                      },
+                    )
+                  : _buildNewsView(),
+            ),
+          ],
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, 'Home', 0, isDark),
-          _buildNavItem(Icons.school, 'Vocab', 1, isDark, isSelected: true),
-          _buildNavItem(Icons.text_fields, 'Grammar', 2, isDark),
-          _buildNavItem(Icons.fitness_center, 'Practice', 3, isDark),
-          _buildNavItem(Icons.bar_chart, 'Progress', 4, isDark),
-          _buildNavItem(Icons.person, 'Profile', 5, isDark),
-        ],
+    );
+  }
+
+  Widget _buildVocabularyList(VocabularyProvider provider) {
+    if (provider.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (provider.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+            const SizedBox(height: 16),
+            Text(
+              'Error: ${provider.error}',
+              style: GoogleFonts.lexend(color: Colors.red),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => provider.loadVocabularies(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (provider.vocabularies.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.book_outlined, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              'No vocabulary found',
+              style: GoogleFonts.lexend(
+                fontSize: 16,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Add your first word!',
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.all(16),
+      itemCount:
+          provider.vocabularies.length + (provider.isLoadingMore ? 1 : 0),
+      itemBuilder: (context, index) {
+        // Show loading indicator at the end
+        if (index == provider.vocabularies.length) {
+          return const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final vocab = provider.vocabularies[index];
+        return VocabularyCardWidget(
+          vocabulary: vocab,
+          isFavorite: provider.isFavorite(vocab.id),
+          onFavoriteTap: () {
+            if (vocab.id != null) {
+              provider.toggleFavorite(vocab.id!);
+            }
+          },
+          onMoreTap: () {
+            _showVocabularyOptions(context, vocab);
+          },
+          onTap: () {
+            _navigateToVocabularyDetail(context, provider.vocabularies, index);
+          },
+          primaryColor: primary,
+        );
+      },
+    );
+  }
+
+  Widget _buildNewsView() {
+    return const NewsScreen(embedded: true);
+  }
+
+  void _navigateToVocabularyDetail(
+    BuildContext context,
+    List<dynamic> vocabularies,
+    int currentIndex,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => _VocabularyNavigator(
+          vocabularies: vocabularies,
+          initialIndex: currentIndex,
+        ),
       ),
     );
   }
 
-  Widget _buildNavItem(
-    IconData icon,
-    String label,
-    int index,
-    bool isDark, {
-    bool isSelected = false,
-  }) {
-    const selectedColor = Color(0xFF3B82F6);
-    final unselectedColor = isDark
-        ? const Color(0xFF6B7280)
-        : const Color(0xFF9CA3AF);
-
-    return GestureDetector(
-      onTap: () {
-        // TODO: Navigate to corresponding screen
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isSelected)
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF1E3A8A).withOpacity(0.3)
-                    : const Color(0xFFDBEAFE),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, size: 24, color: selectedColor),
-            )
-          else
-            Icon(icon, size: 24, color: unselectedColor),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected ? selectedColor : unselectedColor,
+  void _showVocabularyOptions(BuildContext context, vocab) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: Text('Edit', style: GoogleFonts.lexend()),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Navigate to edit screen
+              },
             ),
-          ),
-        ],
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: Text(
+                'Delete',
+                style: GoogleFonts.lexend(color: Colors.red),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                // TODO: Implement delete functionality
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class VocabularyItem {
-  final String word;
-  final String partOfSpeech;
-  final String meaning;
-  final String level;
-  final String phonetic;
-  bool isFavorite;
+// Navigator widget for vocabulary detail with next word functionality
+class _VocabularyNavigator extends StatefulWidget {
+  final List<dynamic> vocabularies;
+  final int initialIndex;
 
-  VocabularyItem({
-    required this.word,
-    required this.partOfSpeech,
-    required this.meaning,
-    required this.level,
-    required this.phonetic,
-    this.isFavorite = false,
+  const _VocabularyNavigator({
+    required this.vocabularies,
+    required this.initialIndex,
   });
+
+  @override
+  State<_VocabularyNavigator> createState() => _VocabularyNavigatorState();
+}
+
+class _VocabularyNavigatorState extends State<_VocabularyNavigator> {
+  late int currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialIndex;
+  }
+
+  void _goToNextWord() {
+    if (currentIndex < widget.vocabularies.length - 1) {
+      setState(() {
+        currentIndex++;
+      });
+    } else {
+      // Last word, go back
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VocabularyDetailScreen(
+      vocabulary: widget.vocabularies[currentIndex],
+      showNextButton: true,
+      onNextWord: _goToNextWord,
+    );
+  }
 }
