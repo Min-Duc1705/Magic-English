@@ -1,337 +1,262 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_header.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_word_section.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_info_section.dart';
+import 'package:magic_enlish/core/widgets/vocabulary/vocabulary_action_buttons.dart';
+import 'package:magic_enlish/data/models/vocabulary/Vocabulary.dart';
 
-class ReviewWordScreen extends StatelessWidget {
-  const ReviewWordScreen({super.key});
+class VocabularyDetailScreen extends StatefulWidget {
+  final Vocabulary vocabulary;
+  final VoidCallback? onNextWord;
+  final bool showNextButton;
+
+  const VocabularyDetailScreen({
+    super.key,
+    required this.vocabulary,
+    this.onNextWord,
+    this.showNextButton = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  State<VocabularyDetailScreen> createState() => _VocabularyDetailScreenState();
+}
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF111827) : const Color(0xFFF3F4F6),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                // ===== Status bar mock =====
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '10:01',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                      ),
-                      Row(
-                        children: const [
-                          Icon(Icons.signal_cellular_alt, size: 16),
-                          SizedBox(width: 4),
-                          Icon(Icons.wifi, size: 16),
-                          SizedBox(width: 4),
-                          Icon(Icons.battery_full, size: 16),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+class _VocabularyDetailScreenState extends State<VocabularyDetailScreen>
+    with SingleTickerProviderStateMixin {
+  late final AudioPlayer _audioPlayer;
+  bool _isPlaying = false;
+  late AnimationController _animationController;
 
-                // ===== AppBar =====
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _circleButton(
-                        icon: Icons.arrow_back,
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const Text(
-                        'Vocabulary',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      _circleButton(icon: Icons.more_vert),
-                    ],
-                  ),
-                ),
+  @override
+  void initState() {
+    super.initState();
 
-                // ===== Content =====
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 160),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ===== Card =====
-                        Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1F2937) : Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 20,
-                                offset: const Offset(0, 4),
-                              )
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Title
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'software',
-                                        style: TextStyle(
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.w800,
-                                          color: isDark ? Colors.white : const Color(0xFF1F2937),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '/ˈsɒft.weər/',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontStyle: FontStyle.italic,
-                                          color: isDark
-                                              ? const Color(0xFF9CA3AF)
-                                              : const Color(0xFF6B7280),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? const Color(0xFF1E40AF).withOpacity(0.4)
-                                          : const Color(0xFFEFF6FF),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: IconButton(
-                                      icon: const Icon(Icons.volume_up),
-                                      color: const Color(0xFF3B82F6),
-                                      onPressed: () {},
-                                    ),
-                                  ),
-                                ],
-                              ),
+    // Initialize audio player with LOW_LATENCY mode
+    _audioPlayer = AudioPlayer(
+      playerId: 'vocabulary_audio_${widget.vocabulary.id}',
+    );
 
-                              const SizedBox(height: 24),
-                              Divider(color: isDark ? Colors.grey[700] : Colors.grey[200]),
-                              const SizedBox(height: 24),
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
 
-                              // Meaning
-                              _sectionTitle('Meaning'),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Chương trình máy tính; Phần mềm; Ứng dụng',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                              ),
-
-                              const SizedBox(height: 32),
-
-                              // Type & Level
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          'WORD TYPE',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          'noun',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'CEFR LEVEL',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF3B82F6),
-                                            borderRadius: BorderRadius.circular(999),
-                                          ),
-                                          child: const Text(
-                                            'B1',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // ===== Examples =====
-                        _sectionTitle('Example'),
-                        const SizedBox(height: 16),
-                        _exampleItem('The computer needs new software to run the game.'),
-                        _exampleItem('We are developing custom software for our clients.'),
-                        _exampleItem('She installed the latest software update on her phone.'),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // ===== Bottom Action Bar =====
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF111827).withOpacity(0.9)
-                      : Colors.white.withOpacity(0.9),
-                  border: Border(
-                    top: BorderSide(
-                        color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              foregroundColor: const Color(0xFF3B82F6),
-                              backgroundColor:
-                                  isDark ? const Color(0xFF1F2937) : const Color(0xFFEFF6FF),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'I know this word',
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              backgroundColor: const Color(0xFF3B82F6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 6,
-                            ),
-                            onPressed: () {},
-                            child: const Text(
-                              'Next word',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: 120,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.grey[700] : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    // Set audio context for mobile with MAXIMUM compatibility
+    _audioPlayer.setAudioContext(
+      AudioContext(
+        iOS: AudioContextIOS(
+          category: AVAudioSessionCategory.playback,
+          options: {
+            AVAudioSessionOptions.mixWithOthers,
+            AVAudioSessionOptions.duckOthers,
+          },
+        ),
+        android: AudioContextAndroid(
+          isSpeakerphoneOn: true,
+          stayAwake: true,
+          contentType: AndroidContentType.speech,
+          usageType: AndroidUsageType.media,
+          audioFocus: AndroidAudioFocus.gain,
         ),
       ),
     );
+
+    // Set player mode
+    _audioPlayer.setPlayerMode(PlayerMode.mediaPlayer);
+
+    _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+        _animationController.stop();
+        _animationController.reset();
+      }
+    });
   }
 
-  // ===== Helpers =====
-
-  static Widget _circleButton({required IconData icon, VoidCallback? onTap}) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(999),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Icon(icon, size: 24),
-      ),
-    );
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.release();
+    _audioPlayer.dispose();
+    _animationController.dispose();
+    super.dispose();
   }
 
-  static Widget _sectionTitle(String title) {
-    return Text(
-      title.toUpperCase(),
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1,
-        color: Color(0xFF6B7280),
-      ),
-    );
-  }
+  Future<void> _playAudio() async {
+    final audioUrl = widget.vocabulary.audioUrl;
 
-  static Widget _exampleItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.format_quote, size: 16, color: Color(0xFF3B82F6)),
+    // Check if audio URL is available
+    if (audioUrl.isEmpty || audioUrl == 'null' || audioUrl == 'N/A') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Audio not available for this word',
+              style: GoogleFonts.lexend(),
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14, height: 1.5),
+        );
+      }
+      return;
+    }
+
+    try {
+      if (_isPlaying) {
+        // Stop current audio
+        await _audioPlayer.stop();
+        if (mounted) {
+          setState(() {
+            _isPlaying = false;
+          });
+          _animationController.stop();
+          _animationController.reset();
+        }
+      } else {
+        // Start playing audio
+        if (mounted) {
+          setState(() {
+            _isPlaying = true;
+          });
+          _animationController.repeat();
+        }
+
+        // Reset player
+        await _audioPlayer.stop();
+        await _audioPlayer.release();
+
+        // Configure player
+        await _audioPlayer.setReleaseMode(ReleaseMode.stop);
+        await _audioPlayer.setVolume(1.0);
+        await _audioPlayer.setPlaybackRate(1.0);
+
+        // Force audio routing to speaker
+        await _audioPlayer.setAudioContext(
+          AudioContext(
+            android: AudioContextAndroid(
+              isSpeakerphoneOn: true,
+              stayAwake: true,
+              contentType: AndroidContentType.music,
+              usageType: AndroidUsageType.media,
+              audioFocus: AndroidAudioFocus.gain,
             ),
           ),
-        ],
+        );
+
+        // Play audio
+        await _audioPlayer.play(
+          UrlSource(audioUrl),
+          volume: 1.0,
+          mode: PlayerMode.mediaPlayer,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Cannot play audio: ${e.toString()}',
+              style: GoogleFonts.lexend(fontSize: 12),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        setState(() {
+          _isPlaying = false;
+        });
+        _animationController.stop();
+        _animationController.reset();
+      }
+    }
+  }
+
+  Color get primary => const Color(0xFF4A90E2);
+  Color get background => const Color(0xfff6f6f8);
+  Color get cardBg => Colors.white;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: background,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top Header
+            const VocabularyHeader(),
+
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Word and Audio Section
+                            VocabularyWordSection(
+                              word: widget.vocabulary.word,
+                              ipa: widget.vocabulary.ipa,
+                              isPlaying: _isPlaying,
+                              onAudioTap: _playAudio,
+                              animation: _animationController,
+                              primaryColor: primary,
+                            ),
+
+                            const SizedBox(height: 16),
+                            Container(height: 1.2, color: Colors.grey.shade300),
+                            const SizedBox(height: 18),
+
+                            // Vocabulary Information Section
+                            VocabularyInfoSection(
+                              meaning: widget.vocabulary.meaning,
+                              wordType: widget.vocabulary.wordType,
+                              cefrLevel: widget.vocabulary.cefrLevel,
+                              examples: widget.vocabulary.example,
+                              primaryColor: primary,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Bottom Action Buttons
+            VocabularyActionButtons(
+              onKnowWord: () => Navigator.pop(context),
+              onReviewAgain: widget.onNextWord ?? () => Navigator.pop(context),
+              primaryColor: primary,
+              knowText: 'I know this word',
+              reviewText: widget.showNextButton ? 'Next word' : 'Review again',
+            ),
+          ],
+        ),
       ),
     );
   }
