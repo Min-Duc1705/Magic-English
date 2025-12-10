@@ -1,4 +1,4 @@
-package vn.project.magic_english.model;
+package vn.nhomx.magic_english.model;
 
 import java.time.Instant;
 
