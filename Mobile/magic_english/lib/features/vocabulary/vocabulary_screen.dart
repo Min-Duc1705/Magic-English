@@ -1,9 +1,9 @@
-import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class VocabularyPage extends StatelessWidget {
+  const VocabularyPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -859,7 +859,7 @@ class VocabularyPage extends StatelessWidget {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 24,
                                                     height: 24,
                                                     child: Stack(),
@@ -955,7 +955,7 @@ class VocabularyPage extends StatelessWidget {
                                                           CrossAxisAlignment
                                                               .start,
                                                       children: [
-                                                        Container(
+                                                        SizedBox(
                                                           width: 24,
                                                           height: 24,
                                                           child: Stack(),
@@ -997,7 +997,7 @@ class VocabularyPage extends StatelessWidget {
                               Expanded(
                                 child: ConstrainedBox(
                                   constraints: BoxConstraints(minWidth: 60),
-                                  child: Container(
+                                  child: SizedBox(
                                     height: 56,
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -1031,7 +1031,7 @@ class VocabularyPage extends StatelessWidget {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    Container(
+                                                    SizedBox(
                                                       width: 24,
                                                       height: 24,
                                                       child: Stack(),
@@ -1117,7 +1117,7 @@ class VocabularyPage extends StatelessWidget {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 24,
                                                     height: 24,
                                                     child: Stack(),
@@ -1186,7 +1186,7 @@ class VocabularyPage extends StatelessWidget {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 24,
                                                     height: 24,
                                                     child: Stack(),
@@ -1255,7 +1255,7 @@ class VocabularyPage extends StatelessWidget {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Container(
+                                                  SizedBox(
                                                     width: 24,
                                                     height: 24,
                                                     child: Stack(),
