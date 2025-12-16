@@ -19,4 +19,15 @@ public interface GrammarRepository extends JpaRepository<Grammar, Long>, JpaSpec
     // Count grammar checks by user
     long countByUserId(Long userId);
 
+    // Count grammar checks created today
+    @Query("SELECT COUNT(g) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) = CURRENT_DATE")
+    Long countTodayGrammarChecksByUserId(@Param("userId") Long userId);
+
+    // Calculate average score for user (today only)
+    @Query("SELECT AVG(g.score) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) = CURRENT_DATE")
+    Double getTodayAverageScoreByUserId(@Param("userId") Long userId);
+
+    // Calculate average score for user (all time)
+    @Query("SELECT AVG(g.score) FROM Grammar g WHERE g.user.id = :userId")
+    Double getAverageScoreByUserId(@Param("userId") Long userId);
 }
