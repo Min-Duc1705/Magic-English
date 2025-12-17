@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         locale: const Locale('en', 'US'),
-        home: const VocabularyScreen(),
+        home: const VocabularyPage(),
         
       ),
     );
