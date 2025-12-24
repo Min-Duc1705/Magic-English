@@ -48,7 +48,7 @@ class DashboardScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         _featureCard(
-                          icon: Icons.monitoring,
+                          icon: Icons.insights,
                           title: "Progress Dashboard",
                           desc: "Track your learning journey.",
                           buttons: _primaryBtn("View Progress"),
@@ -75,8 +75,10 @@ class DashboardScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: const [
-          Text("11:31",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(
+            "11:31",
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          ),
           Row(
             children: [
               Icon(Icons.signal_cellular_alt, size: 14),
@@ -85,7 +87,7 @@ class DashboardScreen extends StatelessWidget {
               SizedBox(width: 4),
               Icon(Icons.battery_full, size: 14),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -99,23 +101,16 @@ class DashboardScreen extends StatelessWidget {
         children: [
           Transform.rotate(
             angle: -0.2,
-            child: const Icon(Icons.menu_book,
-                size: 40, color: primary),
+            child: const Icon(Icons.menu_book, size: 40, color: primary),
           ),
           const SizedBox(width: 12),
           const Expanded(
             child: Text(
               "Hello, Minh Đức!",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.calendar_month),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.calendar_month), onPressed: () {}),
         ],
       ),
     );
@@ -190,20 +185,26 @@ class DashboardScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.bold)),
-                  Text(sub,
-                      style: const TextStyle(
-                          fontSize: 10, color: textSub)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    sub,
+                    style: const TextStyle(fontSize: 10, color: textSub),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
           const Spacer(),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -226,9 +227,13 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Icon(icon, color: primary, size: 26),
               const SizedBox(width: 8),
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -247,14 +252,14 @@ class DashboardScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
-          Text("Recently Add Words",
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            "Recently Add Words",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           SizedBox(height: 4),
           Text(
             "No words added yet",
-            style: TextStyle(
-                fontStyle: FontStyle.italic, color: Colors.grey),
+            style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
           ),
         ],
       ),
@@ -270,12 +275,12 @@ class DashboardScreen extends StatelessWidget {
           backgroundColor: primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           elevation: 6,
         ),
-        child: Text(text,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
     );
   }
@@ -287,12 +292,14 @@ class DashboardScreen extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: Color(0xFFC7D2FE), width: 2),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
-        child: Text(text,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600, color: primary)),
+        child: Text(
+          text,
+          style: const TextStyle(fontWeight: FontWeight.w600, color: primary),
+        ),
       ),
     );
   }
@@ -307,11 +314,8 @@ class DashboardScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(32)),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 16),
-          ],
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 16)],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -334,11 +338,7 @@ class DashboardScreen extends StatelessWidget {
       color: cardLight,
       borderRadius: BorderRadius.circular(radius),
       boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 20,
-          offset: Offset(0, 8),
-        )
+        BoxShadow(color: Colors.black12, blurRadius: 20, offset: Offset(0, 8)),
       ],
     );
   }
@@ -359,8 +359,7 @@ class _NavItem extends StatelessWidget {
       children: [
         if (active)
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             decoration: BoxDecoration(
               color: const Color(0xFFEEF2FF),
               borderRadius: BorderRadius.circular(20),
@@ -375,10 +374,9 @@ class _NavItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: active ? FontWeight.bold : FontWeight.normal,
-            color:
-                active ? DashboardScreen.primary : Colors.grey,
+            color: active ? DashboardScreen.primary : Colors.grey,
           ),
-        )
+        ),
       ],
     );
   }
