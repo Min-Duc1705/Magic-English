@@ -3,13 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:magic_enlish/data/services/progress_service.dart';
-
+/*.*/
 class GrammarCheckDetailScreen extends StatefulWidget {
   final int totalChecks;
 
   const GrammarCheckDetailScreen({super.key, required this.totalChecks});
 
-  @override
+  @override 
   State<GrammarCheckDetailScreen> createState() =>
       _GrammarCheckDetailScreenState();
 }
