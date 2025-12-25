@@ -21,6 +21,10 @@ class VocabularyWordSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final wordColor = isDark ? Colors.white : const Color(0xFF333333);
+    final ipaColor = isDark ? Colors.grey.shade400 : Colors.black54;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,14 +37,15 @@ class VocabularyWordSection extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: 30,
                   fontWeight: FontWeight.w800,
+                  color: wordColor,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 ipa,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black54,
+                  color: ipaColor,
                   fontFamily: 'serif',
                 ),
               ),

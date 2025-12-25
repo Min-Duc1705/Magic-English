@@ -12,6 +12,9 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.grey.shade400 : Colors.grey;
+
     return Padding(
       padding: padding,
       child: Align(
@@ -21,7 +24,7 @@ class SectionHeader extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: Colors.grey,
+            color: textColor,
             letterSpacing: 1.1,
           ),
         ),
