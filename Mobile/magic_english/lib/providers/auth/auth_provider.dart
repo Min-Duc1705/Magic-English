@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('refresh_token', user.refreshToken!);
     }
 
-    // chỉ persist avatar khi có giá trị thuc cua 1
+    // chỉ persist avatar khi có giá trị thuc cua 2
     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
       await prefs.setString('avatarUrl', user.avatarUrl!);
     } else {
