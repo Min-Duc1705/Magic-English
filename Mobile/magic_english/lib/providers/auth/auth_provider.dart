@@ -14,7 +14,7 @@ class AuthProvider with ChangeNotifier {
     _user = user;
     notifyListeners();
 
-    // Luu vào SharedPreferences
+    // Luu vào SharedPreferences 1
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('user_id', user.id);
     await prefs.setString('user_name', user.name);
@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('refresh_token', user.refreshToken!);
     }
 
-    // chỉ persist avatar khi có giá trị thuc cua 
+    // chỉ persist avatar khi có giá trị thuc cua 1
     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
       await prefs.setString('avatarUrl', user.avatarUrl!);
     } else {
