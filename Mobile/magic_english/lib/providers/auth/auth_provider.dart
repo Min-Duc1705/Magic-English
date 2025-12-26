@@ -31,7 +31,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.remove('avatarUrl');
     }
 
-    // (tuỳ chọn) debug 
+    // (tuỳ chọn) ddebug 
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
