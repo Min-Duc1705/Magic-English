@@ -36,7 +36,7 @@ class AuthProvider with ChangeNotifier {
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
-  // Load 1thong tinn uusser từ  SharedPreferences khi mở ap
+  // Load 1thong tinn usser từ  SharedPreferences khi mở ap
   Future<void> loadUser() async {
     print('🔐 ========== LOADING USER FROM STORAGE ==========');
     final prefs = await SharedPreferences.getInstance();
