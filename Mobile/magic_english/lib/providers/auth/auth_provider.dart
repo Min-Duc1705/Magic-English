@@ -24,14 +24,14 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('refresh_token', user.refreshToken!);
     }
 
-    // chỉ persist avatar khi có giá trị thực
+    // chỉ persist avatar khi có giá trị thuc
     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
       await prefs.setString('avatarUrl', user.avatarUrl!);
     } else {
       await prefs.remove('avatarUrl');
     }
 
-    // (tuỳ chọn) debug
+    // (tuỳ chọn) debug 
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
