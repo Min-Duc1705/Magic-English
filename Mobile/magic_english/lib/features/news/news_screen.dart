@@ -149,13 +149,18 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xfff6f6f8);
+
     // If embedded, return just the content without Scaffold and bottom nav
     if (widget.embedded) {
-      return _buildContent();
+      return _buildContent(context);
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xfff6f6f8),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
@@ -171,7 +176,7 @@ class _NewsScreenState extends State<NewsScreen> {
             ),
 
             // Content
-            Expanded(child: _buildContent()),
+            Expanded(child: _buildContent(context)),
           ],
         ),
       ),
@@ -179,7 +184,18 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : Colors.black;
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final categoryBg = isDark
+        ? const Color(0xFF2D2D2D)
+        : const Color(0xffe8e8e8);
+    final categoryTextColor = isDark
+        ? Colors.grey.shade300
+        : Colors.grey.shade700;
+
     return SingleChildScrollView(
       controller: _scrollController,
       child: Column(
@@ -190,11 +206,13 @@ class _NewsScreenState extends State<NewsScreen> {
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
+                    color: isDark
+                        ? Colors.black.withOpacity(0.2)
+                        : Colors.black.withOpacity(0.06),
                     blurRadius: 6,
                   ),
                 ],
@@ -202,25 +220,26 @@ class _NewsScreenState extends State<NewsScreen> {
               child: Row(
                 children: [
                   const SizedBox(width: 12),
-                  Icon(Icons.search, color: Colors.grey.shade600),
+                  Icon(Icons.search, color: textSecondary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       controller: _searchController,
                       onSubmitted: _searchArticles,
+                      style: TextStyle(color: textPrimary),
                       onChanged: (value) {
                         setState(() {}); // Update UI khi text thay đổi
                       },
                       decoration: InputDecoration(
                         hintText: "Search for articles",
-                        hintStyle: TextStyle(color: Colors.grey.shade500),
+                        hintStyle: TextStyle(color: textSecondary),
                         border: InputBorder.none,
                       ),
                     ),
                   ),
                   if (_searchController.text.isNotEmpty)
                     IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
+                      icon: Icon(Icons.clear, color: textSecondary),
                       onPressed: () {
                         _searchController.clear();
                         _loadArticles();
@@ -257,18 +276,14 @@ class _NewsScreenState extends State<NewsScreen> {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF4A90E2)
-                          : const Color(0xffe8e8e8),
+                      color: isSelected ? const Color(0xFF4A90E2) : categoryBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
                       child: Text(
                         category,
                         style: GoogleFonts.lexend(
-                          color: isSelected
-                              ? Colors.white
-                              : Colors.grey.shade700,
+                          color: isSelected ? Colors.white : categoryTextColor,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -380,6 +395,11 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Widget _buildArticleCard(NewsArticle article) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : Colors.black;
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey;
+    final placeholderBg = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -405,7 +425,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     style: GoogleFonts.lexend(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: textPrimary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -413,7 +433,10 @@ class _NewsScreenState extends State<NewsScreen> {
                   const SizedBox(height: 8),
                   Text(
                     "VNExpress - ${article.getTimeAgo()}",
-                    style: GoogleFonts.lexend(fontSize: 12, color: Colors.grey),
+                    style: GoogleFonts.lexend(
+                      fontSize: 12,
+                      color: textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Row(
@@ -453,16 +476,16 @@ class _NewsScreenState extends State<NewsScreen> {
                         return Container(
                           width: 112,
                           height: 112,
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.image, color: Colors.grey),
+                          color: placeholderBg,
+                          child: Icon(Icons.image, color: textSecondary),
                         );
                       },
                     )
                   : Container(
                       width: 112,
                       height: 112,
-                      color: Colors.grey.shade300,
-                      child: const Icon(Icons.article, color: Colors.grey),
+                      color: placeholderBg,
+                      child: Icon(Icons.article, color: textSecondary),
                     ),
             ),
           ],
