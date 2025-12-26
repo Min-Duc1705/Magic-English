@@ -9,7 +9,7 @@ class AuthProvider with ChangeNotifier {
   ResponseLogin? get user => _user;
   bool get isLoggedIn => _user != null;
 
-  // Lưu thông tin user sau khi đăng nhập2
+  // Lưu thông tin user sau khi đăng nhập3
   Future<void> setUser(ResponseLogin user) async {
     _user = user;
     notifyListeners();
