@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('refresh_token', user.refreshToken!);
     }
 
-    // chỉ persist avatar khi có giá trị thuc cua 7
+    // chỉ persist avatar khi có giá trị thuc cua 8
 
     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
       await prefs.setString('avatarUrl', user.avatarUrl!);
@@ -36,7 +36,7 @@ class AuthProvider with ChangeNotifier {
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
-  // Load 1thong tinn uuser từ  SharedPreferences khi mở app
+  // Load 1thong tinn uuser từ  SharedPreferences khi mở ap
   Future<void> loadUser() async {
     print('🔐 ========== LOADING USER FROM STORAGE ==========');
     final prefs = await SharedPreferences.getInstance();
