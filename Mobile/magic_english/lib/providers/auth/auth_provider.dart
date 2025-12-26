@@ -14,7 +14,7 @@ class AuthProvider with ChangeNotifier {
     _user = user;
     notifyListeners();
 
-    // Lưu vào SharedPreferences
+    // Luu vào SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('user_id', user.id);
     await prefs.setString('user_name', user.name);
