@@ -14,25 +14,34 @@ class IELTSResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const primary = Color(0xFF4A90E2);
     const correct = Color(0xFF7ED321);
     const incorrect = Color(0xFFD0021B);
+
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final surface = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final border = isDark ? Colors.grey.shade800 : Colors.grey[300]!;
 
     final percentage = (result.correctAnswers / result.totalQuestions * 100)
         .round();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       appBar: AppBar(
         title: Text(
           'Test Results',
           style: GoogleFonts.lexend(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF111827),
+            color: textPrimary,
           ),
         ),
-        backgroundColor: const Color(0xFFF9F9F9),
-        foregroundColor: const Color(0xFF333333),
+        backgroundColor: background,
+        foregroundColor: textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -113,9 +122,9 @@ class IELTSResultScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +134,7 @@ class IELTSResultScreen extends StatelessWidget {
                     style: GoogleFonts.lexend(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -156,15 +165,12 @@ class IELTSResultScreen extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF111827),
+                    color: textPrimary,
                   ),
                 ),
                 Text(
                   '${result.questionResults.length} questions',
-                  style: GoogleFonts.lexend(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: GoogleFonts.lexend(fontSize: 14, color: textSecondary),
                 ),
               ],
             ),
@@ -179,6 +185,7 @@ class IELTSResultScreen extends StatelessWidget {
               );
 
               return _buildQuestionResultCard(
+                context,
                 questionResult,
                 question,
                 correct,
@@ -250,19 +257,25 @@ class IELTSResultScreen extends StatelessWidget {
   }
 
   Widget _buildQuestionResultCard(
+    BuildContext context,
     IELTSQuestionResult questionResult,
     IELTSQuestion question,
     Color correct,
     Color incorrect,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isCorrect = questionResult.isCorrect;
     final statusColor = isCorrect ? correct : incorrect;
+    final surface = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final containerBg = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
       ),
@@ -343,10 +356,14 @@ class IELTSResultScreen extends StatelessWidget {
                             : Icons.menu_book,
                         size: 16,
                         color: test.skill == 'Listening'
-                            ? Colors.blue[700]
+                            ? (isDark ? Colors.blue.shade300 : Colors.blue[700])
                             : test.skill == 'Writing'
-                            ? Colors.purple[700]
-                            : Colors.green[700],
+                            ? (isDark
+                                  ? Colors.purple.shade300
+                                  : Colors.purple[700])
+                            : (isDark
+                                  ? Colors.green.shade300
+                                  : Colors.green[700]),
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -372,7 +389,7 @@ class IELTSResultScreen extends StatelessWidget {
                     question.passage!,
                     style: GoogleFonts.lexend(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: textSecondary,
                       height: 1.5,
                       fontStyle: FontStyle.italic,
                     ),
@@ -393,7 +410,7 @@ class IELTSResultScreen extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF111827),
+              color: textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -404,7 +421,7 @@ class IELTSResultScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: containerBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -416,16 +433,20 @@ class IELTSResultScreen extends StatelessWidget {
                     style: GoogleFonts.lexend(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[700],
+                      color: textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: surface,
                       borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: Colors.grey[300]!),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey[300]!,
+                      ),
                     ),
                     constraints: const BoxConstraints(maxHeight: 150),
                     child: SingleChildScrollView(
@@ -435,7 +456,7 @@ class IELTSResultScreen extends StatelessWidget {
                             : '(No essay submitted)',
                         style: GoogleFonts.lexend(
                           fontSize: 12,
-                          color: const Color(0xFF333333),
+                          color: textPrimary,
                           height: 1.6,
                         ),
                       ),
@@ -526,7 +547,7 @@ class IELTSResultScreen extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: containerBg,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
@@ -546,7 +567,7 @@ class IELTSResultScreen extends StatelessWidget {
                                   style: GoogleFonts.lexend(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
+                                    color: textSecondary,
                                   ),
                                 ),
                               ),
@@ -558,7 +579,7 @@ class IELTSResultScreen extends StatelessWidget {
                                   style: GoogleFonts.lexend(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
+                                    color: textSecondary,
                                   ),
                                 ),
                               ),
@@ -571,7 +592,7 @@ class IELTSResultScreen extends StatelessWidget {
                                   style: GoogleFonts.lexend(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
+                                    color: textSecondary,
                                   ),
                                 ),
                               ),
@@ -648,7 +669,9 @@ class IELTSResultScreen extends StatelessWidget {
                                   itemLabel,
                                   style: GoogleFonts.lexend(
                                     fontSize: 11,
-                                    color: Colors.grey[800],
+                                    color: isDark
+                                        ? Colors.grey.shade300
+                                        : Colors.grey[800],
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -815,7 +838,7 @@ class IELTSResultScreen extends StatelessWidget {
                                     'No explanation available',
                                     style: GoogleFonts.lexend(
                                       fontSize: 11,
-                                      color: Colors.grey[600],
+                                      color: textSecondary,
                                     ),
                                   ),
                                 ];
@@ -874,7 +897,9 @@ class IELTSResultScreen extends StatelessWidget {
                                               style: GoogleFonts.lexend(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.grey[800],
+                                                color: isDark
+                                                    ? Colors.grey.shade300
+                                                    : Colors.grey[800],
                                               ),
                                             ),
                                             const SizedBox(height: 2),
@@ -882,7 +907,7 @@ class IELTSResultScreen extends StatelessWidget {
                                               explanation,
                                               style: GoogleFonts.lexend(
                                                 fontSize: 11,
-                                                color: Colors.grey[600],
+                                                color: textSecondary,
                                                 height: 1.4,
                                               ),
                                             ),
@@ -914,6 +939,7 @@ class IELTSResultScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildAnswerRow(
+                    context,
                     'Your Answer',
                     questionResult.userAnswer,
                     isCorrect ? correct : incorrect,
@@ -921,6 +947,7 @@ class IELTSResultScreen extends StatelessWidget {
                   if (!isCorrect) ...[
                     const SizedBox(height: 8),
                     _buildAnswerRow(
+                      context,
                       'Correct Answer',
                       questionResult.correctAnswer,
                       correct,
@@ -986,7 +1013,12 @@ class IELTSResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAnswerRow(String label, String answer, Color color) {
+  Widget _buildAnswerRow(
+    BuildContext context,
+    String label,
+    String answer,
+    Color color,
+  ) {
     // Extract only the letter (A, B, C, D) if answer follows pattern like "A. text" or full text
     String displayAnswer = answer;
     if (answer.length >= 2 && answer[1] == '.') {
@@ -1004,7 +1036,12 @@ class IELTSResultScreen extends StatelessWidget {
       children: [
         Text(
           '$label: ',
-          style: GoogleFonts.lexend(fontSize: 12, color: Colors.grey[600]),
+          style: GoogleFonts.lexend(
+            fontSize: 12,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade400
+                : Colors.grey[600],
+          ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

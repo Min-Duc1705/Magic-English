@@ -273,9 +273,11 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
   }
 
   Future<bool> _showPermissionExplanationDialog() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
+            backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -283,16 +285,23 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
               children: [
                 Icon(Icons.mic, color: const Color(0xFF9B59B6), size: 28),
                 const SizedBox(width: 12),
-                const Text('Microphone Permission'),
+                Text(
+                  'Microphone Permission',
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                ),
               ],
             ),
-            content: const Text(
+            content: Text(
               'To practice speaking, we need access to your microphone to record and analyze your pronunciation.\n\nWould you like to enable microphone access?',
+              style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Not Now'),
+                child: Text(
+                  'Not Now',
+                  style: TextStyle(color: isDark ? Colors.grey[400] : null),
+                ),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
@@ -311,24 +320,33 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
   }
 
   void _showPermissionSettingsDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
             Icon(Icons.settings, color: Colors.orange, size: 28),
             const SizedBox(width: 12),
-            const Text('Permission Required'),
+            Text(
+              'Permission Required',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            ),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Microphone permission was previously denied.\n\nTo use speaking practice, please go to Settings and enable microphone access for this app.',
+          style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: isDark ? Colors.grey[400] : null),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -617,6 +635,9 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -625,14 +646,21 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
             const SizedBox(height: 16),
             Text(
               'Analyzing your pronunciation...',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'This may take a few seconds',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
-                color: Colors.grey[600],
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
               ),
             ),
           ],
@@ -674,6 +702,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
   }
 
   void _showFeedbackDialog(PronunciationFeedback feedback) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentWord = _practiceWords[_currentWordIndex];
 
     // Update scores
@@ -700,6 +729,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -714,7 +744,10 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                     : feedback.accuracy == 'fair'
                     ? 'Nice Try! 💪'
                     : 'Keep Practicing! 📚',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
               ),
             ),
           ],
@@ -759,7 +792,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: isDark ? Colors.grey[900] : Colors.grey[100],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -772,7 +805,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                           'Expected: ',
                           style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            color: isDark ? Colors.grey[400] : Colors.grey[700],
                           ),
                         ),
                         Expanded(
@@ -944,6 +977,9 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF1E1E1E)
+            : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           score >= 90
@@ -951,7 +987,12 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
               : score >= 70
               ? 'Good Job! 👍'
               : 'Keep Trying! 💪',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1042,14 +1083,20 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
         ? (_totalScore / _wordsCompleted).round()
         : 0;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Practice Complete! 🎤',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1075,7 +1122,10 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
             const SizedBox(height: 16),
             Text(
               'You practiced ${_practiceWords.length} words',
-              style: GoogleFonts.plusJakartaSans(fontSize: 16),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                color: isDark ? Colors.grey[300] : Colors.grey[800],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1096,7 +1146,12 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: Text('Back', style: GoogleFonts.plusJakartaSans()),
+            child: Text(
+              'Back',
+              style: GoogleFonts.plusJakartaSans(
+                color: isDark ? Colors.grey[400] : null,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1164,19 +1219,28 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const practiceColor = Color(0xFFF97316); // Orange - accent color only
-    const neutral = Color(0xFFE0E0E0);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final practiceColor = isDark
+        ? const Color(0xFFFFB74D)
+        : const Color(0xFFF97316); // Orange - accent color
+    final neutral = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.grey[100];
 
     if (_practiceWords.isEmpty) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: background,
         appBar: AppBar(
           title: Text(
             'Speaking Practice',
-            style: GoogleFonts.plusJakartaSans(),
+            style: GoogleFonts.plusJakartaSans(color: textPrimary),
           ),
-          backgroundColor: const Color(0xFFF9F9F9),
-          foregroundColor: const Color(0xFF333333),
+          backgroundColor: background,
+          foregroundColor: textPrimary,
           elevation: 0,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -1186,14 +1250,14 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
     final currentWord = _practiceWords[_currentWordIndex];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
             // Custom Top Bar (quiz style)
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   bottom: BorderSide(color: neutral.withOpacity(0.3), width: 1),
                 ),
@@ -1207,11 +1271,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                       width: 35,
                       height: 35,
                       alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 28,
-                        color: Color(0xFF333333),
-                      ),
+                      child: Icon(Icons.close, size: 28, color: textPrimary),
                     ),
                   ),
                   const Spacer(),
@@ -1220,7 +1280,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF333333),
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -1311,7 +1371,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                                   'AI will analyze your pronunciation',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: textSecondary,
                                   ),
                                 ),
                               ],
@@ -1346,7 +1406,9 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                             style: GoogleFonts.notoSans(
                               fontSize: 20,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
+                              color: isDark
+                                  ? Colors.grey.shade500
+                                  : Colors.grey[700],
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -1354,7 +1416,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                             currentWord.meaning,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: textSecondary,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -1393,9 +1455,13 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: containerBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey[300]!,
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -1416,7 +1482,9 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                                   fontSize: 14,
                                   color: _transcribedText.isEmpty
                                       ? Colors.grey[500]
-                                      : Colors.grey[800],
+                                      : (isDark
+                                            ? Colors.grey.shade300
+                                            : Colors.grey[800]),
                                   fontStyle: _transcribedText.isEmpty
                                       ? FontStyle.italic
                                       : FontStyle.normal,
@@ -1486,7 +1554,7 @@ class _SpeakingPracticeScreenState extends State<SpeakingPracticeScreen> {
                           : 'Tap to record',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                       textAlign: TextAlign.center,
                     ),

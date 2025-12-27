@@ -442,19 +442,27 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF4A90E2);
-    const neutral = Color(0xFFE0E0E0);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final neutral = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.grey[100];
+    final containerBorder = isDark ? Colors.grey.shade800 : Colors.grey[300];
 
     final currentQuestion = widget.test.questions[_currentQuestionIndex];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
             // Top App Bar
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   bottom: BorderSide(color: neutral.withOpacity(0.3), width: 1),
                 ),
@@ -475,11 +483,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                       width: 35,
                       height: 35,
                       alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 28,
-                        color: Color(0xFF333333),
-                      ),
+                      child: Icon(Icons.close, size: 28, color: textPrimary),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -489,7 +493,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                       style: GoogleFonts.lexend(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF333333),
+                        color: textPrimary,
                       ),
                       textAlign: TextAlign.center,
                       maxLines: 2,
@@ -520,14 +524,14 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                               ),
                             ),
                             Text(
                               '${_getAnsweredCount()}/${widget.test.questions.length} answered',
                               style: GoogleFonts.lexend(
                                 fontSize: 12,
-                                color: Colors.grey[600],
+                                color: textSecondary,
                               ),
                             ),
                           ],
@@ -707,14 +711,14 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                         _formatDuration(_position),
                                         style: GoogleFonts.lexend(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: textSecondary,
                                         ),
                                       ),
                                       Text(
                                         _formatDuration(_duration),
                                         style: GoogleFonts.lexend(
                                           fontSize: 12,
-                                          color: Colors.grey[600],
+                                          color: textSecondary,
                                         ),
                                       ),
                                     ],
@@ -732,7 +736,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                 'Listen carefully to answer the question',
                                 style: GoogleFonts.lexend(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  color: textSecondary,
                                   fontStyle: FontStyle.italic,
                                 ),
                               )
@@ -760,9 +764,9 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: containerBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: containerBorder!),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -776,7 +780,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                   style: GoogleFonts.lexend(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF333333),
+                                    color: textPrimary,
                                   ),
                                 ),
                               ],
@@ -786,7 +790,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                               currentQuestion.passage!,
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                                 height: 1.6,
                               ),
                             ),
@@ -804,7 +808,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                         style: GoogleFonts.lexend(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF333333),
+                          color: textPrimary,
                           height: 1.4,
                         ),
                       ),
@@ -936,7 +940,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                 style: GoogleFonts.lexend(
                                   fontSize: 14,
                                   height: 1.7,
-                                  color: const Color(0xFF333333),
+                                  color: textPrimary,
                                 ),
                               ),
                             ),
@@ -1122,9 +1126,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                         ),
                       ),
                       style: TextButton.styleFrom(
-                        foregroundColor: const Color(
-                          0xFF333333,
-                        ).withOpacity(0.8),
+                        foregroundColor: textPrimary.withOpacity(0.8),
                       ),
                     ),
                   const SizedBox(width: 8),
@@ -1189,6 +1191,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
   }
 
   void _showExitDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -1218,7 +1221,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
               style: GoogleFonts.lexend(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF333333),
+                color: isDark ? Colors.white : const Color(0xFF333333),
               ),
             ),
             const SizedBox(height: 8),
@@ -1252,7 +1255,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                       style: GoogleFonts.lexend(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF333333),
+                        color: isDark ? Colors.white : const Color(0xFF333333),
                       ),
                     ),
                   ),

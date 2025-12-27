@@ -81,21 +81,30 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
   }
 
   void _showResultDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Exercise Complete! 🎉',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.bold),
+          style: GoogleFonts.lexend(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Your Score',
-              style: GoogleFonts.lexend(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.lexend(
+                fontSize: 16,
+                color: isDark ? Colors.grey.shade400 : Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -114,7 +123,12 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: Text('Back', style: GoogleFonts.lexend()),
+            child: Text(
+              'Back',
+              style: GoogleFonts.lexend(
+                color: isDark ? Colors.grey.shade400 : null,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -148,16 +162,25 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const practiceColor = Color(0xFF10B981); // Green - accent color only
-    const neutral = Color(0xFFE0E0E0);
+    final neutral = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
 
     if (_exercises.isEmpty) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: background,
         appBar: AppBar(
-          title: Text('Fill in the Blanks', style: GoogleFonts.lexend()),
-          backgroundColor: const Color(0xFFF9F9F9),
-          foregroundColor: const Color(0xFF333333),
+          title: Text(
+            'Fill in the Blanks',
+            style: GoogleFonts.lexend(color: textPrimary),
+          ),
+          backgroundColor: background,
+          foregroundColor: textPrimary,
           elevation: 0,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -174,14 +197,14 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
     final isCorrect = userAnswer == correctAnswer;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
             // Custom Top Bar (quiz style)
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   bottom: BorderSide(color: neutral.withOpacity(0.3), width: 1),
                 ),
@@ -195,11 +218,7 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                       width: 35,
                       height: 35,
                       alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 28,
-                        color: Color(0xFF333333),
-                      ),
+                      child: Icon(Icons.close, size: 28, color: textPrimary),
                     ),
                   ),
                   const Spacer(),
@@ -208,7 +227,7 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                     style: GoogleFonts.lexend(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF333333),
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -252,7 +271,7 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                               ),
                             ),
                           ],
@@ -300,7 +319,10 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                           Expanded(
                             child: Text(
                               'Fill in the blank with the correct word',
-                              style: GoogleFonts.lexend(fontSize: 14),
+                              style: GoogleFonts.lexend(
+                                fontSize: 14,
+                                color: textPrimary,
+                              ),
                             ),
                           ),
                         ],
@@ -313,10 +335,12 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cardBg,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.grey.shade300,
+                          color: isDark
+                              ? Colors.grey.shade700
+                              : Colors.grey.shade300,
                           width: 2,
                         ),
                       ),
@@ -325,7 +349,7 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                         style: GoogleFonts.lexend(
                           fontSize: 18,
                           height: 1.6,
-                          color: Colors.grey[800],
+                          color: textPrimary,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -346,7 +370,13 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                       },
                       decoration: InputDecoration(
                         labelText: 'Your Answer',
+                        labelStyle: TextStyle(
+                          color: isDark ? Colors.grey.shade400 : null,
+                        ),
                         hintText: 'Type the missing word here',
+                        hintStyle: TextStyle(
+                          color: isDark ? Colors.grey.shade600 : null,
+                        ),
                         prefixIcon: Icon(
                           Icons.edit,
                           color: _validationError != null
@@ -380,7 +410,10 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                               )
                             : null,
                       ),
-                      style: GoogleFonts.lexend(fontSize: 16),
+                      style: GoogleFonts.lexend(
+                        fontSize: 16,
+                        color: textPrimary,
+                      ),
                       textCapitalization: TextCapitalization.none,
                       autocorrect: false,
                     ),
@@ -416,8 +449,12 @@ class _FillBlankScreenState extends State<FillBlankScreen> {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: isCorrect
-                              ? Colors.green.shade50
-                              : Colors.red.shade50,
+                              ? (isDark
+                                    ? Colors.green.withOpacity(0.15)
+                                    : Colors.green.shade50)
+                              : (isDark
+                                    ? Colors.red.withOpacity(0.15)
+                                    : Colors.red.shade50),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isCorrect ? Colors.green : Colors.red,

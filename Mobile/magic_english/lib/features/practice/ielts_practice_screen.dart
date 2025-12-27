@@ -21,16 +21,24 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
   final List<String> _levels = ['General', 'Academic'];
 
   @override
+  @override
   Widget build(BuildContext context) {
     const primary = Color(0xff1745cf);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark ? const Color(0xFF121212) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark
+        ? Colors.grey.shade400
+        : const Color(0xFF6B7280);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF6F6F8);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF111827)),
+          icon: Icon(Icons.arrow_back, color: textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -38,7 +46,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF111827),
+            color: textPrimary,
           ),
         ),
         centerTitle: true,
@@ -114,7 +122,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -133,7 +141,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: isSelected ? primary : const Color(0xFFF6F6F8),
+                          color: isSelected ? primary : cardBg,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -142,9 +150,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? Colors.white
-                                : const Color(0xFF6B7280),
+                            color: isSelected ? Colors.white : textSecondary,
                           ),
                         ),
                       ),
@@ -162,7 +168,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -202,9 +208,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? primary.withOpacity(0.1)
-                          : const Color(0xFFF6F6F8),
+                      color: isSelected ? primary.withOpacity(0.1) : cardBg,
                       border: Border.all(
                         color: isSelected ? primary : Colors.transparent,
                         width: 2,
@@ -217,7 +221,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                         Icon(
                           icon,
                           size: 20,
-                          color: isSelected ? primary : const Color(0xFF6B7280),
+                          color: isSelected ? primary : textSecondary,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -225,9 +229,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? primary
-                                : const Color(0xFF6B7280),
+                            color: isSelected ? primary : textSecondary,
                           ),
                         ),
                       ],
@@ -245,7 +247,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -301,11 +303,16 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
         difficultyColor = Colors.grey;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF6F6F8);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F6F8),
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -341,7 +348,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF111827),
+                          color: textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -370,27 +377,23 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(
-                      Icons.timer_outlined,
-                      size: 13,
-                      color: Colors.grey[600],
-                    ),
+                    Icon(Icons.timer_outlined, size: 13, color: textSecondary),
                     const SizedBox(width: 3),
                     Text(
                       '20 min',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Icon(Icons.help_outline, size: 13, color: Colors.grey[600]),
+                    Icon(Icons.help_outline, size: 13, color: textSecondary),
                     const SizedBox(width: 3),
                     Text(
                       '$questions qs',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                   ],
@@ -440,10 +443,12 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
     try {
       // Show loading dialog
       if (!mounted) return;
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => Dialog(
+          backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -459,6 +464,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -466,7 +472,7 @@ class _IELTSPracticeScreenState extends State<IELTSPracticeScreen> {
                   'AI is creating your $_selectedLevel $_selectedSkill test',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: isDark ? Colors.grey.shade400 : Colors.grey[600],
                   ),
                   textAlign: TextAlign.center,
                 ),
