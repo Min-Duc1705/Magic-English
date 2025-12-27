@@ -9,12 +9,12 @@ class AuthProvider with ChangeNotifier {
   ResponseLogin? get user => _user;
   bool get isLoggedIn => _user != null;
 
-  // Lưu thông tin user sau khi đăng nhập
+  // Lưu thông tin user sau khi đăng nhập1
   Future<void> setUser(ResponseLogin user) async {
     _user = user;
     notifyListeners();
 
-    // Luu vào SharedPreferences 1
+    // Luu vào SharedPreferences 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('user_id', user.id);
     await prefs.setString('user_name', user.name);
@@ -24,7 +24,7 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('refresh_token', user.refreshToken!);
     }
 
-    // chỉ persist avatar khi có giá trị thuc cua 8
+    // chỉ persist avatar khi có giá trị thuc cua 
 
     if (user.avatarUrl != null && user.avatarUrl!.isNotEmpty) {
       await prefs.setString('avatarUrl', user.avatarUrl!);
@@ -36,7 +36,7 @@ class AuthProvider with ChangeNotifier {
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
-  // Load 1thong tinn usser từ  SharedPreferencs khi mở ap
+  // Load thong tinn user từ  SharedPreferences khi mở app
   Future<void> loadUser() async {
     print('🔐 ========== LOADING USER FROM STORAGE ==========');
     final prefs = await SharedPreferences.getInstance();
