@@ -63,6 +63,10 @@ magic_english:
     access-token-validity-in-seconds: 36000 # 1 hour
     refresh-token-validity-in-seconds: 2592000 # 30 days
   upload: file:///T:/TryHard_IT_Project/Moblie/BTL/Backend/magic-english/public/
+  ai:
+    api-keys:
+      
+
 
 server:
   port: 8080
