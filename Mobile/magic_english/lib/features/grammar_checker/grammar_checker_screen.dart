@@ -6,6 +6,7 @@ import 'package:magic_enlish/core/widgets/grammar/grammar_input_card.dart';
 import 'package:magic_enlish/core/widgets/grammar/grammar_score_card.dart';
 import 'package:magic_enlish/core/widgets/grammar/grammar_summary_card.dart';
 import 'package:magic_enlish/core/widgets/grammar/grammar_error_card.dart';
+import 'package:magic_enlish/features/grammar_checker/grammar_history_screen.dart';
 import 'package:magic_enlish/providers/grammar/grammar_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -161,14 +162,19 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
   }
 
   void _showImageSourceDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
@@ -179,7 +185,7 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -188,7 +194,7 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                 style: GoogleFonts.lexend(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF333333),
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 20),
@@ -206,14 +212,12 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                   style: GoogleFonts.lexend(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: textColor,
                   ),
                 ),
                 subtitle: Text(
                   'Use camera to capture text',
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -237,14 +241,12 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                   style: GoogleFonts.lexend(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: textColor,
                   ),
                 ),
                 subtitle: Text(
                   'Select an existing photo',
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -261,8 +263,15 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
 
   @override
   Widget build(BuildContext context) {
-    const Color background = Color(0xFFF8F9FA);
-    const Color borderColor = Color(0xFFEAECEF);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF8F9FA);
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
 
     return Consumer<GrammarProvider>(
       builder: (context, grammarProvider, child) {
@@ -285,15 +294,17 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     height: 56,
                     decoration: BoxDecoration(
-                      color: background.withOpacity(0.8),
-                      border: const Border(
-                        bottom: BorderSide(color: borderColor),
-                      ),
+                      color: cardColor,
+                      border: Border(bottom: BorderSide(color: borderColor)),
                     ),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back, size: 24),
+                          icon: Icon(
+                            Icons.arrow_back,
+                            size: 24,
+                            color: textPrimary,
+                          ),
                           onPressed: () =>
                               Navigator.pushReplacementNamed(context, '/home'),
                           padding: EdgeInsets.zero,
@@ -305,9 +316,27 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                             style: GoogleFonts.lexend(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF333333),
+                              color: textPrimary,
                             ),
                           ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.history,
+                            size: 24,
+                            color: Color(0xFF4A90E2),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const GrammarHistoryScreen(),
+                              ),
+                            );
+                          },
+                          tooltip: 'View history',
+                          padding: EdgeInsets.zero,
                         ),
                         IconButton(
                           icon: const Icon(
@@ -531,14 +560,16 @@ class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
                                     Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: isDark
+                                            ? Colors.black26
+                                            : Colors.white,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
                                         grammar.correctedText,
                                         style: GoogleFonts.lexend(
                                           fontSize: 15,
-                                          color: const Color(0xFF333333),
+                                          color: textPrimary,
                                           height: 1.6,
                                         ),
                                       ),
