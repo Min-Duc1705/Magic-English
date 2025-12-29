@@ -17,13 +17,25 @@ class ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+    final editBgColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
+    final editIconColor = isDark ? Colors.grey.shade400 : Colors.grey;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 8),
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(.2)
+                : Colors.black.withOpacity(.05),
+            blurRadius: 8,
+          ),
         ],
       ),
       child: Column(
@@ -50,6 +62,7 @@ class ProfileCard extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -59,10 +72,10 @@ class ProfileCard extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: editBgColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.edit, size: 20, color: Colors.grey),
+                    child: Icon(Icons.edit, size: 20, color: editIconColor),
                   ),
                 ),
               ],
@@ -71,7 +84,7 @@ class ProfileCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             email,
-            style: GoogleFonts.lexend(fontSize: 13, color: Colors.grey),
+            style: GoogleFonts.lexend(fontSize: 13, color: subtitleColor),
           ),
         ],
       ),

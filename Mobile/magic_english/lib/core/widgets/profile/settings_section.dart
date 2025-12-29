@@ -6,14 +6,22 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(.05), blurRadius: 6),
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(.2)
+                  : Colors.black.withOpacity(.05),
+              blurRadius: 6,
+            ),
           ],
         ),
         child: Column(children: items),
