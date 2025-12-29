@@ -25,13 +25,25 @@ class PracticeScreen extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xfff6f6f8);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final headerBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final iconBg = isDark ? const Color(0xFF2D2D2D) : const Color(0xFFF6F6F8);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final borderColor = isDark ? Colors.grey.shade800 : Colors.grey[300]!;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             // Custom Top Bar
-            Padding(
+            Container(
+              color: headerBg,
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
@@ -43,13 +55,10 @@ class PracticeScreen extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF6F6F8),
+                        color: iconBg,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFF6B7280),
-                      ),
+                      child: Icon(Icons.arrow_back, color: textSecondary),
                     ),
                   ),
                   const Spacer(),
@@ -59,7 +68,7 @@ class PracticeScreen extends StatelessWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: const Color(0xFF111827),
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -68,7 +77,7 @@ class PracticeScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF6F6F8),
+                      color: iconBg,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: ClipRRect(
@@ -80,16 +89,12 @@ class PracticeScreen extends StatelessWidget {
                               errorBuilder: (context, error, stackTrace) {
                                 return Icon(
                                   Icons.person,
-                                  color: Colors.grey[600],
+                                  color: textSecondary,
                                   size: 24,
                                 );
                               },
                             )
-                          : Icon(
-                              Icons.person,
-                              color: Colors.grey[600],
-                              size: 24,
-                            ),
+                          : Icon(Icons.person, color: textSecondary, size: 24),
                     ),
                   ),
                 ],
@@ -101,13 +106,14 @@ class PracticeScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
+                    const SizedBox(height: 16),
                     // Welcome Header
                     Text(
                       'Ready to Practice?',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 30,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF111827),
+                        color: textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -115,7 +121,7 @@ class PracticeScreen extends StatelessWidget {
                       'Choose an activity to start learning.',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -136,6 +142,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'Test your vocabulary',
                           icon: Icons.quiz,
                           color: primary,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary!,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -151,6 +160,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'Improve context',
                           icon: Icons.edit_note,
                           color: green,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -166,6 +178,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'Sharpen comprehension',
                           icon: Icons.headphones,
                           color: purple,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -181,6 +196,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'Improve pronunciation',
                           icon: Icons.mic,
                           color: orange,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -196,6 +214,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'International exam prep',
                           icon: Icons.school,
                           color: blue,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -211,6 +232,9 @@ class PracticeScreen extends StatelessWidget {
                           subtitle: 'Business English test',
                           icon: Icons.business_center,
                           color: teal,
+                          isDark: isDark,
+                          textPrimary: textPrimary,
+                          textSecondary: textSecondary,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -241,8 +265,15 @@ class PracticeScreen extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF6F6F8),
+                          color: cardColor,
                           borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            if (isDark)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                              ),
+                          ],
                         ),
                         child: Row(
                           children: [
@@ -269,7 +300,7 @@ class PracticeScreen extends StatelessWidget {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF111827),
+                                      color: textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -277,7 +308,7 @@ class PracticeScreen extends StatelessWidget {
                                     'A mix of quick exercises to warm you up.',
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 13,
-                                      color: Colors.grey[600],
+                                      color: textSecondary,
                                     ),
                                   ),
                                 ],
@@ -285,7 +316,7 @@ class PracticeScreen extends StatelessWidget {
                             ),
                             Icon(
                               Icons.arrow_forward_ios,
-                              color: Colors.grey[400],
+                              color: textSecondary,
                               size: 18,
                             ),
                           ],
@@ -300,7 +331,7 @@ class PracticeScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.grey[300]!,
+                          color: borderColor,
                           width: 2,
                           style: BorderStyle.solid,
                         ),
@@ -309,19 +340,20 @@ class PracticeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add, color: Colors.grey[500], size: 24),
+                          Icon(Icons.add, color: textSecondary, size: 24),
                           const SizedBox(width: 8),
                           Text(
                             'More modes coming soon',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey[500],
+                              color: textSecondary,
                             ),
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -339,15 +371,19 @@ class PracticeScreen extends StatelessWidget {
     required String subtitle,
     required IconData icon,
     required Color color,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
+    required bool isDark,
+    required Color textPrimary,
+    required Color textSecondary,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: isDark ? const Color(0xFF1E1E1E) : color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
+          border: isDark ? Border.all(color: color.withOpacity(0.3)) : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -370,7 +406,7 @@ class PracticeScreen extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -382,7 +418,7 @@ class PracticeScreen extends StatelessWidget {
               subtitle,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
-                color: Colors.grey[600],
+                color: textSecondary,
               ),
               textAlign: TextAlign.center,
             ),

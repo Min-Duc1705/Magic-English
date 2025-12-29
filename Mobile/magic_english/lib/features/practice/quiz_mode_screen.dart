@@ -76,21 +76,32 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
   }
 
   void _showResultDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xff3713ec);
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: bgColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Quiz Complete! 🎉',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.bold),
+          style: GoogleFonts.lexend(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Your Score',
-              style: GoogleFonts.lexend(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.lexend(
+                fontSize: 16,
+                color: isDark ? Colors.grey.shade400 : Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -98,13 +109,16 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
               style: GoogleFonts.lexend(
                 fontSize: 48,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xff3713ec),
+                color: textColor,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               '${((_score / _quizVocabularies.length) * 100).toStringAsFixed(0)}%',
-              style: GoogleFonts.lexend(fontSize: 20, color: Colors.grey[700]),
+              style: GoogleFonts.lexend(
+                fontSize: 20,
+                color: isDark ? Colors.grey.shade300 : Colors.grey[700],
+              ),
             ),
           ],
         ),
@@ -114,7 +128,12 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: Text('Back', style: GoogleFonts.lexend()),
+            child: Text(
+              'Back',
+              style: GoogleFonts.lexend(
+                color: isDark ? Colors.grey.shade400 : null,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -142,18 +161,29 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const primary = Color(0xFF4A90E2);
     const correct = Color(0xFF7ED321);
     const incorrect = Color(0xFFD0021B);
-    const neutral = Color(0xFFE0E0E0);
+    final neutral = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark
+        ? Colors.grey.shade400
+        : const Color(0xFF666666);
 
     if (_quizVocabularies.isEmpty) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: background,
         appBar: AppBar(
-          title: Text('Quiz Mode', style: GoogleFonts.lexend()),
-          backgroundColor: const Color(0xFFF9F9F9),
-          foregroundColor: const Color(0xFF333333),
+          title: Text(
+            'Quiz Mode',
+            style: GoogleFonts.lexend(color: textPrimary),
+          ),
+          backgroundColor: background,
+          foregroundColor: textPrimary,
           elevation: 0,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -165,20 +195,20 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
     final correctAnswer = currentVocab.meaning;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
             // Top App Bar
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   bottom: BorderSide(color: neutral.withOpacity(0.3), width: 1),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -193,11 +223,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                       width: 35,
                       height: 35,
                       alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 28,
-                        color: Color(0xFF333333),
-                      ),
+                      child: Icon(Icons.close, size: 28, color: textPrimary),
                     ),
                   ),
                   const Spacer(),
@@ -206,7 +232,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                     style: GoogleFonts.lexend(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF333333),
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -232,7 +258,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                               ),
                             ),
                           ],
@@ -275,7 +301,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                           style: GoogleFonts.lexend(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF333333),
+                            color: textPrimary,
                             height: 1.2,
                           ),
                           textAlign: TextAlign.center,
@@ -294,9 +320,9 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                           const SizedBox(height: 8),
                           Text(
                             '/${currentVocab.ipa}/',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Color(0xFF666666),
+                              color: textSecondary,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -380,7 +406,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                                     style: GoogleFonts.lexend(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
-                                      color: const Color(0xFF333333),
+                                      color: textPrimary,
                                     ),
                                   ),
                                 ),
@@ -441,7 +467,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                               "The right answer is '$correctAnswer'.",
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -459,7 +485,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
             // Bottom Action Bar
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   top: BorderSide(color: neutral.withOpacity(0.5), width: 1),
                 ),
@@ -479,7 +505,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                       ),
                     ),
                     style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF333333).withOpacity(0.8),
+                      foregroundColor: textPrimary.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -524,7 +550,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                       Icons.arrow_back,
                       size: 20,
                       color: _currentQuestionIndex > 0
-                          ? const Color(0xFF333333).withOpacity(0.8)
+                          ? textPrimary.withOpacity(0.8)
                           : const Color(0xFFCCCCCC),
                     ),
                     label: Text(
@@ -533,7 +559,7 @@ class _QuizModeScreenState extends State<QuizModeScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: _currentQuestionIndex > 0
-                            ? const Color(0xFF333333).withOpacity(0.8)
+                            ? textPrimary.withOpacity(0.8)
                             : const Color(0xFFCCCCCC),
                       ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../../data/services/toeic_service.dart';
 import 'toeic_take_test_screen.dart';
 
@@ -44,15 +45,18 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const primary = Color(0xFF059669); // Teal for TOEIC
+    final background = isDark ? const Color(0xFF121212) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF111827)),
+          icon: Icon(Icons.arrow_back, color: textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -60,7 +64,7 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF111827),
+            color: textPrimary,
           ),
         ),
         centerTitle: true,
@@ -251,7 +255,7 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -278,7 +282,7 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF111827),
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -342,6 +346,12 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
     required Color primary,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark ? Colors.grey.shade800 : Colors.grey[200]!;
+    final iconColor = isDark ? Colors.grey.shade400 : Colors.grey[500];
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -350,11 +360,11 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? primary.withOpacity(0.1)
-              : Colors.white, // White background for unselected
+              : cardBg, // Theme background for unselected
           border: Border.all(
             color: isSelected
                 ? primary
-                : Colors.grey[200]!, // Subtle border for unselected
+                : borderColor, // Theme border for unselected
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16), // Rounded corners
@@ -399,38 +409,30 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(
-                        Icons.timer_outlined,
-                        size: 14,
-                        color: Colors.grey[500],
-                      ),
+                      Icon(Icons.timer_outlined, size: 14, color: iconColor),
                       const SizedBox(width: 4),
                       Text(
                         section['duration'] as String,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
-                          color: Colors.grey[500],
+                          color: iconColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Icon(
-                        Icons.help_outline,
-                        size: 14,
-                        color: Colors.grey[500],
-                      ),
+                      Icon(Icons.help_outline, size: 14, color: iconColor),
                       const SizedBox(width: 4),
                       Text(
                         '${section['questions']} questions',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
-                          color: Colors.grey[500],
+                          color: iconColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -446,11 +448,18 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
                 color: isSelected ? primary : Colors.transparent,
                 border: isSelected
                     ? null
-                    : Border.all(color: Colors.grey[300]!, width: 1.5),
+                    : Border.all(
+                        color: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey[300]!,
+                        width: 1.5,
+                      ),
               ),
               child: Icon(
                 isSelected ? Icons.check : Icons.arrow_forward_ios_rounded,
-                color: isSelected ? Colors.white : Colors.grey[400],
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.grey.shade400 : Colors.grey[400]),
                 size: isSelected ? 16 : 14,
               ),
             ),
@@ -483,11 +492,16 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
         difficultyColor = Colors.grey;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF6F6F8);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F6F8),
+        color: cardBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -523,7 +537,7 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF111827),
+                          color: textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -552,27 +566,23 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(
-                      Icons.timer_outlined,
-                      size: 13,
-                      color: Colors.grey[600],
-                    ),
+                    Icon(Icons.timer_outlined, size: 13, color: textSecondary),
                     const SizedBox(width: 3),
                     Text(
                       '20 min',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Icon(Icons.help_outline, size: 13, color: Colors.grey[600]),
+                    Icon(Icons.help_outline, size: 13, color: textSecondary),
                     const SizedBox(width: 3),
                     Text(
                       '$questions qs',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
-                        color: Colors.grey[600],
+                        color: textSecondary,
                       ),
                     ),
                   ],
@@ -628,33 +638,38 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(color: Color(0xFF059669)),
-              const SizedBox(height: 16),
-              Text(
-                'Generating TOEIC Test...',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+        builder: (context) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          return AlertDialog(
+            backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: Color(0xFF059669)),
+                const SizedBox(height: 16),
+                Text(
+                  'Generating TOEIC Test...',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'This may take a few seconds',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
-                  color: Colors.grey[600],
+                const SizedBox(height: 8),
+                Text(
+                  'This may take a few seconds',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey[600],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
       );
 
       // Generate test
@@ -666,11 +681,30 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
       // Start test session
       final history = await _toeicService.startTest(test.id);
 
-      // Close loading dialog
+      // PRELOAD FIRST IMAGE before navigating (so it shows instantly)
+      final firstImageQuestion = test.questions.firstWhere(
+        (q) => q.imageUrl != null && q.imageUrl!.isNotEmpty,
+        orElse: () => test.questions.first,
+      );
+
+      if (firstImageQuestion.imageUrl != null &&
+          firstImageQuestion.imageUrl!.isNotEmpty) {
+        try {
+          debugPrint('Preloading first image before entering test...');
+          await DefaultCacheManager().downloadFile(
+            firstImageQuestion.imageUrl!,
+          );
+          debugPrint('First image ready!');
+        } catch (e) {
+          debugPrint('Failed to preload first image: $e');
+        }
+      }
+
+      // Close loading dialog and navigate to test
       if (mounted) {
         Navigator.of(context).pop();
 
-        // Navigate to take test screen
+        // Navigate to take test screen (first image already cached!)
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -685,41 +719,49 @@ class _TOEICPracticeScreenState extends State<TOEICPracticeScreen> {
         Navigator.of(context).pop();
 
         // Show error dialog
+        // Show error dialog
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Color(0xFFEF4444)),
-                const SizedBox(width: 8),
-                Text(
-                  'Error',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
+          builder: (context) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
+            return AlertDialog(
+              backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Color(0xFFEF4444)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Error',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              content: Text(
+                'Failed to generate test: ${e.toString()}',
+                style: GoogleFonts.plusJakartaSans(
+                  color: isDark ? Colors.grey.shade300 : Colors.black,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF059669),
+                    ),
                   ),
                 ),
               ],
-            ),
-            content: Text(
-              'Failed to generate test: ${e.toString()}',
-              style: GoogleFonts.plusJakartaSans(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'OK',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF059669),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         );
       }
     } finally {
