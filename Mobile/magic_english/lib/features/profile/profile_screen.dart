@@ -471,7 +471,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
         },
         activeThumbColor: primary,
-        activeColor: primary.withOpacity(0.5),
+        activeTrackColor: primary.withOpacity(0.5),
       ),
     );
   }
