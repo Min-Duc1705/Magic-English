@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/services/api_client.dart';
 import 'package:magic_enlish/data/models/grammar/grammar.dart';
 import 'package:magic_enlish/core/constants/api_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +19,7 @@ class GrammarService {
       throw Exception('No access token found');
     }
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       Uri.parse('$baseUrl/check'),
       headers: {
         'Content-Type': 'application/json',
@@ -48,16 +48,19 @@ class GrammarService {
       throw Exception('No access token found');
     }
 
-    final response = await http.get(
-      Uri.parse('$baseUrl?page=$page&size=$size'),
+    final response = await ApiClient.get(
+      Uri.parse('$baseUrl?page=$page&size=$size&sort=createdAt,desc'),
       headers: {'Authorization': 'Bearer $token'},
     );
+
+    print('Grammar History API Response Status: ${response.statusCode}');
+    print('Grammar History API Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(utf8.decode(response.bodyBytes));
       // Extract data from wrapper if exists
       final data = responseData['data'] ?? responseData;
-      final result = data['result'] as List<dynamic>;
+      final result = data['result'] as List<dynamic>? ?? [];
 
       return {
         'grammars': result.map((json) => Grammar.fromJson(json)).toList(),
@@ -75,7 +78,7 @@ class GrammarService {
       throw Exception('No access token found');
     }
 
-    final response = await http.get(
+    final response = await ApiClient.get(
       Uri.parse('$baseUrl/$id'),
       headers: {'Authorization': 'Bearer $token'},
     );
@@ -97,7 +100,7 @@ class GrammarService {
       throw Exception('No access token found');
     }
 
-    final response = await http.delete(
+    final response = await ApiClient.delete(
       Uri.parse('$baseUrl/$id'),
       headers: {'Authorization': 'Bearer $token'},
     );
