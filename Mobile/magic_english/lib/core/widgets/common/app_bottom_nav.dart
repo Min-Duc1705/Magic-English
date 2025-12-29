@@ -19,13 +19,16 @@ class _AppBottomNavState extends State<AppBottomNav> {
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xff3713ec);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xfff6f6f8);
+    final borderColor = isDark ? Colors.grey.shade800 : Colors.grey;
 
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xfff6f6f8),
-        border: Border(top: BorderSide(color: Colors.grey)),
+        color: bgColor,
+        border: Border(top: BorderSide(color: borderColor)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

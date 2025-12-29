@@ -21,6 +21,10 @@ class VocabularyInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerColor = isDark ? Colors.grey.shade400 : Colors.grey.shade700;
+    final contentColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -30,7 +34,7 @@ class VocabularyInfoSection extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade700,
+            color: headerColor,
           ),
         ),
         const SizedBox(height: 6),
@@ -40,6 +44,7 @@ class VocabularyInfoSection extends StatelessWidget {
             fontSize: 17,
             fontWeight: FontWeight.w700,
             height: 1.4,
+            color: contentColor,
           ),
         ),
         const SizedBox(height: 22),
@@ -53,10 +58,7 @@ class VocabularyInfoSection extends StatelessWidget {
                 children: [
                   Text(
                     "Word Type",
-                    style: GoogleFonts.lexend(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: GoogleFonts.lexend(fontSize: 14, color: headerColor),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -64,6 +66,7 @@ class VocabularyInfoSection extends StatelessWidget {
                     style: GoogleFonts.lexend(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
+                      color: contentColor,
                     ),
                   ),
                 ],
@@ -75,10 +78,7 @@ class VocabularyInfoSection extends StatelessWidget {
                 children: [
                   Text(
                     "CEFR Level",
-                    style: GoogleFonts.lexend(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: GoogleFonts.lexend(fontSize: 14, color: headerColor),
                   ),
                   const SizedBox(height: 6),
                   CefrLevelBadge(
@@ -103,7 +103,7 @@ class VocabularyInfoSection extends StatelessWidget {
           style: GoogleFonts.lexend(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade700,
+            color: headerColor,
           ),
         ),
         const SizedBox(height: 8),

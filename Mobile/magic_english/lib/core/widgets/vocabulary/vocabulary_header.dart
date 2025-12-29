@@ -15,13 +15,16 @@ class VocabularyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final contentColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
           GestureDetector(
             onTap: onBackPressed ?? () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, size: 26),
+            child: Icon(Icons.arrow_back, size: 26, color: contentColor),
           ),
           const Spacer(),
           Text(
@@ -29,12 +32,13 @@ class VocabularyHeader extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: contentColor,
             ),
           ),
           const Spacer(),
           GestureDetector(
             onTap: onMorePressed,
-            child: const Icon(Icons.more_vert, size: 26),
+            child: Icon(Icons.more_vert, size: 26, color: contentColor),
           ),
         ],
       ),

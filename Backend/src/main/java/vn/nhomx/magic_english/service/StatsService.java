@@ -98,9 +98,9 @@ public class StatsService {
         return distribution;
     }
 
-    // /**
-    //  * Get total vocabulary count for user
-    //  */
+    /**
+     * Get total vocabulary count for user
+     */
     public Long getTotalVocabularyCountByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
@@ -109,10 +109,10 @@ public class StatsService {
         return vocabularyRepository.countByUserId(user.getId());
     }
 
-    // /**
-    //  * Get home statistics for current user
-    //  * Returns: streakDays, wordsToday, totalWords, grammarChecks, avgGrammarScore
-    //  */
+    /**
+     * Get home statistics for current user
+     * Returns: streakDays, wordsToday, totalWords, grammarChecks, avgGrammarScore
+     */
     public Map<String, Object> getHomeStatsByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
@@ -258,5 +258,129 @@ public class StatsService {
         }
 
         return longestStreak;
+    }
+
+    /**
+     * Get daily vocabulary stats for last N days
+     * Returns list of maps with date and count
+     */
+    public List<Map<String, Object>> getDailyVocabularyStats(String email, int days) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(days - 1);
+        List<Object[]> results = vocabularyRepository.countByUserIdGroupByDate(user.getId(), startDate);
+
+        // Convert to map with all days filled
+        return fillDailyStats(results, startDate, days);
+    }
+
+    /**
+     * Get daily grammar check stats for last N days
+     */
+    public List<Map<String, Object>> getDailyGrammarCheckStats(String email, int days) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(days - 1);
+        List<Object[]> results = grammarRepository.countByUserIdGroupByDate(user.getId(), startDate);
+
+        return fillDailyStats(results, startDate, days);
+    }
+
+    /**
+     * Get daily grammar score stats for last N days
+     */
+    public List<Map<String, Object>> getDailyGrammarScoreStats(String email, int days) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(days - 1);
+        List<Object[]> results = grammarRepository.getAverageScoreByUserIdGroupByDate(user.getId(), startDate);
+
+        // Create map for quick lookup
+        Map<LocalDate, Double> scoreMap = new HashMap<>();
+        for (Object[] result : results) {
+            LocalDate date = ((java.sql.Date) result[0]).toLocalDate();
+            Double avgScore = (Double) result[1];
+            scoreMap.put(date, avgScore);
+        }
+
+        // Fill all days
+        List<Map<String, Object>> dailyStats = new java.util.ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            Map<String, Object> stat = new HashMap<>();
+            stat.put("date", date.toString());
+            Double score = scoreMap.get(date);
+            stat.put("avgScore", score != null ? score.intValue() : 0);
+            dailyStats.add(stat);
+        }
+
+        return dailyStats;
+    }
+
+    /**
+     * Get daily activity stats for last N days (for streak chart)
+     * Shows whether user had any activity (vocabulary or grammar) on each day
+     */
+    public List<Map<String, Object>> getDailyActivityStats(String email, int days) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        LocalDate startDate = LocalDate.now().minusDays(days - 1);
+
+        // Get all activity dates
+        List<java.sql.Date> vocabDates = userRepository.findAllVocabularyDatesByUserId(user.getId());
+        List<java.sql.Date> grammarDates = userRepository.findAllGrammarDatesByUserId(user.getId());
+
+        Set<LocalDate> activityDates = new HashSet<>();
+        vocabDates.forEach(date -> activityDates.add(date.toLocalDate()));
+        grammarDates.forEach(date -> activityDates.add(date.toLocalDate()));
+
+        // Fill all days
+        List<Map<String, Object>> dailyStats = new java.util.ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            Map<String, Object> stat = new HashMap<>();
+            stat.put("date", date.toString());
+            stat.put("hasActivity", activityDates.contains(date));
+            dailyStats.add(stat);
+        }
+
+        return dailyStats;
+    }
+
+    /**
+     * Helper method to fill daily stats with 0 for missing days
+     */
+    private List<Map<String, Object>> fillDailyStats(List<Object[]> results, LocalDate startDate, int days) {
+        // Create map for quick lookup
+        Map<LocalDate, Long> countMap = new HashMap<>();
+        for (Object[] result : results) {
+            LocalDate date = ((java.sql.Date) result[0]).toLocalDate();
+            Long count = (Long) result[1];
+            countMap.put(date, count);
+        }
+
+        // Fill all days
+        List<Map<String, Object>> dailyStats = new java.util.ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            LocalDate date = startDate.plusDays(i);
+            Map<String, Object> stat = new HashMap<>();
+            stat.put("date", date.toString());
+            stat.put("count", countMap.getOrDefault(date, 0L));
+            dailyStats.add(stat);
+        }
+
+        return dailyStats;
     }
 }

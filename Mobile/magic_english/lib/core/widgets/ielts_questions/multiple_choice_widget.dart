@@ -19,12 +19,17 @@ class MultipleChoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final border = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: containerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +76,7 @@ class MultipleChoiceWidget extends StatelessWidget {
             questionText,
             style: GoogleFonts.lexend(
               fontSize: 14,
-              color: const Color(0xFF333333),
+              color: textPrimary,
               height: 1.5,
               fontWeight: FontWeight.w500,
             ),
@@ -93,12 +98,10 @@ class MultipleChoiceWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? const Color(0xFF4A90E2).withOpacity(0.1)
-                        : Colors.grey[50],
+                        : (isDark ? Colors.grey.shade800 : Colors.grey[50]),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: isSelected
-                          ? const Color(0xFF4A90E2)
-                          : Colors.grey[300]!,
+                      color: isSelected ? const Color(0xFF4A90E2) : border,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -111,7 +114,7 @@ class MultipleChoiceWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF4A90E2)
-                              : Colors.white,
+                              : (isDark ? Colors.grey.shade700 : Colors.white),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
                             color: isSelected
@@ -136,7 +139,9 @@ class MultipleChoiceWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF4A90E2)
-                              : Colors.grey[200],
+                              : (isDark
+                                    ? Colors.grey.shade700
+                                    : Colors.grey[200]),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -147,7 +152,9 @@ class MultipleChoiceWidget extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: isSelected
                                   ? Colors.white
-                                  : Colors.grey[700],
+                                  : (isDark
+                                        ? Colors.grey.shade300
+                                        : Colors.grey[700]),
                             ),
                           ),
                         ),
@@ -159,7 +166,7 @@ class MultipleChoiceWidget extends StatelessWidget {
                           option.text,
                           style: GoogleFonts.lexend(
                             fontSize: 13,
-                            color: const Color(0xFF333333),
+                            color: textPrimary,
                             height: 1.4,
                           ),
                         ),
