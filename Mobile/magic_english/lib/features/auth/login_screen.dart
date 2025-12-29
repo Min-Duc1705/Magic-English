@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // ================= STATUS BAR =================
+  // ============= STATUS BAR =================
   Widget _statusBar(Color textMain) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
