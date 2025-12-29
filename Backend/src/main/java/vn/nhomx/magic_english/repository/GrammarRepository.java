@@ -1,5 +1,8 @@
 package vn.nhomx.magic_english.repository;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vn.nhomx.magic_english.model.Grammar;
+
+
 
 @Repository
 public interface GrammarRepository extends JpaRepository<Grammar, Long>, JpaSpecificationExecutor<Grammar> {
@@ -30,4 +35,13 @@ public interface GrammarRepository extends JpaRepository<Grammar, Long>, JpaSpec
     // Calculate average score for user (all time)
     @Query("SELECT AVG(g.score) FROM Grammar g WHERE g.user.id = :userId")
     Double getAverageScoreByUserId(@Param("userId") Long userId);
+
+    // Count grammar checks per day in date range
+    @Query("SELECT DATE(g.createdAt), COUNT(g) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) >= :startDate GROUP BY DATE(g.createdAt) ORDER BY DATE(g.createdAt)")
+    List<Object[]> countByUserIdGroupByDate(@Param("userId") Long userId, @Param("startDate") LocalDate startDate);
+
+    // Get average score per day in date range
+    @Query("SELECT DATE(g.createdAt), AVG(g.score) FROM Grammar g WHERE g.user.id = :userId AND DATE(g.createdAt) >= :startDate GROUP BY DATE(g.createdAt) ORDER BY DATE(g.createdAt)")
+    List<Object[]> getAverageScoreByUserIdGroupByDate(@Param("userId") Long userId,
+            @Param("startDate") LocalDate startDate);
 }
