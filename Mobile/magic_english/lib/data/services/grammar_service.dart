@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:magic_enlish/core/services/api_client.dart';
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:magic_enlish/data/models/grammar/grammar.dart';
 import 'package:magic_enlish/core/constants/api_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
