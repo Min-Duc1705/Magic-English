@@ -41,6 +41,7 @@ class AllAchievementsScreen extends StatelessWidget {
             // Unlocked Section
             _buildUnlockedSection(),
             const SizedBox(height: 32),
+            
             // Locked Section
             _buildLockedSection(),
             const SizedBox(height: 32),

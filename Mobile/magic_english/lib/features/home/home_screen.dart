@@ -68,7 +68,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  // ================= STATUS BAR =================
+  // ================= STATUS BAR ============
   Widget _statusBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
