@@ -1,484 +1,618 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:magic_enlish/core/widgets/common/app_bottom_nav.dart';
+import 'package:magic_enlish/core/widgets/grammar/grammar_input_card.dart';
+import 'package:magic_enlish/core/widgets/grammar/grammar_score_card.dart';
+import 'package:magic_enlish/core/widgets/grammar/grammar_summary_card.dart';
+import 'package:magic_enlish/core/widgets/grammar/grammar_error_card.dart';
+import 'package:magic_enlish/features/grammar_checker/grammar_history_screen.dart';
+import 'package:magic_enlish/providers/grammar/grammar_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 
-class GrammarResultScreen extends StatefulWidget {
-  const GrammarResultScreen({super.key});
+class GrammarCheckerPage extends StatefulWidget {
+  const GrammarCheckerPage({super.key});
 
   @override
-  State<GrammarResultScreen> createState() => _GrammarResultScreenState();
+  State<GrammarCheckerPage> createState() => _GrammarCheckerPageState();
 }
 
-class _GrammarResultScreenState extends State<GrammarResultScreen> {
-  bool isDark = false;
+class _GrammarCheckerPageState extends State<GrammarCheckerPage> {
+  final TextEditingController _controller = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
+  final TextRecognizer _textRecognizer = TextRecognizer();
+  bool _isProcessingImage = false;
 
   @override
-  Widget build(BuildContext context) {
-    final bg = isDark ? const Color(0xFF111827) : const Color(0xFFF3F4F6);
-    final card = isDark ? const Color(0xFF1F2937) : Colors.white;
-    final textMain =
-        isDark ? const Color(0xFFF9FAFB) : const Color(0xFF1F2937);
-    final textSub =
-        isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280);
-    const primary = Color(0xFF6B4EFF);
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {});
+    });
+    // Reset grammar state when entering the page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<GrammarProvider>(context, listen: false);
+      provider.clearCurrentGrammar();
+    });
+  }
 
-    return Scaffold(
-      backgroundColor: bg,
-      body: Column(
-        children: [
-          _statusBar(textMain),
-          _header(textMain),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
+  void _checkGrammar() {
+    final provider = Provider.of<GrammarProvider>(context, listen: false);
+    provider.checkGrammar(_controller.text);
+  }
+
+  Future<void> _pickImageAndExtractText(ImageSource source) async {
+    try {
+      setState(() {
+        _isProcessingImage = true;
+      });
+
+      final XFile? image = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 85,
+      );
+
+      if (image == null) {
+        setState(() {
+          _isProcessingImage = false;
+        });
+        return;
+      }
+
+      // Process image with ML Kit Text Recognition
+      final inputImage = InputImage.fromFilePath(image.path);
+      final RecognizedText recognizedText = await _textRecognizer.processImage(
+        inputImage,
+      );
+
+      if (recognizedText.text.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
                 children: [
-                  _originalText(card, textMain),
-                  const SizedBox(height: 12),
-                  _scoreCard(card, textMain, textSub),
-                  const SizedBox(height: 12),
-                  _summary(card, textMain),
-                  const SizedBox(height: 12),
-                  _corrected(card),
-                  const SizedBox(height: 12),
-                  _grammarCard(
-                    title: "Tt Grammar",
-                    text:
-                        "He go to the school yesterday but don't bringed his book",
-                    wrong: "go",
-                    correct: "went",
-                    explain:
-                        "Động từ 'go' cần chia ở thì quá khứ đơn vì có 'yesterday'.",
-                    card: card,
-                    textMain: textMain,
-                    textSub: textSub,
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.white,
+                    size: 20,
                   ),
-                  _grammarCard(
-                    title: "Tt Grammar",
-                    text:
-                        "yesterday but don't bringed his book",
-                    wrong: "don't",
-                    correct: "did not",
-                    explain:
-                        "Phủ định thì quá khứ dùng 'did not' + động từ nguyên mẫu.",
-                    card: card,
-                    textMain: textMain,
-                    textSub: textSub,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'No text found in image',
+                      style: GoogleFonts.lexend(fontSize: 14),
+                    ),
                   ),
-                  _grammarCard(
-                    title: "Tt Grammar",
-                    text:
-                        "but don't bringed his book",
-                    wrong: "bringed",
-                    correct: "bring",
-                    explain:
-                        "Sau 'did not', động từ phải ở dạng nguyên mẫu.",
-                    card: card,
-                    textMain: textMain,
-                    textSub: textSub,
-                  ),
-                  _punctuation(card, textMain, textSub),
-                  const SizedBox(height: 80),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: _bottomNav(),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: isDark ? Colors.white : Colors.black,
-        onPressed: () => setState(() => isDark = !isDark),
-        child: Icon(
-          isDark ? Icons.light_mode : Icons.dark_mode,
-          color: isDark ? Colors.black : Colors.white,
-        ),
-      ),
-    );
-  }
-
-  // ================= STATUS =================
-  Widget _statusBar(Color text) {
-    return Container(
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("10:47",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-          Row(
-            children: const [
-              Icon(Icons.signal_cellular_alt, size: 14),
-              SizedBox(width: 4),
-              Icon(Icons.wifi, size: 14),
-              SizedBox(width: 4),
-              Icon(Icons.battery_full, size: 14),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  // ================= HEADER =================
-  Widget _header(Color textMain) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 2),
-        ],
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          const Spacer(),
-          Text(
-            "Grammar Checker",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: textMain,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.image_search, color: Colors.blue),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= ORIGINAL =================
-  Widget _originalText(Color card, Color textMain) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: _card(card),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "ORIGINAL TEXT",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "He go to the school yesterday but don't bringed his book",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: textMain,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= SCORE =================
-  Widget _scoreCard(Color card, Color textMain, Color textSub) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: _card(card),
-      child: Column(
-        children: [
-          SizedBox(
-            width: 140,
-            height: 140,
-            child: CustomPaint(
-              painter: _CircleScorePainter(0.4),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text("40",
-                        style:
-                            TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
-                    Text("/ 100",
-                        style:
-                            TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  ],
-                ),
+              backgroundColor: Colors.orange.shade700,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
+              duration: const Duration(seconds: 2),
             ),
-          ),
-          const SizedBox(height: 12),
-          Text("Your Score",
-              style:
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(
-            "Significant improvements needed.",
-            style: TextStyle(color: textSub),
-          ),
-        ],
-      ),
-    );
-  }
+          );
+        }
+      } else {
+        // Fill the text into the input field
+        _controller.text = recognizedText.text;
 
-  // ================= SUMMARY =================
-  Widget _summary(Color card, Color textMain) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: _card(card),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Summary of Suggestions",
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          _summaryRow(Icons.spellcheck, Colors.red, "0 Spelling Errors"),
-          _summaryRow(Icons.text_fields, Colors.purple, "3 Grammar Errors"),
-          _summaryRow(Icons.edit, Colors.blue, "1 Punctuation Mistake"),
-          _summaryRow(Icons.lightbulb, Colors.orange, "0 Clarity Improvements"),
-        ],
-      ),
-    );
-  }
-
-  Widget _summaryRow(IconData icon, Color color, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: color.withOpacity(0.15),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(width: 12),
-          Text(text, style: const TextStyle(fontSize: 16)),
-        ],
-      ),
-    );
-  }
-
-  // ================= CORRECTED =================
-  Widget _corrected(Color card) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6F6EB),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: const [
-              CircleAvatar(
-                backgroundColor: Colors.green,
-                child: Icon(Icons.check, color: Colors.white),
-              ),
-              SizedBox(width: 8),
-              Text("Corrected Version",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green)),
-              Spacer(),
-              Icon(Icons.copy, color: Colors.green),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: _card(Colors.white),
-            child: const Text(
-              "He went to the school yesterday but did not bring his book.",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================= GRAMMAR CARD =================
-  Widget _grammarCard({
-    required String title,
-    required String text,
-    required String wrong,
-    required String correct,
-    required String explain,
-    required Color card,
-    required Color textMain,
-    required Color textSub,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: _card(card),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title,
-              style: const TextStyle(
-                  color: Colors.purple,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          RichText(
-            text: TextSpan(
-              style: TextStyle(fontSize: 18, color: textMain),
-              children: [
-                TextSpan(
-                  text: text.replaceAll(wrong, ""),
-                ),
-                TextSpan(
-                  text: wrong,
-                  style: const TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    color: Colors.purple,
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Text extracted successfully!',
+                      style: GoogleFonts.lexend(fontSize: 14),
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: " $correct ",
-                  style: const TextStyle(
-                    backgroundColor: Color(0xFFE6F6EB),
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
+                ],
+              ),
+              backgroundColor: const Color(0xff4CAF50),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+
+      setState(() {
+        _isProcessingImage = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isProcessingImage = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Error extracting text: $e',
+                    style: GoogleFonts.lexend(fontSize: 14),
                   ),
                 ),
               ],
             ),
+            backgroundColor: Colors.red.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            duration: const Duration(seconds: 3),
           ),
-          const SizedBox(height: 8),
-          Text(explain, style: TextStyle(color: textSub)),
-        ],
-      ),
-    );
+        );
+      }
+    }
   }
 
-  // ================= PUNCTUATION =================
-  Widget _punctuation(Color card, Color textMain, Color textSub) {
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: _card(card),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Punctuation",
-              style: TextStyle(
-                  color: Colors.blue, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text("his book.",
-              style: TextStyle(
+  void _showImageSourceDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'Extract Text from Image',
+                style: GoogleFonts.lexend(
                   fontSize: 18,
-                  color: textMain,
-                  fontWeight: FontWeight.w500)),
-          const SizedBox(height: 6),
-          Text("Câu trần thuật cần kết thúc bằng dấu chấm (.)",
-              style: TextStyle(color: textSub)),
-        ],
-      ),
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4A90E2).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.camera_alt, color: Color(0xFF4A90E2)),
+                ),
+                title: Text(
+                  'Take Photo',
+                  style: GoogleFonts.lexend(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: textColor,
+                  ),
+                ),
+                subtitle: Text(
+                  'Use camera to capture text',
+                  style: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageAndExtractText(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4A90E2).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.photo_library,
+                    color: Color(0xFF4A90E2),
+                  ),
+                ),
+                title: Text(
+                  'Choose from Gallery',
+                  style: GoogleFonts.lexend(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: textColor,
+                  ),
+                ),
+                subtitle: Text(
+                  'Select an existing photo',
+                  style: GoogleFonts.lexend(fontSize: 13, color: subTextColor),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageAndExtractText(ImageSource.gallery);
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        );
+      },
     );
   }
-
-  // ================= BOTTOM NAV =================
-  Widget _bottomNav() {
-    return Container(
-      height: 64,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black12)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
-          _NavItem(Icons.home, "Home"),
-          _NavItem(Icons.school, "Vocab"),
-          _NavItem(Icons.verified, "Grammar", active: true),
-          _NavItem(Icons.fitness_center, "Practice"),
-          _NavItem(Icons.bar_chart, "Progress"),
-          _NavItem(Icons.account_circle, "Profile"),
-        ],
-      ),
-    );
-  }
-
-  BoxDecoration _card(Color color) {
-    return BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: const [
-        BoxShadow(color: Colors.black12, blurRadius: 4),
-      ],
-    );
-  }
-}
-
-// ================= SCORE PAINTER =================
-class _CircleScorePainter extends CustomPainter {
-  final double percent;
-  _CircleScorePainter(this.percent);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final bgPaint = Paint()
-      ..color = Colors.grey.shade300
-      ..strokeWidth = 10
-      ..style = PaintingStyle.stroke;
-
-    final fgPaint = Paint()
-      ..color = Colors.orange
-      ..strokeWidth = 10
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 8;
-
-    canvas.drawCircle(center, radius, bgPaint);
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      -pi / 2,
-      2 * pi * percent,
-      false,
-      fgPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ================= NAV ITEM =================
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool active;
-
-  const _NavItem(this.icon, this.label, {this.active = false});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon,
-            color: active ? const Color(0xFF6B4EFF) : Colors.grey),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: active ? FontWeight.bold : FontWeight.normal,
-            color: active ? const Color(0xFF6B4EFF) : Colors.grey,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF8F9FA);
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+
+    return Consumer<GrammarProvider>(
+      builder: (context, grammarProvider, child) {
+        final grammar = grammarProvider.currentGrammar;
+        final isLoading = grammarProvider.isLoading;
+        final error = grammarProvider.error;
+
+        return GestureDetector(
+          onTap: () {
+            // Ẩn bàn phím khi tap ra ngoài
+            FocusScope.of(context).unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: background,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // Top Bar
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      border: Border(bottom: BorderSide(color: borderColor)),
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.arrow_back,
+                            size: 24,
+                            color: textPrimary,
+                          ),
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, '/home'),
+                          padding: EdgeInsets.zero,
+                        ),
+                        Expanded(
+                          child: Text(
+                            "Grammar Checker",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lexend(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: textPrimary,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.history,
+                            size: 24,
+                            color: Color(0xFF4A90E2),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const GrammarHistoryScreen(),
+                              ),
+                            );
+                          },
+                          tooltip: 'View history',
+                          padding: EdgeInsets.zero,
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.image_search,
+                            size: 24,
+                            color: Color(0xFF4A90E2),
+                          ),
+                          onPressed: _isProcessingImage
+                              ? null
+                              : _showImageSourceDialog,
+                          tooltip: 'Extract text from image',
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Main Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Processing Image Indicator
+                          if (_isProcessingImage)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF4A90E2).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFF4A90E2,
+                                  ).withOpacity(0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Color(0xFF4A90E2),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Extracting text from image...',
+                                      style: GoogleFonts.lexend(
+                                        fontSize: 14,
+                                        color: const Color(0xFF4A90E2),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          // Input Section
+                          GrammarInputCard(
+                            controller: _controller,
+                            onCheck: _checkGrammar,
+                            isLoading: isLoading,
+                          ),
+
+                          // Error Message
+                          if (error != null) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE94E77).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFFE94E77,
+                                  ).withOpacity(0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Color(0xFFE94E77),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      error,
+                                      style: GoogleFonts.lexend(
+                                        color: const Color(0xFFE94E77),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+
+                          // Results Section
+                          if (grammar != null) ...[
+                            const SizedBox(height: 24),
+
+                            // Score Card
+                            GrammarScoreCard(score: grammar.score),
+
+                            const SizedBox(height: 24),
+
+                            // Summary Card
+                            GrammarSummaryCard(grammar: grammar),
+
+                            const SizedBox(height: 24),
+
+                            // Corrected Text Card
+                            if (grammar.correctedText.isNotEmpty) ...[
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                    0xFF4CAF50,
+                                  ).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFF4CAF50,
+                                    ).withOpacity(0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4CAF50),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            'Corrected Version',
+                                            style: GoogleFonts.lexend(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: const Color(0xFF4CAF50),
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.copy,
+                                            color: Color(0xFF4CAF50),
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text: grammar.correctedText,
+                                              ),
+                                            );
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.check_circle,
+                                                      color: Colors.white,
+                                                      size: 20,
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Expanded(
+                                                      child: Text(
+                                                        'Copied to clipboard',
+                                                        style:
+                                                            GoogleFonts.lexend(
+                                                              fontSize: 14,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                backgroundColor: const Color(
+                                                  0xFF4CAF50,
+                                                ),
+                                                behavior:
+                                                    SnackBarBehavior.floating,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                duration: const Duration(
+                                                  seconds: 2,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          tooltip: 'Copy corrected text',
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 12),
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? Colors.black26
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        grammar.correctedText,
+                                        style: GoogleFonts.lexend(
+                                          fontSize: 15,
+                                          color: textPrimary,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+
+                            const SizedBox(height: 16),
+
+                            // Error Details
+                            ...grammar.errors.map(
+                              (error) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: GrammarErrorCard(error: error),
+                              ),
+                            ),
+                          ],
+
+                          const SizedBox(height: 80),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: const AppBottomNav(currentIndex: 2),
           ),
-        ),
-      ],
+        );
+      },
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _textRecognizer.close();
+    // Clear grammar result when leaving the page
+    final provider = Provider.of<GrammarProvider>(context, listen: false);
+    provider.clearCurrentGrammar();
+    super.dispose();
   }
 }
