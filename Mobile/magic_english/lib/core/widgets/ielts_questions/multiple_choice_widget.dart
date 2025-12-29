@@ -180,7 +180,7 @@ class MultipleChoiceWidget extends StatelessWidget {
                 style: GoogleFonts.lexend(
                   fontSize: 12,
                   color:
-                      selectedIndices.length >= 1 && selectedIndices.length <= 3
+                      selectedIndices.isNotEmpty && selectedIndices.length <= 3
                       ? Colors.green[600]
                       : Colors.orange[600],
                   fontWeight: FontWeight.w500,
