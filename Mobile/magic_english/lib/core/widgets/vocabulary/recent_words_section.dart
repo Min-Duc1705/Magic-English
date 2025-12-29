@@ -72,12 +72,21 @@ class _RecentWordsSectionState extends State<RecentWordsSection> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.black54;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Recently Added Words",
-          style: GoogleFonts.lexend(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.lexend(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
         ),
         const SizedBox(height: 12),
 
@@ -116,7 +125,7 @@ class _RecentWordsSectionState extends State<RecentWordsSection> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -131,6 +140,7 @@ class _RecentWordsSectionState extends State<RecentWordsSection> {
                             style: GoogleFonts.lexend(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -138,7 +148,7 @@ class _RecentWordsSectionState extends State<RecentWordsSection> {
                             vocab.meaning,
                             style: GoogleFonts.lexend(
                               fontSize: 13,
-                              color: Colors.black54,
+                              color: textSecondary,
                             ),
                           ),
                         ],

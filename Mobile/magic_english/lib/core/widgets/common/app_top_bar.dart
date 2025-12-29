@@ -15,13 +15,17 @@ class AppTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark ? Colors.white : const Color(0xFF333333);
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
           GestureDetector(
             onTap: onBackPressed ?? () => Navigator.pop(context),
-            child: const Icon(Icons.arrow_back, size: 28),
+            child: Icon(Icons.arrow_back, size: 28, color: iconColor),
           ),
           const Spacer(),
           Text(
@@ -29,6 +33,7 @@ class AppTopBar extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: textColor,
             ),
           ),
           const Spacer(),

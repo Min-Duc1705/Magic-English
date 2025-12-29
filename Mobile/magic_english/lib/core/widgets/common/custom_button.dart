@@ -20,20 +20,27 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final outlinedBg = isDark ? Colors.transparent : Colors.white;
+    final outlinedBorder = isDark
+        ? Colors.grey.shade700
+        : AppColors.borderColor;
+    final outlinedText = isDark ? Colors.white : AppColors.textDark;
+
     return SizedBox(
       width: double.infinity,
       height: 52,
       child: isOutlined
           ? OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.borderColor),
+                side: BorderSide(color: outlinedBorder),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                backgroundColor: Colors.white,
+                backgroundColor: outlinedBg,
               ),
               onPressed: isLoading ? null : onPressed,
-              child: _buildButtonContent(),
+              child: _buildButtonContent(outlinedText),
             )
           : ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -43,12 +50,12 @@ class CustomButton extends StatelessWidget {
                 ),
               ),
               onPressed: isLoading ? null : onPressed,
-              child: _buildButtonContent(),
+              child: _buildButtonContent(Colors.white),
             ),
     );
   }
 
-  Widget _buildButtonContent() {
+  Widget _buildButtonContent(Color textColor) {
     if (isLoading) {
       return const SizedBox(
         height: 24,
@@ -71,7 +78,7 @@ class CustomButton extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 16,
               fontWeight: isOutlined ? FontWeight.w500 : FontWeight.w600,
-              color: isOutlined ? AppColors.textDark : Colors.white,
+              color: textColor,
             ),
           ),
         ],
@@ -83,7 +90,7 @@ class CustomButton extends StatelessWidget {
       style: GoogleFonts.lexend(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: isOutlined ? AppColors.textDark : Colors.white,
+        color: textColor,
       ),
     );
   }

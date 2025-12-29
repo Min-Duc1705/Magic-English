@@ -67,13 +67,18 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
   @override
   Widget build(BuildContext context) {
     int controllerIndex = 0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final border = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+    final indigoColor = isDark ? Colors.indigoAccent : Colors.indigo[700];
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: containerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,14 +86,14 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
           // Header
           Row(
             children: [
-              Icon(Icons.account_tree, color: Colors.indigo[700], size: 20),
+              Icon(Icons.account_tree, color: indigoColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Flow-chart Completion',
                 style: GoogleFonts.lexend(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.indigo[700],
+                  color: indigoColor,
                 ),
               ),
             ],
@@ -100,7 +105,7 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
             widget.questionText,
             style: GoogleFonts.lexend(
               fontSize: 14,
-              color: const Color(0xFF333333),
+              color: textPrimary,
               height: 1.5,
             ),
           ),
@@ -115,13 +120,17 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: step.hasBlank
-                    ? Colors.indigo.withOpacity(0.05)
-                    : Colors.grey[50],
+                    ? (isDark
+                          ? Colors.indigo.withOpacity(0.2)
+                          : Colors.indigo.withOpacity(0.05))
+                    : (isDark ? const Color(0xFF2C2C2C) : Colors.grey[50]),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: step.hasBlank
-                      ? Colors.indigo.withOpacity(0.3)
-                      : Colors.grey[300]!,
+                      ? (isDark
+                            ? Colors.indigo.withOpacity(0.5)
+                            : Colors.indigo.withOpacity(0.3))
+                      : (isDark ? Colors.grey.shade700 : Colors.grey[300]!),
                   width: step.hasBlank ? 2 : 1,
                 ),
               ),
@@ -143,13 +152,17 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
                         Container(
                           width: 2,
                           height: 30,
-                          color: Colors.indigo[300],
+                          color: isDark
+                              ? Colors.indigo.shade200
+                              : Colors.indigo[300],
                         ),
                         Positioned(
                           bottom: 0,
                           child: Icon(
                             Icons.arrow_drop_down,
-                            color: Colors.indigo[400],
+                            color: isDark
+                                ? Colors.indigo.shade300
+                                : Colors.indigo[400],
                             size: 24,
                           ),
                         ),
@@ -196,13 +209,16 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
   }
 
   Widget _buildNormalStep(FlowchartStep step) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+
     return Row(
       children: [
         Container(
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: isDark ? Colors.grey.shade700 : Colors.grey[200],
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -211,7 +227,7 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
               style: GoogleFonts.lexend(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[600],
+                color: isDark ? Colors.grey.shade300 : Colors.grey[600],
               ),
             ),
           ),
@@ -220,10 +236,7 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
         Expanded(
           child: Text(
             step.text,
-            style: GoogleFonts.lexend(
-              fontSize: 13,
-              color: const Color(0xFF333333),
-            ),
+            style: GoogleFonts.lexend(fontSize: 13, color: textPrimary),
           ),
         ),
       ],
@@ -231,6 +244,12 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
   }
 
   Widget _buildBlankStep(FlowchartStep step, int ctrlIndex, int stepIndex) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final indigoColor = isDark ? Colors.indigoAccent : Colors.indigo[700];
+    final inputFill = isDark ? const Color(0xFF383838) : Colors.white;
+    final inputHint = isDark ? Colors.grey.shade400 : Colors.grey[400];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,7 +259,9 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: Colors.indigo[100],
+                color: isDark
+                    ? Colors.indigo.withOpacity(0.3)
+                    : Colors.indigo[100],
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -249,7 +270,7 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.indigo[700],
+                    color: indigoColor,
                   ),
                 ),
               ),
@@ -258,17 +279,14 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
             Expanded(
               child: RichText(
                 text: TextSpan(
-                  style: GoogleFonts.lexend(
-                    fontSize: 13,
-                    color: const Color(0xFF333333),
-                  ),
+                  style: GoogleFonts.lexend(fontSize: 13, color: textPrimary),
                   children: [
                     TextSpan(text: step.textBefore ?? ''),
                     TextSpan(
                       text: ' [____] ',
                       style: GoogleFonts.lexend(
                         fontWeight: FontWeight.bold,
-                        color: Colors.indigo[700],
+                        color: indigoColor,
                       ),
                     ),
                     TextSpan(text: step.textAfter ?? ''),
@@ -284,31 +302,39 @@ class _FlowchartWidgetState extends State<FlowchartWidget> {
           onChanged: (value) => widget.onAnswerChanged(stepIndex, value),
           decoration: InputDecoration(
             hintText: 'Type answer...',
-            hintStyle: GoogleFonts.lexend(
-              fontSize: 13,
-              color: Colors.grey[400],
+            hintStyle: GoogleFonts.lexend(fontSize: 13, color: inputHint),
+            prefixIcon: Icon(
+              Icons.edit,
+              size: 18,
+              color: isDark ? Colors.indigoAccent : Colors.indigo[400],
             ),
-            prefixIcon: Icon(Icons.edit, size: 18, color: Colors.indigo[400]),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: inputFill,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 12,
               vertical: 10,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.indigo[300]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.indigo.shade200 : Colors.indigo[300]!,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.indigo[300]!),
+              borderSide: BorderSide(
+                color: isDark ? Colors.indigo.shade200 : Colors.indigo[300]!,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.indigo[600]!, width: 2),
+              borderSide: BorderSide(
+                color: isDark ? Colors.indigoAccent : Colors.indigo[600]!,
+                width: 2,
+              ),
             ),
           ),
-          style: GoogleFonts.lexend(fontSize: 13),
+          style: GoogleFonts.lexend(fontSize: 13, color: textPrimary),
         ),
       ],
     );

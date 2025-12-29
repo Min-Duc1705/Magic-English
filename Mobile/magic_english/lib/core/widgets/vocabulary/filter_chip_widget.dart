@@ -19,19 +19,25 @@ class FilterChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final chipBg = isDark ? const Color(0xFF2D2D2D) : Colors.white;
+    final textColor = isDark ? Colors.white70 : Colors.black87;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: isActive ? primaryColor : Colors.white,
+          color: isActive ? primaryColor : chipBg,
           borderRadius: BorderRadius.circular(10),
           boxShadow: isActive
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(.05),
+                    color: isDark
+                        ? Colors.black.withOpacity(.2)
+                        : Colors.black.withOpacity(.05),
                     blurRadius: 4,
                   ),
                 ],
@@ -49,7 +55,7 @@ class FilterChipWidget extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.lexend(
-                color: isActive ? Colors.white : Colors.black87,
+                color: isActive ? Colors.white : textColor,
                 fontSize: 13,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
               ),

@@ -13,6 +13,9 @@ class ExampleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.grey.shade300 : Colors.black87;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -23,7 +26,11 @@ class ExampleItem extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.lexend(fontSize: 14, height: 1.4),
+              style: GoogleFonts.lexend(
+                fontSize: 14,
+                height: 1.4,
+                color: textColor,
+              ),
             ),
           ),
         ],
