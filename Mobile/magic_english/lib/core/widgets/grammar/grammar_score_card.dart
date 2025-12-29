@@ -9,9 +9,14 @@ class GrammarScoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color cardBg = Colors.white;
-    const Color borderColor = Color(0xFFEAECEF);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final Color scoreColor = _getScoreColor(score);
+    final bgCircleColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -28,7 +33,7 @@ class GrammarScoreCard extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF333333),
+              color: textColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -44,7 +49,7 @@ class GrammarScoreCard extends StatelessWidget {
                     painter: CircleProgressPainter(
                       progress: score / 100,
                       color: scoreColor,
-                      backgroundColor: Colors.grey.shade200,
+                      backgroundColor: bgCircleColor,
                     ),
                   ),
                   Column(
@@ -55,7 +60,7 @@ class GrammarScoreCard extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF333333),
+                          color: textColor,
                         ),
                       ),
                       Text(
@@ -63,7 +68,7 @@ class GrammarScoreCard extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF333333).withOpacity(0.7),
+                          color: textColor.withOpacity(0.7),
                         ),
                       ),
                     ],

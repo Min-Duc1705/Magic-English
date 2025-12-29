@@ -9,8 +9,12 @@ class GrammarErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color cardBg = Colors.white;
-    const Color borderColor = Color(0xFFEAECEF);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
     const Color success = Color(0xFF7ED321);
 
     final errorTypeInfo = _getErrorTypeInfo(error.errorType);
@@ -47,10 +51,7 @@ class GrammarErrorCard extends StatelessWidget {
           const SizedBox(height: 12),
           RichText(
             text: TextSpan(
-              style: GoogleFonts.lexend(
-                fontSize: 16,
-                color: const Color(0xFF333333),
-              ),
+              style: GoogleFonts.lexend(fontSize: 16, color: textColor),
               children: [
                 TextSpan(text: error.beforeText),
                 if (error.errorText.isNotEmpty)
@@ -81,7 +82,7 @@ class GrammarErrorCard extends StatelessWidget {
               error.explanation,
               style: GoogleFonts.lexend(
                 fontSize: 14,
-                color: const Color(0xFF333333).withOpacity(0.8),
+                color: textColor.withOpacity(0.8),
               ),
             ),
           ],

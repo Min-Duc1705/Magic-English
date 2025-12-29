@@ -9,8 +9,12 @@ class GrammarSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color cardBg = Colors.white;
-    const Color borderColor = Color(0xFFEAECEF);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
     const Color error = Color(0xFFE94E77);
     const Color primary = Color(0xFF4A90E2);
     const Color suggestion = Color(0xFFF5A623);
@@ -63,7 +67,7 @@ class GrammarSummaryCard extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF333333),
+              color: textColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -72,6 +76,7 @@ class GrammarSummaryCard extends StatelessWidget {
             iconColor: error,
             title:
                 "$spellingCount Spelling ${spellingCount == 1 ? 'Error' : 'Errors'}",
+            textColor: textColor,
           ),
           const SizedBox(height: 12),
           _summaryItem(
@@ -79,6 +84,7 @@ class GrammarSummaryCard extends StatelessWidget {
             iconColor: grammarColor,
             title:
                 "$grammarCount Grammar ${grammarCount == 1 ? 'Error' : 'Errors'}",
+            textColor: textColor,
           ),
           const SizedBox(height: 12),
           _summaryItem(
@@ -86,6 +92,7 @@ class GrammarSummaryCard extends StatelessWidget {
             iconColor: primary,
             title:
                 "$punctuationCount Punctuation ${punctuationCount == 1 ? 'Mistake' : 'Mistakes'}",
+            textColor: textColor,
           ),
           const SizedBox(height: 12),
           _summaryItem(
@@ -93,6 +100,7 @@ class GrammarSummaryCard extends StatelessWidget {
             iconColor: suggestion,
             title:
                 "$clarityCount Clarity ${clarityCount == 1 ? 'Improvement' : 'Improvements'}",
+            textColor: textColor,
           ),
         ],
       ),
@@ -103,6 +111,7 @@ class GrammarSummaryCard extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required String title,
+    required Color textColor,
   }) {
     return Row(
       children: [
@@ -119,10 +128,7 @@ class GrammarSummaryCard extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: GoogleFonts.lexend(
-              fontSize: 16,
-              color: const Color(0xFF333333),
-            ),
+            style: GoogleFonts.lexend(fontSize: 16, color: textColor),
           ),
         ),
       ],

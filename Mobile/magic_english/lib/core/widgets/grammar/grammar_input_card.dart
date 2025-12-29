@@ -15,9 +15,16 @@ class GrammarInputCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color cardBg = Colors.white;
-    const Color borderColor = Color(0xFFEAECEF);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFEAECEF);
     const Color primary = Color(0xFF4A90E2);
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final hintColor = isDark
+        ? Colors.grey.shade500
+        : const Color(0xFF333333).withOpacity(0.5);
 
     return Column(
       children: [
@@ -37,17 +44,11 @@ class GrammarInputCard extends StatelessWidget {
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Type or paste your text here...",
-                  hintStyle: GoogleFonts.lexend(
-                    color: const Color(0xFF333333).withOpacity(0.5),
-                    fontSize: 16,
-                  ),
+                  hintStyle: GoogleFonts.lexend(color: hintColor, fontSize: 16),
                   counterText: "",
                   contentPadding: EdgeInsets.zero,
                 ),
-                style: GoogleFonts.lexend(
-                  fontSize: 16,
-                  color: const Color(0xFF333333),
-                ),
+                style: GoogleFonts.lexend(fontSize: 16, color: textColor),
               ),
               const SizedBox(height: 8),
               Align(
@@ -55,7 +56,7 @@ class GrammarInputCard extends StatelessWidget {
                 child: Text(
                   "${controller.text.length}/5000",
                   style: GoogleFonts.lexend(
-                    color: const Color(0xFF333333).withOpacity(0.6),
+                    color: textColor.withOpacity(0.6),
                     fontSize: 14,
                   ),
                 ),
