@@ -683,7 +683,7 @@ class _GrammarHistoryScreenState extends State<GrammarHistoryScreen> {
                               ],
                             ),
                           );
-                        }).toList(), // Added .toList() to fix the map usage
+                        }), // Added .toList() to fix the map usage
                       ],
                     ],
                   ),
