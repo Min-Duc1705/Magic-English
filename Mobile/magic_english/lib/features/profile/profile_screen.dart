@@ -6,14 +6,24 @@ import 'package:magic_enlish/core/widgets/profile/profile_card.dart';
 import 'package:magic_enlish/core/widgets/common/section_header.dart';
 import 'package:magic_enlish/core/widgets/profile/settings_section.dart';
 import 'package:magic_enlish/features/profile/edit_profile_screen.dart';
+import 'package:magic_enlish/features/profile/help_support_screen.dart';
+import 'package:magic_enlish/features/profile/privacy_policy_screen.dart';
+import 'package:magic_enlish/features/profile/terms_of_service_screen.dart';
 import 'package:magic_enlish/core/utils/backend_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:magic_enlish/providers/auth/auth_provider.dart';
+import 'package:magic_enlish/providers/theme/theme_provider.dart';
 import 'package:magic_enlish/features/auth/login_screen.dart';
+import 'package:magic_enlish/providers/settings/settings_provider.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   // Colors
   Color get primary => const Color(0xFF4A90E2);
   Color get primaryLight => const Color(0xFFF3F0FF);
@@ -22,10 +32,22 @@ class ProfilePage extends StatelessWidget {
   Color get textPrimary => const Color(0xFF34495E);
   Color get textSecondary => const Color(0xFF7F8C8D);
 
+  final List<String> _aiModels = [
+    "Gemini 1.5 Pro",
+    "Gemini 2.5 Flash-Lite",
+    "GPT-4o",
+    "Claude 3.5 Sonnet",
+    "Llama 3",
+  ];
+
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+    final isDark = themeProvider.isDarkMode;
+
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: isDark ? const Color(0xFF121212) : background,
       bottomNavigationBar: const AppBottomNav(currentIndex: 4),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -33,7 +55,9 @@ class ProfilePage extends StatelessWidget {
             children: [
               // Top Bar (use shared core component)
               Container(
-                decoration: const BoxDecoration(color: Colors.white),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                ),
                 child: const AppTopBar(title: 'Profile'),
               ),
 
@@ -47,8 +71,6 @@ class ProfilePage extends StatelessWidget {
                       name: user?.name ?? 'Guest',
                       email: user?.email ?? '',
                       avatarUrl: _buildAvatarUrl(user?.avatarUrl),
-                      // (user?.avatarUrl != null && user!.avatarUrl != null)
-                      // ? dotenv.env['Backend_URL']! +'/storage/avatar/' +user.avatarUrl!: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCwjU4CsVdt2VEZUWSxL3Bn7cWu3vczpiZduN16hF5Tinakk5hqQY0APafoANhjTIWQt38yD1hmxuUZnRzF9SOQHQzDKapvXzD6W1wo4od6FEeyio-wAkRmRhBaf0fZGGNlIioVT-_Ec8SzErktYBEQ6QfN-2yhwqvc-qBhud5N7XXDPCj0Ogu9HpsXXsCXodL5l4BlK5N43TyexljZnqhyv3ZPMqTE1GpUCA6NT1j4XL48cGrdl58TipWQd-WuW-Wi_vhGXLwDg5A',
                       onEdit: () {
                         Navigator.push(
                           context,
@@ -66,8 +88,14 @@ class ProfilePage extends StatelessWidget {
               const SectionHeader(title: "Preferences"),
               SettingsSection(
                 items: [
-                  _settingsItem(Icons.smart_toy, "AI Model", "Advanced"),
-                  _settingsItem(Icons.translate, "Language", "English"),
+                  _buildAIModelTile(isDark, settingsProvider),
+                  _settingsItem(
+                    Icons.translate,
+                    "Language",
+                    "English",
+                    isDark,
+                    () {},
+                  ),
                 ],
               ),
 
@@ -75,16 +103,8 @@ class ProfilePage extends StatelessWidget {
               const SectionHeader(title: "General"),
               SettingsSection(
                 items: [
-                  _generalItem(
-                    Icons.notifications,
-                    "Push Notifications",
-                    switchValue: true,
-                  ),
-                  _generalItem(
-                    Icons.dark_mode,
-                    "Dark Mode",
-                    switchValue: false,
-                  ),
+                  _buildNotificationTile(isDark, settingsProvider),
+                  _darkModeItem(context, isDark),
                 ],
               ),
 
@@ -92,9 +112,48 @@ class ProfilePage extends StatelessWidget {
               const SectionHeader(title: "About"),
               SettingsSection(
                 items: [
-                  _aboutItem(Icons.help_outline, "Help & Support"),
-                  _aboutItem(Icons.shield, "Privacy Policy"),
-                  _aboutItem(Icons.gavel, "Terms of Service"),
+                  _aboutItem(
+                    context,
+                    Icons.help_outline,
+                    "Help & Support",
+                    isDark,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HelpSupportScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _aboutItem(
+                    context,
+                    Icons.shield,
+                    "Privacy Policy",
+                    isDark,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PrivacyPolicyScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _aboutItem(
+                    context,
+                    Icons.gavel,
+                    "Terms of Service",
+                    isDark,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TermsOfServiceScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
 
@@ -106,17 +165,23 @@ class ProfilePage extends StatelessWidget {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: cardLight,
+                    color: isDark ? const Color(0xFF1E1E1E) : cardLight,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(.05),
+                        color: isDark
+                            ? Colors.black.withOpacity(.2)
+                            : Colors.black.withOpacity(.05),
                         blurRadius: 6,
                       ),
                     ],
                   ),
                   child: ListTile(
-                    leading: Icon(Icons.logout, color: Colors.red, size: 28),
+                    leading: const Icon(
+                      Icons.logout,
+                      color: Colors.red,
+                      size: 28,
+                    ),
                     title: Text(
                       "Logout",
                       style: GoogleFonts.lexend(
@@ -241,17 +306,19 @@ class ProfilePage extends StatelessWidget {
                         ),
                       );
 
-                      if (confirmed == true) {
+                      if (confirmed == true && mounted) {
                         await Provider.of<AuthProvider>(
                           context,
                           listen: false,
                         ).logout();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
-                          ),
-                        );
+                        if (mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                          );
+                        }
                       }
                     },
                   ),
@@ -264,56 +331,173 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _settingsItem(IconData icon, String title, String value) {
+  Widget _buildAIModelTile(bool isDark, SettingsProvider provider) {
+    final titleColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subtitleColor = isDark ? Colors.grey.shade400 : textSecondary;
+
+    return ListTile(
+      leading: Icon(Icons.smart_toy, color: primary, size: 28),
+      title: Text(
+        "AI Model",
+        style: GoogleFonts.lexend(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
+      ),
+      trailing: DropdownButton<String>(
+        value: _aiModels.contains(provider.aiModel)
+            ? provider.aiModel
+            : _aiModels.first,
+        icon: Icon(
+          Icons.arrow_drop_down,
+          color: isDark ? Colors.grey.shade400 : textPrimary,
+        ),
+        elevation: 16,
+        style: GoogleFonts.lexend(fontSize: 13, color: subtitleColor),
+        dropdownColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        underline: Container(height: 0, color: Colors.transparent),
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            provider.setAIModel(newValue);
+          }
+        },
+        items: _aiModels.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(
+              value,
+              style: GoogleFonts.lexend(
+                color: isDark ? Colors.white : textPrimary,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildNotificationTile(bool isDark, SettingsProvider provider) {
+    final titleColor = isDark ? Colors.white : const Color(0xFF333333);
+
+    return ListTile(
+      leading: Icon(Icons.notifications, color: primary, size: 28),
+      title: Text(
+        "Push Notifications",
+        style: GoogleFonts.lexend(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
+      ),
+      trailing: Switch(
+        value: provider.pushNotificationsEnabled,
+        onChanged: (bool value) {
+          provider.setPushNotifications(value);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                value
+                    ? "Push notifications enabled"
+                    : "Push notifications disabled",
+                style: GoogleFonts.lexend(),
+              ),
+              backgroundColor: value ? Colors.green : Colors.grey,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+        activeThumbColor: primary,
+      ),
+    );
+  }
+
+  Widget _settingsItem(
+    IconData icon,
+    String title,
+    String value,
+    bool isDark,
+    VoidCallback onTap,
+  ) {
+    final titleColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subtitleColor = isDark ? Colors.grey.shade400 : textSecondary;
+    final arrowColor = isDark ? Colors.grey.shade400 : textPrimary;
+
     return ListTile(
       leading: Icon(icon, color: primary, size: 28),
       title: Text(
         title,
-        style: GoogleFonts.lexend(fontSize: 15, fontWeight: FontWeight.w500),
+        style: GoogleFonts.lexend(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             value,
-            style: GoogleFonts.lexend(fontSize: 13, color: textSecondary),
+            style: GoogleFonts.lexend(fontSize: 13, color: subtitleColor),
           ),
           const SizedBox(width: 4),
-          Icon(Icons.chevron_right, color: textPrimary, size: 22),
+          Icon(Icons.chevron_right, color: arrowColor, size: 22),
         ],
       ),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 
-  Widget _generalItem(
-    IconData icon,
-    String title, {
-    required bool switchValue,
-  }) {
+  Widget _darkModeItem(BuildContext context, bool isDark) {
+    final titleColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return ListTile(
-      leading: Icon(icon, color: primary, size: 28),
+      leading: Icon(
+        isDark ? Icons.dark_mode : Icons.light_mode,
+        color: primary,
+        size: 28,
+      ),
       title: Text(
-        title,
-        style: GoogleFonts.lexend(fontSize: 15, fontWeight: FontWeight.w500),
+        "Dark Mode",
+        style: GoogleFonts.lexend(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
       ),
       trailing: Switch(
-        value: switchValue,
-        onChanged: (v) {},
+        value: isDark,
+        onChanged: (v) {
+          Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+        },
         activeThumbColor: primary,
+        activeColor: primary.withOpacity(0.5),
       ),
     );
   }
 
-  Widget _aboutItem(IconData icon, String title) {
+  Widget _aboutItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    bool isDark,
+    VoidCallback onTap,
+  ) {
+    final titleColor = isDark ? Colors.white : const Color(0xFF333333);
+    final arrowColor = isDark ? Colors.grey.shade400 : textPrimary;
+
     return ListTile(
       leading: Icon(icon, color: primary, size: 28),
       title: Text(
         title,
-        style: GoogleFonts.lexend(fontSize: 15, fontWeight: FontWeight.w500),
+        style: GoogleFonts.lexend(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: titleColor,
+        ),
       ),
-      trailing: Icon(Icons.chevron_right, color: textPrimary, size: 22),
-      onTap: () {},
+      trailing: Icon(Icons.chevron_right, color: arrowColor, size: 22),
+      onTap: onTap,
     );
   }
 
@@ -327,7 +511,7 @@ class ProfilePage extends StatelessWidget {
     }
 
     // If already a full URL (Cloudinary or other), use it directly
-    if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+    if (avatarUrl.startsWith('https://')) {
       return avatarUrl;
     }
 
