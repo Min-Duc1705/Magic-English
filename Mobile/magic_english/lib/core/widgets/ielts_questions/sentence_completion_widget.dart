@@ -72,12 +72,22 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final border = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+    final orangeColor = isDark ? Colors.orangeAccent : Colors.orange[700];
+    final questionBg = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
+    final questionBorder = isDark ? Colors.grey.shade700 : Colors.grey[200]!;
+    final inputFill = isDark ? const Color(0xFF383838) : Colors.white;
+    final inputHint = isDark ? Colors.grey.shade400 : Colors.grey[400];
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: containerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,14 +95,14 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
           // Header
           Row(
             children: [
-              Icon(Icons.short_text, color: Colors.orange[700], size: 20),
+              Icon(Icons.short_text, color: orangeColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Sentence Completion',
                 style: GoogleFonts.lexend(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.orange[700],
+                  color: orangeColor,
                 ),
               ),
             ],
@@ -104,7 +114,7 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
             widget.questionText,
             style: GoogleFonts.lexend(
               fontSize: 14,
-              color: const Color(0xFF333333),
+              color: textPrimary,
               height: 1.5,
             ),
           ),
@@ -119,9 +129,9 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: questionBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(color: questionBorder),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +142,7 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
                       style: GoogleFonts.lexend(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange[700],
+                        color: orangeColor,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -141,7 +151,7 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
                       text: TextSpan(
                         style: GoogleFonts.lexend(
                           fontSize: 13,
-                          color: const Color(0xFF333333),
+                          color: textPrimary,
                           height: 1.6,
                         ),
                         children: _buildSentenceSpans(
@@ -160,36 +170,51 @@ class _SentenceCompletionWidgetState extends State<SentenceCompletionWidget> {
                         hintText: 'Type your answer...',
                         hintStyle: GoogleFonts.lexend(
                           fontSize: 13,
-                          color: Colors.grey[400],
+                          color: inputHint,
                         ),
                         prefixIcon: Icon(
                           Icons.edit,
                           size: 18,
-                          color: Colors.orange[400],
+                          color: isDark
+                              ? Colors.orangeAccent
+                              : Colors.orange[400],
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: inputFill,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? Colors.grey.shade700
+                                : Colors.grey[300]!,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? Colors.grey.shade700
+                                : Colors.grey[300]!,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: BorderSide(
-                            color: Colors.orange[400]!,
+                            color: isDark
+                                ? Colors.orangeAccent
+                                : Colors.orange[400]!,
                             width: 2,
                           ),
                         ),
                       ),
-                      style: GoogleFonts.lexend(fontSize: 13),
+                      style: GoogleFonts.lexend(
+                        fontSize: 13,
+                        color: textPrimary,
+                      ),
                     ),
                   ],
                 ),

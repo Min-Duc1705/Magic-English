@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD
 /// Static color constants (unchanged for compatibility)
-=======
->>>>>>> 85b7bddd1075ab718af38766e3e0b72f59e23b6e
 class AppColors {
   static const primary = Color(0xFF4A90E2);
   static const lightBg = Color(0xfff6f6f8);
@@ -11,7 +8,6 @@ class AppColors {
   static const placeholder = Color(0xff594c9a);
   static const textDark = Color(0xff131022);
   static const white = Colors.white;
-<<<<<<< HEAD
 
   // Dark mode colors
   static const darkBg = Color(0xFF121212);
@@ -59,6 +55,4 @@ class ThemeColors {
 extension ThemeColorsExtension on BuildContext {
   ThemeColors get colors => ThemeColors(this);
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
-=======
->>>>>>> 85b7bddd1075ab718af38766e3e0b72f59e23b6e
 }

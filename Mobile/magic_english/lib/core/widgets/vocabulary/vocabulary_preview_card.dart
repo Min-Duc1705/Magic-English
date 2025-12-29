@@ -75,22 +75,32 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final textTertiary = isDark ? Colors.grey.shade500 : Colors.grey.shade700;
+    final ipaColor = isDark ? Colors.grey.shade400 : Colors.black54;
+    final dividerColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+
     if (widget.isLoading) {
-      return _buildLoadingState();
+      return _buildLoadingState(cardColor, textSecondary, isDark);
     }
 
     if (widget.vocabulary == null) {
-      return _buildEmptyState();
+      return _buildEmptyState(cardColor, textSecondary, isDark);
     }
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.08),
+            color: isDark
+                ? Colors.black.withOpacity(.2)
+                : Colors.black.withOpacity(.08),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -112,15 +122,16 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
                       style: GoogleFonts.lexend(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
+                        color: textPrimary,
                       ),
                     ),
                     if (widget.vocabulary!.ipa.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         widget.vocabulary!.ipa,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
-                          color: Colors.black54,
+                          color: ipaColor,
                           fontFamily: 'serif',
                         ),
                       ),
@@ -150,7 +161,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
           ),
 
           const SizedBox(height: 16),
-          Container(height: 1.2, color: Colors.grey.shade300),
+          Container(height: 1.2, color: dividerColor),
           const SizedBox(height: 16),
 
           // Meaning
@@ -160,7 +171,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
               style: GoogleFonts.lexend(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: textTertiary,
               ),
             ),
             const SizedBox(height: 4),
@@ -170,6 +181,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 height: 1.4,
+                color: textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -187,7 +199,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
                         "Type",
                         style: GoogleFonts.lexend(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: textSecondary,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -196,6 +208,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
                         style: GoogleFonts.lexend(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: textPrimary,
                         ),
                       ),
                     ],
@@ -210,7 +223,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
                         "Level",
                         style: GoogleFonts.lexend(
                           fontSize: 13,
-                          color: Colors.grey.shade600,
+                          color: textSecondary,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -237,7 +250,7 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
               style: GoogleFonts.lexend(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
+                color: textTertiary,
               ),
             ),
             const SizedBox(height: 6),
@@ -257,15 +270,17 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
     );
   }
 
-  Widget _buildLoadingState() {
+  Widget _buildLoadingState(Color cardColor, Color textSecondary, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.08),
+            color: isDark
+                ? Colors.black.withOpacity(.2)
+                : Colors.black.withOpacity(.08),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -277,34 +292,30 @@ class _VocabularyPreviewCardState extends State<VocabularyPreviewCard> {
           const SizedBox(height: 16),
           Text(
             'Looking up word...',
-            style: GoogleFonts.lexend(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: GoogleFonts.lexend(fontSize: 14, color: textSecondary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(Color cardColor, Color textSecondary, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+        ),
       ),
       child: Column(
         children: [
-          Icon(Icons.search, size: 48, color: Colors.grey.shade400),
+          Icon(Icons.search, size: 48, color: textSecondary),
           const SizedBox(height: 12),
           Text(
             'Preview will appear here',
-            style: GoogleFonts.lexend(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: GoogleFonts.lexend(fontSize: 14, color: textSecondary),
           ),
         ],
       ),

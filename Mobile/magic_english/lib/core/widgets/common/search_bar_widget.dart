@@ -14,19 +14,30 @@ class SearchBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF27272A) : Colors.white;
+    final iconColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final hintColor = isDark ? Colors.grey.shade500 : Colors.grey.shade500;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(.06), blurRadius: 6),
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(.2)
+                : Colors.black.withOpacity(.06),
+            blurRadius: 6,
+          ),
         ],
       ),
       child: Row(
         children: [
           const SizedBox(width: 12),
-          Icon(Icons.search, color: Colors.grey.shade600),
+          Icon(Icons.search, color: iconColor),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -35,10 +46,11 @@ class SearchBarWidget extends StatelessWidget {
               enableIMEPersonalizedLearning: true,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.search,
+              style: TextStyle(color: textColor),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hintText,
-                hintStyle: TextStyle(color: Colors.grey.shade500),
+                hintStyle: TextStyle(color: hintColor),
               ),
             ),
           ),

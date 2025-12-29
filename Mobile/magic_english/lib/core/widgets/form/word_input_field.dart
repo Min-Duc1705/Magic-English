@@ -30,6 +30,14 @@ class WordInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Theme Colors
+    final labelColor = isDark ? Colors.white : const Color(0xFF333333);
+    final inputBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade300;
+    final hintColor = isDark ? Colors.grey.shade500 : const Color(0xFFADB5BD);
+    final textColor = isDark ? Colors.white : Colors.black;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +48,7 @@ class WordInputField extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF333333),
+              color: labelColor,
             ),
           ),
           const SizedBox(height: 10),
@@ -51,10 +59,10 @@ class WordInputField extends StatelessWidget {
             Container(
               height: 58,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: inputBg,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: hasError ? Colors.red : Colors.grey.shade300,
+                  color: hasError ? Colors.red : borderColor,
                   width: hasError ? 1.5 : 1,
                 ),
               ),
@@ -65,13 +73,11 @@ class WordInputField extends StatelessWidget {
                 enableIMEPersonalizedLearning: true,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
+                style: GoogleFonts.lexend(color: textColor, fontSize: 16),
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   hintText: hintText,
-                  hintStyle: GoogleFonts.lexend(
-                    color: const Color(0xFFADB5BD),
-                    fontSize: 15,
-                  ),
+                  hintStyle: GoogleFonts.lexend(color: hintColor, fontSize: 15),
                   border: InputBorder.none,
                 ),
               ),
@@ -115,7 +121,7 @@ class WordInputField extends StatelessWidget {
             helperText!,
             style: GoogleFonts.lexend(
               fontSize: 13,
-              color: Colors.grey.shade600,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
             ),
           ),
         ],

@@ -57,6 +57,19 @@ class _VocabularyPageState extends State<VocabularyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark
+        ? const Color(0xFF18181B)
+        : const Color(0xfff6f6f8);
+    final cardColor = isDark ? const Color(0xFF27272A) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark
+        ? Colors.grey.shade400
+        : const Color(0xFF999999);
+    final segmentBg = isDark
+        ? const Color(0xFF2D2D2D)
+        : const Color(0xFFE5E5E5);
+
     return Scaffold(
       backgroundColor: background,
       bottomNavigationBar: const AppBottomNav(currentIndex: 1),
@@ -65,13 +78,14 @@ class _VocabularyPageState extends State<VocabularyPage> {
           children: [
             // -------------------- TOP BAR --------------------
             Container(
+              color: cardColor,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () =>
                         Navigator.pushReplacementNamed(context, '/home'),
-                    child: const Icon(Icons.arrow_back, size: 28),
+                    child: Icon(Icons.arrow_back, size: 28, color: textPrimary),
                   ),
                   const Spacer(),
                   Text(
@@ -79,6 +93,7 @@ class _VocabularyPageState extends State<VocabularyPage> {
                     style: GoogleFonts.lexend(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -92,7 +107,7 @@ class _VocabularyPageState extends State<VocabularyPage> {
                         context.read<VocabularyProvider>().loadVocabularies();
                       }
                     },
-                    child: const Icon(Icons.add, size: 28),
+                    child: Icon(Icons.add, size: 28, color: textPrimary),
                   ),
                 ],
               ),
@@ -104,7 +119,7 @@ class _VocabularyPageState extends State<VocabularyPage> {
               child: Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE5E5E5),
+                  color: segmentBg,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -121,7 +136,7 @@ class _VocabularyPageState extends State<VocabularyPage> {
                           height: double.infinity,
                           decoration: BoxDecoration(
                             color: _selectedTab == "My Vocabulary"
-                                ? Colors.white
+                                ? cardColor
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: _selectedTab == "My Vocabulary"
@@ -141,8 +156,8 @@ class _VocabularyPageState extends State<VocabularyPage> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: _selectedTab == "My Vocabulary"
-                                    ? const Color(0xFF333333)
-                                    : const Color(0xFF999999),
+                                    ? textPrimary
+                                    : textSecondary,
                               ),
                             ),
                           ),
@@ -160,7 +175,7 @@ class _VocabularyPageState extends State<VocabularyPage> {
                           height: double.infinity,
                           decoration: BoxDecoration(
                             color: _selectedTab == "News"
-                                ? Colors.white
+                                ? cardColor
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: _selectedTab == "News"
@@ -180,8 +195,8 @@ class _VocabularyPageState extends State<VocabularyPage> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: _selectedTab == "News"
-                                    ? const Color(0xFF333333)
-                                    : const Color(0xFF999999),
+                                    ? textPrimary
+                                    : textSecondary,
                               ),
                             ),
                           ),

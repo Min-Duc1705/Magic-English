@@ -23,12 +23,27 @@ class MatchingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containerBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade300 : Colors.grey[800];
+    final border = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+    final tealColor = isDark ? Colors.tealAccent : Colors.teal[700];
+    final tealBg = isDark
+        ? Colors.teal.withOpacity(0.2)
+        : Colors.teal.withOpacity(0.08);
+    final tealBorder = isDark
+        ? Colors.teal.withOpacity(0.4)
+        : Colors.teal.withOpacity(0.3);
+    final objectsBg = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
+    final objectsBorder = isDark ? Colors.grey.shade700 : Colors.grey[200];
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: containerBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,14 +51,14 @@ class MatchingWidget extends StatelessWidget {
           // Header
           Row(
             children: [
-              Icon(Icons.compare_arrows, color: Colors.teal[700], size: 20),
+              Icon(Icons.compare_arrows, color: tealColor, size: 20),
               const SizedBox(width: 8),
               Text(
                 'Matching',
                 style: GoogleFonts.lexend(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.teal[700],
+                  color: tealColor,
                 ),
               ),
             ],
@@ -55,7 +70,7 @@ class MatchingWidget extends StatelessWidget {
             questionText,
             style: GoogleFonts.lexend(
               fontSize: 14,
-              color: const Color(0xFF333333),
+              color: textPrimary,
               height: 1.5,
             ),
           ),
@@ -66,9 +81,9 @@ class MatchingWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.teal.withOpacity(0.08),
+              color: tealBg,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.teal.withOpacity(0.3)),
+              border: Border.all(color: tealBorder),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +93,7 @@ class MatchingWidget extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal[700],
+                    color: tealColor,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -103,7 +118,7 @@ class MatchingWidget extends StatelessWidget {
                             style: GoogleFonts.lexend(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Colors.teal[700],
+                              color: tealColor,
                             ),
                           ),
                         ),
@@ -112,7 +127,7 @@ class MatchingWidget extends StatelessWidget {
                             text,
                             style: GoogleFonts.lexend(
                               fontSize: 12,
-                              color: Colors.grey[800],
+                              color: textSecondary,
                             ),
                           ),
                         ),
@@ -130,9 +145,9 @@ class MatchingWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: objectsBg,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: objectsBorder!),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,7 +157,7 @@ class MatchingWidget extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
+                    color: isDark ? Colors.grey.shade400 : Colors.grey[700],
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -170,7 +185,9 @@ class MatchingWidget extends StatelessWidget {
                               style: GoogleFonts.lexend(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.teal[800],
+                                color: isDark
+                                    ? Colors.tealAccent
+                                    : Colors.teal[800],
                               ),
                             ),
                           ),
@@ -182,7 +199,7 @@ class MatchingWidget extends StatelessWidget {
                             item.text,
                             style: GoogleFonts.lexend(
                               fontSize: 13,
-                              color: Colors.grey[800],
+                              color: textSecondary,
                             ),
                           ),
                         ),
@@ -190,7 +207,9 @@ class MatchingWidget extends StatelessWidget {
                         Icon(
                           Icons.arrow_forward,
                           size: 16,
-                          color: Colors.grey[400],
+                          color: isDark
+                              ? Colors.grey.shade500
+                              : Colors.grey[400],
                         ),
                         const SizedBox(width: 8),
                         // Dropdown for selecting option number
@@ -199,13 +218,19 @@ class MatchingWidget extends StatelessWidget {
                           height: 36,
                           decoration: BoxDecoration(
                             color: selected != null
-                                ? Colors.teal.withOpacity(0.15)
-                                : Colors.white,
+                                ? (isDark
+                                      ? Colors.teal.withOpacity(0.3)
+                                      : Colors.teal.withOpacity(0.15))
+                                : (isDark
+                                      ? Colors.grey.shade800
+                                      : Colors.white),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: selected != null
-                                  ? Colors.teal
-                                  : Colors.grey[300]!,
+                                  ? (isDark ? Colors.tealAccent : Colors.teal)
+                                  : (isDark
+                                        ? Colors.grey.shade600
+                                        : Colors.grey[300]!),
                               width: selected != null ? 2 : 1,
                             ),
                           ),
@@ -218,7 +243,9 @@ class MatchingWidget extends StatelessWidget {
                                   '?',
                                   style: GoogleFonts.lexend(
                                     fontSize: 14,
-                                    color: Colors.grey[400],
+                                    color: isDark
+                                        ? Colors.grey.shade400
+                                        : Colors.grey[400],
                                   ),
                                 ),
                               ),

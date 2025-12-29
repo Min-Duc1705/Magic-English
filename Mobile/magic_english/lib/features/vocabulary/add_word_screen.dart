@@ -122,8 +122,13 @@ class _AddWordPageState extends State<AddWordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF8F9FA);
+
     return Scaffold(
-      backgroundColor: backgroundLight,
+      backgroundColor: background,
 
       // Bottom Navigation
       bottomNavigationBar: const AppBottomNav(currentIndex: 1),
