@@ -85,12 +85,12 @@ class AuthProvider with ChangeNotifier {
 
   final AuthRepository _authRepository = AuthRepository();
 
-  // Đăng xuất
+  // dang xuat
   Future<void> logout() async {
     try {
       final token = _user?.accessToken ?? '';
       if (token.isNotEmpty) {
-        // Call backend logout
+        // Call backend logout  
         await _authRepository.logout(token);
       }
     } catch (e) {
