@@ -99,7 +99,7 @@ class AuthProvider with ChangeNotifier {
 
     _user = null;
     notifyListeners();
-
+//
     // Xóa dữ liệu user nhưng GIỮ LẠI onboarding_completed
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_id');
