@@ -35,53 +35,53 @@ class AuthProvider with ChangeNotifier {
     debugPrint('AUTH_PROVIDER: setUser avatarUrl=${user.avatarUrl}');
   }
 
-  // // Load thông tin user từ SharedPreferences khi mở app
-  // Future<void> loadUser() async {
-  //   print('🔐 ========== LOADING USER FROM STORAGE ==========');
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final userId = prefs.getInt('user_id');
-  //   final userName = prefs.getString('user_name');
-  //   final userEmail = prefs.getString('user_email');
-  //   final accessToken = prefs.getString('access_token');
-  //   final refreshToken = prefs.getString('refresh_token');
-  //   final avatarUrl = prefs.getString('avatarUrl');
+  // Load thông tin user từ SharedPreferences khi mở app
+  Future<void> loadUser() async {
+    print('🔐 ========== LOADING USER FROM STORAGE ==========');
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    final userName = prefs.getString('user_name');
+    final userEmail = prefs.getString('user_email');
+    final accessToken = prefs.getString('access_token');
+    final refreshToken = prefs.getString('refresh_token');
+    final avatarUrl = prefs.getString('avatarUrl');
 
-  //   print('🔐 user_id: $userId');
-  //   print('🔐 user_name: $userName');
-  //   print('🔐 user_email: $userEmail');
-  //   print('🔐 access_token exists: ${accessToken != null}');
-  //   if (accessToken != null && accessToken.length > 20) {
-  //     debugPrint(
-  //       '🔐 access_token (first 20 chars): ${accessToken.substring(0, 20)}...',
-  //     );
-  //   }
-  //   print('🔐 refresh_token exists: ${refreshToken != null}');
-  //   if (refreshToken != null && refreshToken.length > 20) {
-  //     debugPrint(
-  //       '🔐 refresh_token (first 20 chars): ${refreshToken.substring(0, 20)}...',
-  //     );
-  //   }
+    print('🔐 user_id: $userId');
+    print('🔐 user_name: $userName');
+    print('🔐 user_email: $userEmail');
+    print('🔐 access_token exists: ${accessToken != null}');
+    if (accessToken != null && accessToken.length > 20) {
+      debugPrint(
+        '🔐 access_token (first 20 chars): ${accessToken.substring(0, 20)}...',
+      );
+    }
+    print('🔐 refresh_token exists: ${refreshToken != null}');
+    if (refreshToken != null && refreshToken.length > 20) {
+      debugPrint(
+        '🔐 refresh_token (first 20 chars): ${refreshToken.substring(0, 20)}...',
+      );
+    }
 
-  //   if (userId != null &&
-  //       userName != null &&
-  //       userEmail != null &&
-  //       accessToken != null) {
-  //     _user = ResponseLogin(
-  //       id: userId,
-  //       name: userName,
-  //       email: userEmail,
-  //       accessToken: accessToken,
-  //       refreshToken: refreshToken,
-  //       avatarUrl: avatarUrl,
-  //     );
-  //     print('✅ USER LOADED SUCCESSFULLY - isLoggedIn: true');
-  //     notifyListeners();
-  //   } else {
-  //     print('❌ USER NOT LOADED - Missing required fields');
-  //     print('❌ isLoggedIn: false');
-  //   }
-  //   print('🔐 ================================================');
-  // }
+    if (userId != null &&
+        userName != null &&
+        userEmail != null &&
+        accessToken != null) {
+      _user = ResponseLogin(
+        id: userId,
+        name: userName,
+        email: userEmail,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        avatarUrl: avatarUrl,
+      );
+      print('✅ USER LOADED SUCCESSFULLY - isLoggedIn: true');
+      notifyListeners();
+    } else {
+      print('❌ USER NOT LOADED - Missing required fields');
+      print('❌ isLoggedIn: false');
+    }
+    print('🔐 ================================================');
+  }
 
   final AuthRepository _authRepository = AuthRepository();
 
