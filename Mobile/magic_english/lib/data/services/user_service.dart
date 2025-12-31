@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:magic_enlish/core/services/api_client.dart';
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:magic_enlish/data/models/BackendResponse.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:magic_enlish/data/models/user/ResponseUpdateUser.dart';

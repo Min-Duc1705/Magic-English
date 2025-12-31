@@ -19,6 +19,13 @@ class OnboardingPage1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF135BEC);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF0D121B);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final gradientEnd = isDark
+        ? const Color(0xFF121212).withOpacity(0.3)
+        : const Color(0xFFF6F6F8).withOpacity(0.3);
+    final inactiveDot = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
 
     return Column(
       children: [
@@ -38,7 +45,7 @@ class OnboardingPage1 extends StatelessWidget {
                     style: GoogleFonts.lexend(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF0D121B),
+                      color: textPrimary,
                     ),
                   ),
                 ],
@@ -132,10 +139,7 @@ class OnboardingPage1 extends StatelessWidget {
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  const Color(0xFFF6F6F8).withOpacity(0.3),
-                                ],
+                                colors: [Colors.transparent, gradientEnd],
                               ),
                             ),
                           ),
@@ -159,7 +163,7 @@ class OnboardingPage1 extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: const Color(0xFF0D121B),
+                          color: textPrimary,
                           height: 1.15,
                         ),
                         children: [
@@ -177,7 +181,7 @@ class OnboardingPage1 extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.lexend(
                         fontSize: 16,
-                        color: Colors.grey.shade600,
+                        color: textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -197,11 +201,11 @@ class OnboardingPage1 extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildIndicator(0, currentPage == 0),
+                  _buildIndicator(0, currentPage == 0, inactiveDot),
                   const SizedBox(width: 12),
-                  _buildIndicator(1, currentPage == 1),
+                  _buildIndicator(1, currentPage == 1, inactiveDot),
                   const SizedBox(width: 12),
-                  _buildIndicator(2, currentPage == 2),
+                  _buildIndicator(2, currentPage == 2, inactiveDot),
                 ],
               ),
               const SizedBox(height: 32),
@@ -244,7 +248,7 @@ class OnboardingPage1 extends StatelessWidget {
     );
   }
 
-  Widget _buildIndicator(int index, bool isActive) {
+  Widget _buildIndicator(int index, bool isActive, Color inactiveColor) {
     return GestureDetector(
       onTap: () => onDotTap(index),
       child: AnimatedContainer(
@@ -253,7 +257,7 @@ class OnboardingPage1 extends StatelessWidget {
         width: isActive ? 32 : 8,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: isActive ? const Color(0xFF135BEC) : Colors.grey.shade300,
+          color: isActive ? const Color(0xFF135BEC) : inactiveColor,
         ),
       ),
     );

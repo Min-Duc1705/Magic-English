@@ -376,10 +376,16 @@ class IELTSResultScreen extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: test.skill == 'Listening'
-                              ? Colors.blue[700]
+                              ? (isDark
+                                    ? Colors.blue.shade300
+                                    : Colors.blue[700])
                               : test.skill == 'Writing'
-                              ? Colors.purple[700]
-                              : Colors.green[700],
+                              ? (isDark
+                                    ? Colors.purple.shade300
+                                    : Colors.purple[700])
+                              : (isDark
+                                    ? Colors.green.shade300
+                                    : Colors.green[700]),
                         ),
                       ),
                     ],
@@ -932,7 +938,7 @@ class IELTSResultScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: containerBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -985,7 +991,9 @@ class IELTSResultScreen extends StatelessWidget {
                                   style: GoogleFonts.lexend(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.blue[700],
+                                    color: isDark
+                                        ? Colors.blue.shade300
+                                        : Colors.blue[700],
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -993,7 +1001,7 @@ class IELTSResultScreen extends StatelessWidget {
                                   questionResult.explanation!,
                                   style: GoogleFonts.lexend(
                                     fontSize: 12,
-                                    color: Colors.grey[700],
+                                    color: textSecondary,
                                     height: 1.5,
                                   ),
                                 ),

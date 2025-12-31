@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/api_constants.dart';
 
@@ -97,7 +97,7 @@ class PronunciationService {
     final url = Uri.parse('${ApiConstants.baseUrl}/pronunciation/analyze');
     final headers = await _getAuthHeaders();
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       url,
       headers: headers,
       body: jsonEncode({

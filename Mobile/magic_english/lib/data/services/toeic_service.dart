@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/toeic/toeic_test.dart';
 import '../../core/constants/api_constants.dart';
@@ -28,7 +28,7 @@ class ToeicService {
     final url = Uri.parse('${ApiConstants.baseUrl}/toeic/generate');
     final headers = await _getAuthHeaders();
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       url,
       headers: headers,
       body: jsonEncode({'section': section, 'difficulty': difficulty}),
@@ -47,7 +47,7 @@ class ToeicService {
     final url = Uri.parse('${ApiConstants.baseUrl}/toeic/tests/$testId');
     final headers = await _getAuthHeaders();
 
-    final response = await http.get(url, headers: headers);
+    final response = await ApiClient.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -62,7 +62,7 @@ class ToeicService {
     final url = Uri.parse('${ApiConstants.baseUrl}/toeic/start');
     final headers = await _getAuthHeaders();
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       url,
       headers: headers,
       body: jsonEncode({'testId': testId}),
@@ -85,7 +85,7 @@ class ToeicService {
     final url = Uri.parse('${ApiConstants.baseUrl}/toeic/submit');
     final headers = await _getAuthHeaders();
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       url,
       headers: headers,
       body: jsonEncode({
@@ -108,7 +108,7 @@ class ToeicService {
     final url = Uri.parse('${ApiConstants.baseUrl}/toeic/history');
     final headers = await _getAuthHeaders();
 
-    final response = await http.get(url, headers: headers);
+    final response = await ApiClient.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));

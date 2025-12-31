@@ -18,6 +18,20 @@ class OnboardingPage2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF135BEC);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final textPrimary = isDark ? Colors.white : const Color(0xFF0D121B);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
+    final dividerColor = isDark ? Colors.grey.shade800 : Colors.grey.shade100;
+    final inactiveDot = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+
+    // Specially for icons/text on white background which is now cardColor
+    final cardTextColor = isDark ? Colors.white : const Color(0xFF0D121B);
+    final cardSubTextColor = isDark
+        ? Colors.grey.shade400
+        : Colors.grey.shade500;
 
     return Column(
       children: [
@@ -34,7 +48,7 @@ class OnboardingPage2 extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade500,
+                    color: textSecondary,
                   ),
                 ),
               ),
@@ -55,12 +69,12 @@ class OnboardingPage2 extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(color: borderColor),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -74,7 +88,7 @@ class OnboardingPage2 extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade500,
+                          color: cardSubTextColor,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -85,7 +99,7 @@ class OnboardingPage2 extends StatelessWidget {
                             'Serendipity',
                             style: GoogleFonts.lexend(
                               fontSize: 18,
-                              color: const Color(0xFF0D121B),
+                              color: cardTextColor,
                             ),
                           ),
                           Icon(Icons.edit, color: primaryColor, size: 20),
@@ -109,9 +123,13 @@ class OnboardingPage2 extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.grey.shade300,
+                              isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
                               primaryColor,
-                              Colors.grey.shade300,
+                              isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
                             ],
                           ),
                         ),
@@ -143,11 +161,11 @@ class OnboardingPage2 extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -235,7 +253,7 @@ class OnboardingPage2 extends StatelessWidget {
                                       style: GoogleFonts.lexend(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color(0xFF0D121B),
+                                        color: cardTextColor,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -264,13 +282,13 @@ class OnboardingPage2 extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Container(height: 1, color: Colors.grey.shade100),
+                            Container(height: 1, color: dividerColor),
                             const SizedBox(height: 12),
                             RichText(
                               text: TextSpan(
                                 style: GoogleFonts.lexend(
                                   fontSize: 14,
-                                  color: Colors.grey.shade600,
+                                  color: cardSubTextColor,
                                   height: 1.5,
                                 ),
                                 children: [
@@ -278,7 +296,7 @@ class OnboardingPage2 extends StatelessWidget {
                                     text: 'Noun: ',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF0D121B),
+                                      color: cardTextColor,
                                     ),
                                   ),
                                   const TextSpan(
@@ -304,7 +322,7 @@ class OnboardingPage2 extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0D121B),
+                    color: textPrimary,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -313,7 +331,7 @@ class OnboardingPage2 extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.lexend(
                     fontSize: 16,
-                    color: Colors.grey.shade600,
+                    color: textSecondary,
                     height: 1.5,
                   ),
                 ),
@@ -333,11 +351,11 @@ class OnboardingPage2 extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildIndicator(0, currentPage == 0),
+                  _buildIndicator(0, currentPage == 0, inactiveDot),
                   const SizedBox(width: 8),
-                  _buildIndicator(1, currentPage == 1),
+                  _buildIndicator(1, currentPage == 1, inactiveDot),
                   const SizedBox(width: 8),
-                  _buildIndicator(2, currentPage == 2),
+                  _buildIndicator(2, currentPage == 2, inactiveDot),
                 ],
               ),
               const SizedBox(height: 24),
@@ -373,7 +391,7 @@ class OnboardingPage2 extends StatelessWidget {
     );
   }
 
-  Widget _buildIndicator(int index, bool isActive) {
+  Widget _buildIndicator(int index, bool isActive, Color inactiveColor) {
     return GestureDetector(
       onTap: () => onDotTap(index),
       child: AnimatedContainer(
@@ -382,7 +400,7 @@ class OnboardingPage2 extends StatelessWidget {
         width: isActive ? 24 : 8,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: isActive ? const Color(0xFF135BEC) : Colors.grey.shade300,
+          color: isActive ? const Color(0xFF135BEC) : inactiveColor,
         ),
       ),
     );

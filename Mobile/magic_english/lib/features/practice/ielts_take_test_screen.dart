@@ -866,7 +866,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                 ),
                                 style: GoogleFonts.lexend(
                                   fontSize: 13,
-                                  color: Colors.grey[700],
+                                  color: textSecondary,
                                   height: 1.6,
                                 ),
                               ),
@@ -879,9 +879,9 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                       // Writing Essay Input (Separate Card)
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: containerBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: containerBorder!),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -893,7 +893,9 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                 vertical: 10,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: isDark
+                                    ? const Color(0xFF2C2C2C)
+                                    : Colors.grey[100],
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(12),
                                   topRight: Radius.circular(12),
@@ -904,7 +906,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                   Icon(
                                     Icons.edit_note,
                                     size: 20,
-                                    color: Colors.grey[700],
+                                    color: textSecondary,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
@@ -912,7 +914,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
                                     style: GoogleFonts.lexend(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.grey[700],
+                                      color: textSecondary,
                                     ),
                                   ),
                                 ],
@@ -1100,7 +1102,7 @@ class _IELTSTakeTestScreenState extends State<IELTSTakeTestScreen> {
             // Bottom Action Bar
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   top: BorderSide(color: neutral.withOpacity(0.5), width: 1),
                 ),

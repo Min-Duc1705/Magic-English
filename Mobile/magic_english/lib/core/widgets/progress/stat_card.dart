@@ -85,12 +85,6 @@ class _StatCardState extends State<StatCard>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final borderColor = isDark ? const Color(0xFF3D3D3D) : Colors.grey.shade300;
@@ -184,7 +178,6 @@ class _StatCardState extends State<StatCard>
                     widget.title2,
                     style: GoogleFonts.lexend(
                       fontSize: 13,
-                      color: Colors.grey.shade600,
                       color: textSecondary,
                     ),
                   ),
