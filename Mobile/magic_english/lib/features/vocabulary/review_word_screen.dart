@@ -176,12 +176,16 @@ class _VocabularyDetailScreenState extends State<VocabularyDetailScreen>
     }
   }
 
-  Color get primary => const Color(0xFF4A90E2);
-  Color get background => const Color(0xfff6f6f8);
-  Color get cardBg => Colors.white;
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = const Color(0xFF4A90E2);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xfff6f6f8);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final dividerColor = isDark ? Colors.grey.shade800 : Colors.grey.shade300;
+
     return Scaffold(
       backgroundColor: background,
       body: SafeArea(
@@ -205,7 +209,9 @@ class _VocabularyDetailScreenState extends State<VocabularyDetailScreen>
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(.08),
+                              color: isDark
+                                  ? Colors.black.withOpacity(0.2)
+                                  : Colors.black.withOpacity(.08),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -225,7 +231,7 @@ class _VocabularyDetailScreenState extends State<VocabularyDetailScreen>
                             ),
 
                             const SizedBox(height: 16),
-                            Container(height: 1.2, color: Colors.grey.shade300),
+                            Container(height: 1.2, color: dividerColor),
                             const SizedBox(height: 18),
 
                             // Vocabulary Information Section

@@ -13,6 +13,13 @@ class BarChartCard extends StatelessWidget {
     const borderColor = Color(0xFFE0E0E0);
     const textColor = Color(0xFF100d1b);
     const primary = Color(0xFF4A90E2);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFE0E0E0);
+    final textColor = isDark ? Colors.white : const Color(0xFF100d1b);
+    final primary = isDark ? const Color(0xFF60A5FA) : const Color(0xFF4A90E2);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -50,30 +57,35 @@ class BarChartCard extends StatelessWidget {
                   distribution.a1,
                   distribution.getNormalizedHeight(distribution.a1),
                   primary.withOpacity(0.2),
+                  isDark,
                 ),
                 _barChart(
                   'A2',
                   distribution.a2,
                   distribution.getNormalizedHeight(distribution.a2),
                   primary.withOpacity(0.2),
+                  isDark,
                 ),
                 _barChart(
                   'B1',
                   distribution.b1,
                   distribution.getNormalizedHeight(distribution.b1),
                   primary,
+                  isDark,
                 ),
                 _barChart(
                   'B2',
                   distribution.b2,
                   distribution.getNormalizedHeight(distribution.b2),
                   primary.withOpacity(0.2),
+                  isDark,
                 ),
                 _barChart(
                   'C1',
                   distribution.c1,
                   distribution.getNormalizedHeight(distribution.c1),
                   primary.withOpacity(0.2),
+                  isDark,
                 ),
                 _barChart(
                   'C2',
@@ -95,6 +107,30 @@ class BarChartCard extends StatelessWidget {
     // Minimum height for empty bars
     final barHeight = height == 0 ? 10.0 : 120 * height;
     final barColor = height == 0 ? Colors.grey.shade300 : color;
+                  isDark,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _barChart(
+    String label,
+    int count,
+    double height,
+    Color color,
+    bool isDark,
+  ) {
+    final textMuted = isDark ? Colors.grey.shade400 : const Color(0xFF888888);
+    final textColor = isDark ? Colors.white : const Color(0xFF100d1b);
+    // Minimum height for empty bars
+    final barHeight = height == 0 ? 10.0 : 120 * height;
+    final barColor = height == 0
+        ? (isDark ? Colors.grey.shade700 : Colors.grey.shade300)
+        : color;
 
     return Expanded(
       child: Column(

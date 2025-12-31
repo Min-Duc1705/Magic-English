@@ -288,21 +288,30 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
   }
 
   void _showResultDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Listening Practice Complete! 🎧',
-          style: GoogleFonts.lexend(fontWeight: FontWeight.bold),
+          style: GoogleFonts.lexend(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Your Score',
-              style: GoogleFonts.lexend(fontSize: 16, color: Colors.grey[600]),
+              style: GoogleFonts.lexend(
+                fontSize: 16,
+                color: isDark ? Colors.grey.shade400 : Colors.grey[600],
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -321,7 +330,12 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: Text('Back', style: GoogleFonts.lexend()),
+            child: Text(
+              'Back',
+              style: GoogleFonts.lexend(
+                color: isDark ? Colors.grey.shade400 : null,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -350,16 +364,26 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const practiceColor = Color(0xFF9B59B6); // Purple - accent color only
-    const neutral = Color(0xFFE0E0E0);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final practiceColor = isDark
+        ? const Color(0xFFD0A9F5)
+        : const Color(0xFF9B59B6); // Purple - accent color
+    final neutral = isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
 
     if (_exercises.isEmpty) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: background,
         appBar: AppBar(
-          title: Text('Listening Practice', style: GoogleFonts.lexend()),
-          backgroundColor: const Color(0xFFF9F9F9),
-          foregroundColor: const Color(0xFF333333),
+          title: Text(
+            'Listening Practice',
+            style: GoogleFonts.lexend(color: textPrimary),
+          ),
+          backgroundColor: background,
+          foregroundColor: textPrimary,
           elevation: 0,
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -372,14 +396,14 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
     final isCorrect = userAnswer == correctAnswer;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       body: SafeArea(
         child: Column(
           children: [
             // Custom Top Bar (quiz style)
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFF9F9F9),
+                color: background,
                 border: Border(
                   bottom: BorderSide(color: neutral.withOpacity(0.3), width: 1),
                 ),
@@ -393,11 +417,7 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                       width: 35,
                       height: 35,
                       alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.close,
-                        size: 28,
-                        color: Color(0xFF333333),
-                      ),
+                      child: Icon(Icons.close, size: 28, color: textPrimary),
                     ),
                   ),
                   const Spacer(),
@@ -406,7 +426,7 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                     style: GoogleFonts.lexend(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF333333),
+                      color: textPrimary,
                     ),
                   ),
                   const Spacer(),
@@ -450,7 +470,7 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF333333),
+                                color: textPrimary,
                               ),
                             ),
                           ],
@@ -498,7 +518,10 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                           Expanded(
                             child: Text(
                               'Listen carefully and type what you hear',
-                              style: GoogleFonts.lexend(fontSize: 14),
+                              style: GoogleFonts.lexend(
+                                fontSize: 14,
+                                color: textPrimary,
+                              ),
                             ),
                           ),
                         ],
@@ -543,7 +566,9 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                             _isPlaying ? 'Playing...' : 'Tap to play audio',
                             style: GoogleFonts.lexend(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey[600],
                             ),
                           ),
                         ],
@@ -565,7 +590,13 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                       },
                       decoration: InputDecoration(
                         labelText: 'What did you hear?',
+                        labelStyle: TextStyle(
+                          color: isDark ? Colors.grey.shade400 : null,
+                        ),
                         hintText: 'Type the word here',
+                        hintStyle: TextStyle(
+                          color: isDark ? Colors.grey.shade600 : null,
+                        ),
                         prefixIcon: Icon(
                           Icons.edit,
                           color: _validationError != null
@@ -575,7 +606,11 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isListening ? Icons.mic : Icons.mic_none,
-                            color: _isListening ? Colors.red : Colors.grey,
+                            color: _isListening
+                                ? Colors.red
+                                : isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey,
                           ),
                           onPressed: _isChecked
                               ? null
@@ -604,17 +639,20 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                             width: 2,
                           ),
                         ),
-                        enabledBorder: _validationError != null
-                            ? OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Colors.red,
-                                  width: 2,
-                                ),
-                              )
-                            : null,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _validationError != null
+                                ? Colors.red
+                                : neutral.withOpacity(0.5),
+                            width: _validationError != null ? 2 : 1,
+                          ),
+                        ),
                       ),
-                      style: GoogleFonts.lexend(fontSize: 16),
+                      style: GoogleFonts.lexend(
+                        fontSize: 16,
+                        color: textPrimary,
+                      ),
                       textCapitalization: TextCapitalization.none,
                       autocorrect: false,
                     ),
@@ -650,8 +688,12 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: isCorrect
-                              ? Colors.green.shade50
-                              : Colors.red.shade50,
+                              ? (isDark
+                                    ? Colors.green.withOpacity(0.15)
+                                    : Colors.green.shade50)
+                              : (isDark
+                                    ? Colors.red.withOpacity(0.15)
+                                    : Colors.red.shade50),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isCorrect ? Colors.green : Colors.red,
@@ -689,7 +731,9 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                                 style: GoogleFonts.lexend(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.grey[800],
+                                  color: isDark
+                                      ? Colors.grey.shade300
+                                      : Colors.grey[800],
                                 ),
                               ),
                             ],
@@ -698,7 +742,9 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                               '/${currentVocab.ipa}/',
                               style: GoogleFonts.notoSans(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: isDark
+                                    ? Colors.grey.shade500
+                                    : Colors.grey[600],
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -707,7 +753,9 @@ class _ListeningPracticeScreenState extends State<ListeningPracticeScreen> {
                               currentVocab.meaning,
                               style: GoogleFonts.lexend(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: isDark
+                                    ? Colors.grey.shade500
+                                    : Colors.grey[600],
                                 fontStyle: FontStyle.italic,
                               ),
                             ),

@@ -14,22 +14,30 @@ class ToeicResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF059669); // Teal for TOEIC
-    const correct = Color(0xFF10B981);
-    const incorrect = Color(0xFFEF4444);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = isDark ? const Color(0xFF4ADE80) : const Color(0xFF059669);
+    final correct = isDark ? Colors.greenAccent : const Color(0xFF10B981);
+    final incorrect = isDark ? Colors.redAccent : const Color(0xFFEF4444);
+    final background = isDark
+        ? const Color(0xFF121212)
+        : const Color(0xFFF9F9F9);
+    final surface = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final border = isDark ? Colors.grey.shade700 : Colors.grey[300]!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: background,
       appBar: AppBar(
         title: Text(
           'Test Results',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF111827),
+            color: textPrimary,
           ),
         ),
-        backgroundColor: const Color(0xFFF9F9F9),
-        foregroundColor: const Color(0xFF333333),
+        backgroundColor: background,
+        foregroundColor: textPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -68,7 +76,9 @@ class ToeicResultScreen extends StatelessWidget {
                     'TOEIC Score',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
-                      color: Colors.white.withOpacity(0.9),
+                      color: isDark
+                          ? Colors.black87
+                          : Colors.white.withOpacity(0.9),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -77,14 +87,16 @@ class ToeicResultScreen extends StatelessWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 64,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: isDark ? Colors.black : Colors.white,
                     ),
                   ),
                   Text(
                     'out of 990',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
-                      color: Colors.white.withOpacity(0.8),
+                      color: isDark
+                          ? Colors.black54
+                          : Colors.white.withOpacity(0.8),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -92,21 +104,27 @@ class ToeicResultScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _buildStatItem(
+                        context,
                         'Correct',
                         '${result.correctAnswers}/${result.totalAnswers}',
-                        correct,
+                        isDark ? Colors.black87 : correct,
+                        isResultCard: true,
                       ),
                       Container(width: 1, height: 40, color: Colors.white30),
                       _buildStatItem(
+                        context,
                         'Accuracy',
                         '${result.accuracyPercentage.round()}%',
-                        Colors.white,
+                        isDark ? Colors.black : Colors.white,
+                        isResultCard: true,
                       ),
                       Container(width: 1, height: 40, color: Colors.white30),
                       _buildStatItem(
+                        context,
                         'Time',
                         _formatTime(result.timeSpentSeconds),
-                        Colors.white,
+                        isDark ? Colors.black : Colors.white,
+                        isResultCard: true,
                       ),
                     ],
                   ),
@@ -121,9 +139,9 @@ class ToeicResultScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: border),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +151,7 @@ class ToeicResultScreen extends StatelessWidget {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -162,14 +180,14 @@ class ToeicResultScreen extends StatelessWidget {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF111827),
+                    color: textPrimary,
                   ),
                 ),
                 Text(
                   '${result.questionResults.length} questions',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: textSecondary,
                   ),
                 ),
               ],
@@ -180,6 +198,7 @@ class ToeicResultScreen extends StatelessWidget {
             // Questions List
             ...result.questionResults.map((questionResult) {
               return _buildQuestionResultCard(
+                context,
                 questionResult,
                 correct,
                 incorrect,
@@ -196,11 +215,11 @@ class ToeicResultScreen extends StatelessWidget {
           Navigator.pop(context); // Go back to TOEIC practice screen
         },
         backgroundColor: primary,
-        icon: const Icon(Icons.check, color: Colors.white),
+        icon: Icon(Icons.check, color: isDark ? Colors.black : Colors.white),
         label: Text(
           'Done',
           style: GoogleFonts.plusJakartaSans(
-            color: Colors.white,
+            color: isDark ? Colors.black : Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -208,7 +227,14 @@ class ToeicResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, Color color) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value,
+    Color color, {
+    bool isResultCard = false,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         Text(
@@ -224,7 +250,11 @@ class ToeicResultScreen extends StatelessWidget {
           label,
           style: GoogleFonts.plusJakartaSans(
             fontSize: 12,
-            color: Colors.white.withOpacity(0.8),
+            color: isResultCard
+                ? (isDark ? Colors.black54 : Colors.white.withOpacity(0.8))
+                : (isDark
+                      ? Colors.grey.shade400
+                      : Colors.white.withOpacity(0.8)),
           ),
         ),
       ],
@@ -250,18 +280,28 @@ class ToeicResultScreen extends StatelessWidget {
   }
 
   Widget _buildQuestionResultCard(
+    BuildContext context,
     ToeicQuestionResult questionResult,
     Color correct,
     Color incorrect,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isCorrect = questionResult.isCorrect;
     final statusColor = isCorrect ? correct : incorrect;
+    final surface = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF111827);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey[600];
+    final containerBg = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
+    final blueColor = isDark ? Colors.blueAccent : Colors.blue[700];
+    final blueBg = isDark
+        ? Colors.blue.withOpacity(0.1)
+        : Colors.blue.withOpacity(0.05);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
       ),
@@ -315,10 +355,10 @@ class ToeicResultScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.05),
+                color: blueBg,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.blue.withOpacity(0.2),
+                  color: blueColor!.withOpacity(0.2),
                   width: 1,
                 ),
               ),
@@ -327,7 +367,7 @@ class ToeicResultScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.article, size: 16, color: Colors.blue[700]),
+                      Icon(Icons.article, size: 16, color: blueColor),
                       const SizedBox(width: 6),
                       Text(
                         questionResult.audioUrl != null
@@ -336,7 +376,7 @@ class ToeicResultScreen extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue[700],
+                          color: blueColor,
                         ),
                       ),
                     ],
@@ -346,7 +386,7 @@ class ToeicResultScreen extends StatelessWidget {
                     questionResult.passage!,
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: textSecondary,
                       height: 1.5,
                       fontStyle: FontStyle.italic,
                     ),
@@ -363,7 +403,7 @@ class ToeicResultScreen extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF111827),
+              color: textPrimary,
             ),
           ),
           const SizedBox(height: 12),
@@ -372,7 +412,7 @@ class ToeicResultScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: containerBg,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -380,15 +420,22 @@ class ToeicResultScreen extends StatelessWidget {
               children: [
                 if (questionResult.selectedAnswerOption != null)
                   _buildAnswerRow(
+                    context,
                     'Your Answer',
                     '${questionResult.selectedAnswerOption} - ${questionResult.selectedAnswerText}',
                     isCorrect ? correct : incorrect,
                   ),
                 if (questionResult.selectedAnswerOption == null)
-                  _buildAnswerRow('Your Answer', 'Not answered', Colors.grey),
+                  _buildAnswerRow(
+                    context,
+                    'Your Answer',
+                    'Not answered',
+                    Colors.grey,
+                  ),
                 if (!isCorrect) ...[
                   const SizedBox(height: 8),
                   _buildAnswerRow(
+                    context,
                     'Correct Answer',
                     '${questionResult.correctAnswerOption} - ${questionResult.correctAnswerText}',
                     correct,
@@ -401,10 +448,10 @@ class ToeicResultScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.05),
+                      color: blueBg,
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: Colors.blue.withOpacity(0.2),
+                        color: blueColor!.withOpacity(0.2),
                         width: 1,
                       ),
                     ),
@@ -414,7 +461,7 @@ class ToeicResultScreen extends StatelessWidget {
                         Icon(
                           Icons.lightbulb_outline,
                           size: 18,
-                          color: Colors.blue[700],
+                          color: blueColor,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -426,7 +473,7 @@ class ToeicResultScreen extends StatelessWidget {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue[700],
+                                  color: blueColor,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -434,7 +481,7 @@ class ToeicResultScreen extends StatelessWidget {
                                 questionResult.explanation!,
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
-                                  color: Colors.grey[700],
+                                  color: textSecondary,
                                   height: 1.4,
                                 ),
                               ),
@@ -453,7 +500,13 @@ class ToeicResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAnswerRow(String label, String answer, Color color) {
+  Widget _buildAnswerRow(
+    BuildContext context,
+    String label,
+    String answer,
+    Color color,
+  ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -464,7 +517,7 @@ class ToeicResultScreen extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+              color: isDark ? Colors.grey.shade400 : Colors.grey[700],
             ),
           ),
         ),

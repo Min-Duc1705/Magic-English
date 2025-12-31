@@ -24,6 +24,13 @@ class VocabularyCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF333333);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final textTertiary = isDark ? Colors.grey.shade500 : Colors.grey.shade700;
+    final ipaColor = isDark ? Colors.grey.shade400 : Colors.black54;
+
     return GestureDetector(
       onTap:
           onTap ??
@@ -39,10 +46,15 @@ class VocabularyCardWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 14),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(.06), blurRadius: 6),
+            BoxShadow(
+              color: isDark
+                  ? Colors.black.withOpacity(.2)
+                  : Colors.black.withOpacity(.06),
+              blurRadius: 6,
+            ),
           ],
         ),
         child: Row(
@@ -60,6 +72,7 @@ class VocabularyCardWidget extends StatelessWidget {
                         style: GoogleFonts.lexend(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: textPrimary,
                         ),
                       ),
                       if (vocabulary.wordType.isNotEmpty) ...[
@@ -68,7 +81,7 @@ class VocabularyCardWidget extends StatelessWidget {
                           '(${vocabulary.wordType})',
                           style: GoogleFonts.lexend(
                             fontSize: 14,
-                            color: Colors.grey.shade600,
+                            color: textSecondary,
                           ),
                         ),
                       ],
@@ -79,7 +92,7 @@ class VocabularyCardWidget extends StatelessWidget {
                     vocabulary.meaning,
                     style: GoogleFonts.lexend(
                       fontSize: 14,
-                      color: Colors.grey.shade700,
+                      color: textTertiary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -90,9 +103,9 @@ class VocabularyCardWidget extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           vocabulary.ipa,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: Colors.black54,
+                            color: ipaColor,
                             fontFamily: 'serif',
                           ),
                         ),
@@ -110,13 +123,13 @@ class VocabularyCardWidget extends StatelessWidget {
                   onTap: onFavoriteTap,
                   child: Icon(
                     isFavorite ? Icons.star : Icons.star_border,
-                    color: isFavorite ? Colors.amber : Colors.grey.shade500,
+                    color: isFavorite ? Colors.amber : textSecondary,
                   ),
                 ),
                 const SizedBox(height: 6),
                 GestureDetector(
                   onTap: onMoreTap,
-                  child: Icon(Icons.more_vert, color: Colors.grey.shade600),
+                  child: Icon(Icons.more_vert, color: textSecondary),
                 ),
               ],
             ),

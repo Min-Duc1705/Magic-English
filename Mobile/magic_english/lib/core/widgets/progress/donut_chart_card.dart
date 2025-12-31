@@ -18,6 +18,19 @@ class DonutChartCard extends StatelessWidget {
     const secondary = Color(0xFF50E3C2);
     const accent = Color(0xFFF8D648);
     const purple = Color(0xFF8884d8);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final borderColor = isDark
+        ? const Color(0xFF3D3D3D)
+        : const Color(0xFFE0E0E0);
+    final textColor = isDark ? Colors.white : const Color(0xFF100d1b);
+    final textMuted = isDark ? Colors.grey.shade400 : const Color(0xFF888888);
+    final primary = isDark ? const Color(0xFF60A5FA) : const Color(0xFF4A90E2);
+    final secondary = isDark
+        ? const Color(0xFF2DD4BF)
+        : const Color(0xFF50E3C2);
+    final accent = isDark ? const Color(0xFFFACC15) : const Color(0xFFF8D648);
+    final purple = isDark ? const Color(0xFFA78BFA) : const Color(0xFF8884d8);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -56,6 +69,16 @@ class DonutChartCard extends StatelessWidget {
                     CustomPaint(
                       size: const Size(120, 120),
                       painter: DonutChartPainter(breakdown: breakdown),
+                      painter: DonutChartPainter(
+                        breakdown: breakdown,
+                        emptyColor: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
+                        primary: primary,
+                        secondary: secondary,
+                        accent: accent,
+                        purple: purple,
+                      ),
                     ),
                     Column(
                       mainAxisSize: MainAxisSize.min,
@@ -89,18 +112,22 @@ class DonutChartCard extends StatelessWidget {
                     _legendItem(
                       'Verbs (${(breakdown.getPercentage(breakdown.verb) * 100).toStringAsFixed(0)}%)',
                       primary,
+                      isDark,
                     ),
                     _legendItem(
                       'Adjectives (${(breakdown.getPercentage(breakdown.adjective) * 100).toStringAsFixed(0)}%)',
                       secondary,
+                      isDark,
                     ),
                     _legendItem(
                       'Nouns (${(breakdown.getPercentage(breakdown.noun) * 100).toStringAsFixed(0)}%)',
                       accent,
+                      isDark,
                     ),
                     _legendItem(
                       'Adverbs (${(breakdown.getPercentage(breakdown.adverb) * 100).toStringAsFixed(0)}%)',
                       purple,
+                      isDark,
                     ),
                     if (breakdown.other > 0)
                       _legendItem(
@@ -119,6 +146,21 @@ class DonutChartCard extends StatelessWidget {
 
   Widget _legendItem(String label, Color color) {
     const textColor = Color(0xFF100d1b);
+                        isDark ? Colors.grey.shade600 : Colors.grey,
+                        isDark,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendItem(String label, Color color, bool isDark) {
+    final textColor = isDark ? Colors.white : const Color(0xFF100d1b);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -139,6 +181,20 @@ class DonutChartPainter extends CustomPainter {
   final VocabularyBreakdown breakdown;
 
   DonutChartPainter({required this.breakdown});
+  final Color emptyColor;
+  final Color primary;
+  final Color secondary;
+  final Color accent;
+  final Color purple;
+
+  DonutChartPainter({
+    required this.breakdown,
+    required this.emptyColor,
+    required this.primary,
+    required this.secondary,
+    required this.accent,
+    required this.purple,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -155,6 +211,10 @@ class DonutChartPainter extends CustomPainter {
     if (breakdown.total == 0) {
       final paint = Paint()
         ..color = Colors.grey.shade300
+    // If no data, draw empty circle
+    if (breakdown.total == 0) {
+      final paint = Paint()
+        ..color = emptyColor
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.round;
