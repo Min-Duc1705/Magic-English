@@ -43,8 +43,6 @@ class ToeicQuestion {
   final String questionType;
   final String? passage;
   final String? audioUrl;
-  final String? part; // Part 1, Part 2, Part 3, Part 4 for Listening
-  final String? imageUrl; // Image URL for Part 1 Photographs
   final List<ToeicAnswer> answers;
 
   ToeicQuestion({
@@ -54,8 +52,6 @@ class ToeicQuestion {
     required this.questionType,
     this.passage,
     this.audioUrl,
-    this.part,
-    this.imageUrl,
     required this.answers,
   });
 
@@ -67,8 +63,6 @@ class ToeicQuestion {
       questionType: json['questionType'] ?? 'multiple_choice',
       passage: json['passage'],
       audioUrl: json['audioUrl'],
-      part: json['part'],
-      imageUrl: json['imageUrl'],
       answers: (json['answers'] as List)
           .map((a) => ToeicAnswer.fromJson(a))
           .toList(),

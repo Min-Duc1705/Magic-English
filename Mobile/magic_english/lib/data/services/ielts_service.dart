@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:magic_enlish/data/models/ielts/ielts_test.dart';
 import 'package:magic_enlish/core/constants/api_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +23,7 @@ class IELTSService {
       throw Exception('No access token found');
     }
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       Uri.parse('$baseUrl/generate'),
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ class IELTSService {
       throw Exception('No access token found');
     }
 
-    final response = await http.get(
+    final response = await ApiClient.get(
       Uri.parse('$baseUrl/tests/$testId'),
       headers: {'Authorization': 'Bearer $token'},
     );
@@ -73,7 +73,7 @@ class IELTSService {
       throw Exception('No access token found');
     }
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       Uri.parse('$baseUrl/start'),
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ class IELTSService {
       throw Exception('No access token found');
     }
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       Uri.parse('$baseUrl/submit'),
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ class IELTSService {
       throw Exception('No access token found');
     }
 
-    final response = await http.get(
+    final response = await ApiClient.get(
       Uri.parse('$baseUrl/history'),
       headers: {'Authorization': 'Bearer $token'},
     );

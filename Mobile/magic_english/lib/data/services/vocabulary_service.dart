@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:magic_enlish/data/models/BackendResponse.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:magic_enlish/data/models/vocabulary/Vocabulary.dart';
@@ -21,13 +21,12 @@ class VocabularyService {
 
     try {
       final headers = await _getHeaders();
-      final response = await http
-          .post(
+      final response =
+          await ApiClient.post(
             Uri.parse('$url/api/v1/vocabulary'),
             headers: headers,
             body: jsonEncode(vocabulary.toJson()),
-          )
-          .timeout(
+          ).timeout(
             const Duration(seconds: 30), // Tăng timeout lên 30 giây
             onTimeout: () {
               throw Exception(
@@ -62,7 +61,7 @@ class VocabularyService {
       apiUrl += '&search=${Uri.encodeComponent(search)}';
     }
 
-    final response = await http.get(Uri.parse(apiUrl), headers: headers);
+    final response = await ApiClient.get(Uri.parse(apiUrl), headers: headers);
 
     final jsonData = jsonDecode(response.body);
 
@@ -84,13 +83,12 @@ class VocabularyService {
   ) async {
     final String url = dotenv.env['Backend_URL'] ?? '';
     final headers = await _getHeaders();
-    final response = await http
-        .post(
+    final response =
+        await ApiClient.post(
           Uri.parse('$url/api/v1/vocabulary/preview'),
           headers: headers,
           body: jsonEncode(vocabulary.toJson()),
-        )
-        .timeout(
+        ).timeout(
           const Duration(seconds: 30), // Tăng timeout cho preview (AI call)
           onTimeout: () {
             throw Exception(

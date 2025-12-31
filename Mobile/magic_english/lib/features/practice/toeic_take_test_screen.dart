@@ -736,7 +736,7 @@ class _ToeicTakeTestScreenState extends State<ToeicTakeTestScreen> {
                               _getPartDescription(currentQuestion.part),
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
-                                color: Colors.grey[700],
+                                color: textSecondary,
                                 fontStyle: FontStyle.italic,
                               ),
                             ),

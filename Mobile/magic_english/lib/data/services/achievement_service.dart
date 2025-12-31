@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:magic_enlish/core/utils/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/api_constants.dart';
 import '../models/progress/achievement.dart';
@@ -31,7 +31,7 @@ class AchievementService {
     final url = Uri.parse('${ApiConstants.baseUrl}/user-achievements/check');
     final headers = await _getAuthHeaders();
 
-    final response = await http.post(
+    final response = await ApiClient.post(
       url,
       headers: headers,
       body: jsonEncode({
@@ -87,7 +87,7 @@ class AchievementService {
     final headers = await _getAuthHeaders();
 
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await ApiClient.get(url, headers: headers);
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
@@ -115,7 +115,7 @@ class AchievementService {
     final headers = await _getAuthHeaders();
 
     try {
-      final response = await http.get(url, headers: headers);
+      final response = await ApiClient.get(url, headers: headers);
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));

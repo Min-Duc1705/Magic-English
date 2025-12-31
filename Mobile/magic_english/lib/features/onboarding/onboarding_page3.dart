@@ -19,7 +19,25 @@ class OnboardingPage3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFF135BEC);
-    const bgColor = Colors.white;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Theme Colors
+    final bgColor = isDark ? const Color(0xFF121212) : Colors.white;
+    final cardColor = isDark ? const Color(0xFF2D2D2D) : Colors.white;
+    final cardSurfaceColor = isDark
+        ? const Color(0xFF1E1E1E)
+        : Colors.grey.shade50;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF0D121B);
+    final textSecondary = isDark ? Colors.grey.shade400 : Colors.grey.shade500;
+    final textSecondaryLight = isDark
+        ? Colors.grey.shade400
+        : Colors.grey.shade600;
+    final borderColor = isDark ? Colors.grey.shade700 : Colors.grey.shade100;
+    final iconBgColor = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
+    final inactiveDot = isDark ? Colors.grey.shade800 : Colors.grey.shade200;
+    final shadowColor = isDark
+        ? Colors.transparent
+        : Colors.black.withOpacity(0.02);
 
     return Container(
       color: bgColor,
@@ -38,7 +56,7 @@ class OnboardingPage3 extends StatelessWidget {
                     style: GoogleFonts.lexend(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade400,
+                      color: textSecondary,
                     ),
                   ),
                 ),
@@ -59,12 +77,14 @@ class OnboardingPage3 extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
+                      color: cardSurfaceColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(color: borderColor),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: isDark
+                              ? Colors.black.withOpacity(0.2)
+                              : Colors.black.withOpacity(0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -126,7 +146,7 @@ class OnboardingPage3 extends StatelessWidget {
                                   width: 32,
                                   height: 32,
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade200,
+                                    color: iconBgColor,
                                     shape: BoxShape.circle,
                                   ),
                                   child: ClipOval(
@@ -150,18 +170,16 @@ class OnboardingPage3 extends StatelessWidget {
                                   child: Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: cardColor,
                                       borderRadius: const BorderRadius.only(
                                         topRight: Radius.circular(12),
                                         bottomLeft: Radius.circular(12),
                                         bottomRight: Radius.circular(12),
                                       ),
-                                      border: Border.all(
-                                        color: Colors.grey.shade100,
-                                      ),
+                                      border: Border.all(color: borderColor),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.02),
+                                          color: shadowColor,
                                           blurRadius: 4,
                                         ),
                                       ],
@@ -170,7 +188,7 @@ class OnboardingPage3 extends StatelessWidget {
                                       text: TextSpan(
                                         style: GoogleFonts.lexend(
                                           fontSize: 14,
-                                          color: Colors.grey.shade600,
+                                          color: textSecondaryLight,
                                         ),
                                         children: [
                                           const TextSpan(
@@ -222,7 +240,7 @@ class OnboardingPage3 extends StatelessWidget {
                                         style: GoogleFonts.lexend(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
-                                          color: const Color(0xFF0D121B),
+                                          color: textPrimary,
                                         ),
                                         children: [
                                           const TextSpan(
@@ -232,7 +250,9 @@ class OnboardingPage3 extends StatelessWidget {
                                             text: 'learn',
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green.shade600,
+                                              color: isDark
+                                                  ? Colors.green.shade400
+                                                  : Colors.green.shade600,
                                             ),
                                           ),
                                           const TextSpan(text: ' English.'),
@@ -273,13 +293,18 @@ class OnboardingPage3 extends StatelessWidget {
                         child: _buildStatCard(
                           icon: Icons.local_fire_department,
                           iconColor: Colors.orange,
-                          bgGradient: [
-                            Colors.orange.shade50,
-                            Colors.orange.shade100,
-                          ],
-                          borderColor: Colors.orange.shade200,
+                          bgGradient: isDark
+                              ? [
+                                  Colors.orange.withOpacity(0.1),
+                                  Colors.orange.withOpacity(0.05),
+                                ]
+                              : [Colors.orange.shade50, Colors.orange.shade100],
+                          borderColor: isDark
+                              ? Colors.orange.withOpacity(0.3)
+                              : Colors.orange.shade200,
                           label: 'Current Streak',
                           value: '3 Days',
+                          isDark: isDark,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -288,13 +313,18 @@ class OnboardingPage3 extends StatelessWidget {
                         child: _buildStatCard(
                           icon: Icons.emoji_events,
                           iconColor: primaryColor,
-                          bgGradient: [
-                            Colors.blue.shade50,
-                            Colors.indigo.shade100,
-                          ],
-                          borderColor: Colors.blue.shade200,
+                          bgGradient: isDark
+                              ? [
+                                  Colors.indigo.withOpacity(0.1),
+                                  Colors.indigo.withOpacity(0.05),
+                                ]
+                              : [Colors.blue.shade50, Colors.indigo.shade100],
+                          borderColor: isDark
+                              ? Colors.blue.withOpacity(0.3)
+                              : Colors.blue.shade200,
                           label: 'Fluency Level',
                           value: 'B2 Int.',
+                          isDark: isDark,
                         ),
                       ),
                     ],
@@ -309,9 +339,20 @@ class OnboardingPage3 extends StatelessWidget {
           // Footer Area
           Container(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              boxShadow: isDark
+                  ? [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: const Offset(0, -2),
+                      ),
+                    ]
+                  : null,
             ),
             child: Column(
               children: [
@@ -322,7 +363,7 @@ class OnboardingPage3 extends StatelessWidget {
                   style: GoogleFonts.lexend(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0D121B),
+                    color: textPrimary,
                     height: 1.2,
                   ),
                 ),
@@ -332,7 +373,7 @@ class OnboardingPage3 extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: GoogleFonts.lexend(
                     fontSize: 15,
-                    color: Colors.grey.shade500,
+                    color: textSecondary,
                     height: 1.5,
                   ),
                 ),
@@ -342,11 +383,11 @@ class OnboardingPage3 extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildIndicator(0, currentPage == 0),
+                    _buildIndicator(0, currentPage == 0, inactiveDot),
                     const SizedBox(width: 12),
-                    _buildIndicator(1, currentPage == 1),
+                    _buildIndicator(1, currentPage == 1, inactiveDot),
                     const SizedBox(width: 12),
-                    _buildIndicator(2, currentPage == 2),
+                    _buildIndicator(2, currentPage == 2, inactiveDot),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -397,6 +438,7 @@ class OnboardingPage3 extends StatelessWidget {
     required Color borderColor,
     required String label,
     required String value,
+    required bool isDark,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -418,7 +460,7 @@ class OnboardingPage3 extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? Colors.white10 : Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4),
@@ -432,7 +474,7 @@ class OnboardingPage3 extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
+              color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
             ),
           ),
           const SizedBox(height: 4),
@@ -441,7 +483,7 @@ class OnboardingPage3 extends StatelessWidget {
             style: GoogleFonts.lexend(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF0D121B),
+              color: isDark ? Colors.white : const Color(0xFF0D121B),
             ),
           ),
         ],
@@ -449,7 +491,7 @@ class OnboardingPage3 extends StatelessWidget {
     );
   }
 
-  Widget _buildIndicator(int index, bool isActive) {
+  Widget _buildIndicator(int index, bool isActive, Color inactiveColor) {
     return GestureDetector(
       onTap: () => onDotTap(index),
       child: AnimatedContainer(
@@ -458,7 +500,7 @@ class OnboardingPage3 extends StatelessWidget {
         width: isActive ? 32 : 10,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          color: isActive ? const Color(0xFF135BEC) : Colors.grey.shade200,
+          color: isActive ? const Color(0xFF135BEC) : inactiveColor,
         ),
       ),
     );

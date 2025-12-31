@@ -9,10 +9,6 @@ class BarChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const cardBg = Colors.white;
-    const borderColor = Color(0xFFE0E0E0);
-    const textColor = Color(0xFF100d1b);
-    const primary = Color(0xFF4A90E2);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final borderColor = isDark
@@ -92,21 +88,6 @@ class BarChartCard extends StatelessWidget {
                   distribution.c2,
                   distribution.getNormalizedHeight(distribution.c2),
                   primary.withOpacity(0.2),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _barChart(String label, int count, double height, Color color) {
-    const textMuted = Color(0xFF888888);
-    const textColor = Color(0xFF100d1b);
-    // Minimum height for empty bars
-    final barHeight = height == 0 ? 10.0 : 120 * height;
-    final barColor = height == 0 ? Colors.grey.shade300 : color;
                   isDark,
                 ),
               ],
