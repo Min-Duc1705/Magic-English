@@ -10,6 +10,14 @@ class DonutChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const cardBg = Colors.white;
+    const borderColor = Color(0xFFE0E0E0);
+    const textColor = Color(0xFF100d1b);
+    const textMuted = Color(0xFF888888);
+    const primary = Color(0xFF4A90E2);
+    const secondary = Color(0xFF50E3C2);
+    const accent = Color(0xFFF8D648);
+    const purple = Color(0xFF8884d8);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final borderColor = isDark
@@ -60,6 +68,7 @@ class DonutChartCard extends StatelessWidget {
                   children: [
                     CustomPaint(
                       size: const Size(120, 120),
+                      painter: DonutChartPainter(breakdown: breakdown),
                       painter: DonutChartPainter(
                         breakdown: breakdown,
                         emptyColor: isDark
@@ -123,6 +132,20 @@ class DonutChartCard extends StatelessWidget {
                     if (breakdown.other > 0)
                       _legendItem(
                         'Other (${(breakdown.getPercentage(breakdown.other) * 100).toStringAsFixed(0)}%)',
+                        Colors.grey,
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legendItem(String label, Color color) {
+    const textColor = Color(0xFF100d1b);
                         isDark ? Colors.grey.shade600 : Colors.grey,
                         isDark,
                       ),
@@ -156,6 +179,8 @@ class DonutChartCard extends StatelessWidget {
 
 class DonutChartPainter extends CustomPainter {
   final VocabularyBreakdown breakdown;
+
+  DonutChartPainter({required this.breakdown});
   final Color emptyColor;
   final Color primary;
   final Color secondary;
@@ -177,6 +202,15 @@ class DonutChartPainter extends CustomPainter {
     final radius = size.width / 2;
     const strokeWidth = 10.0;
 
+    const primary = Color(0xFF4A90E2);
+    const secondary = Color(0xFF50E3C2);
+    const accent = Color(0xFFF8D648);
+    const purple = Color(0xFF8884d8);
+
+    // If no data, draw empty gray circle
+    if (breakdown.total == 0) {
+      final paint = Paint()
+        ..color = Colors.grey.shade300
     // If no data, draw empty circle
     if (breakdown.total == 0) {
       final paint = Paint()
