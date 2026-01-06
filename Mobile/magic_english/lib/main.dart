@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:magic_enlish/features/auth/login_screen.dart';
-import 'package:magic_enlish/features/vocabulary/vocabulary_screen.dart';
 
 void main() {
   runApp(const MyApp());
